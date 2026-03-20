@@ -8,823 +8,685 @@
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 
   :root {
-    --bg: #F7F4EF;
-    --surface: #FFFFFF;
-    --border: #E2DDD6;
-    --text-primary: #1A1714;
-    --text-secondary: #6B6560;
-    --text-muted: #9B9591;
-    --accent: #2D6A4F;
-    --accent-light: #EAF4EF;
-    --accent-warm: #C17D3C;
-    --accent-warm-light: #FBF0E4;
-    --error-soft: #FDF0F0;
-    --radius: 12px;
-    --radius-lg: 20px;
-
-    /* Accessible bar colors - high contrast, colorblind friendly */
-    --bar-blue: #1B6CA8;
-    --bar-orange: #D4600A;
-    --bar-green: #2D6A4F;
-    --bar-red: #C0392B;
-    --bar-purple: #6C3483;
-    --bar-teal: #0E7E7E;
-    --bar-pink: #B03A6E;
-    --bar-navy: #1A3A5C;
+    --bg: #F7F4EF; --surface: #FFFFFF; --border: #E2DDD6;
+    --text-primary: #1A1714; --text-secondary: #6B6560; --text-muted: #9B9591;
+    --accent: #2D6A4F; --accent-light: #EAF4EF;
+    --accent-warm: #C17D3C; --accent-warm-light: #FBF0E4;
+    --radius: 12px; --radius-lg: 20px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text-primary);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
+    background: var(--bg); color: var(--text-primary);
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 24px;
   }
 
-  .app {
-    width: 100%;
-    max-width: 720px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  .app { width: 100%; max-width: 680px; display: flex; flex-direction: column; gap: 20px; }
+
+  .header { display: flex; align-items: center; gap: 12px; }
+  .lesson-label { font-family: 'DM Serif Display', serif; font-size: 26px; letter-spacing: -0.5px; }
+  .phase-label { font-size: 12px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; flex: 1; }
+
+  .tts-toggle {
+    width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--border);
+    background: var(--surface); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0; margin-left: auto;
+  }
+  .tts-toggle svg { width: 16px; height: 16px; fill: var(--text-muted); transition: fill 0.15s; }
+  .tts-toggle.on { border-color: var(--accent); background: var(--accent-light); }
+  .tts-toggle.on svg { fill: var(--accent); }
+  .tts-toggle:hover { border-color: var(--accent); }
+  .tts-toggle:hover svg { fill: var(--accent); }
+
+  .progress-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.5s ease; }
+
+  /* Main canvas for bar models */
+  .canvas {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 44px 40px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 200px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    animation: fadeUp 0.35s ease; overflow: visible;
   }
 
-  .header {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    padding-bottom: 4px;
+  /* Short on-screen text — key point only */
+  .key-point {
+    background: var(--accent-light); border: 1px solid #B8DAC8;
+    border-radius: var(--radius-lg); padding: 18px 24px;
+    font-size: 16px; font-weight: 500; color: var(--text-primary);
+    line-height: 1.5; animation: fadeUp 0.35s ease;
+    display: flex; align-items: center; gap: 12px;
   }
 
-  .lesson-label {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    color: var(--text-primary);
-    letter-spacing: -0.5px;
+  .key-point.correction {
+    background: var(--accent-warm-light); border-color: #E8C99A;
   }
 
-  .phase-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  .key-point.neutral {
+    background: var(--surface); border-color: var(--border); font-weight: 400;
   }
 
-  .progress-track {
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
+  /* Audio indicator */
+  .audio-indicator {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent); display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; cursor: pointer;
+    transition: all 0.15s; border: none;
   }
+  .audio-indicator:hover { background: #255C43; transform: scale(1.05); }
+  .audio-indicator.speaking { background: var(--accent-warm); animation: pulse 1s infinite; }
+  .audio-indicator svg { width: 16px; height: 16px; fill: white; }
 
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 0.5s ease;
-  }
-
-  /* Instruction card */
-  .instruction-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 32px 36px;
-    line-height: 1.7;
-    font-size: 17px;
-    color: var(--text-primary);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    animation: fadeUp 0.4s ease;
-  }
-
-  .instruction-card.prompt {
-    background: var(--accent-light);
-    border-color: #B8DAC8;
-    font-size: 18px;
-    font-weight: 500;
-  }
-
-  .instruction-card.correction {
-    background: var(--accent-warm-light);
-    border-color: #E8C99A;
-  }
-
-  /* Bar model canvas */
-  .bar-canvas {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 220px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    animation: fadeUp 0.4s ease;
-  }
-
-  .bars-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
-    position: relative;
-    width: 100%;
-    max-width: 480px;
-  }
-
-  .bar {
-    height: 64px;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-
-  .bar-wrapper {
-    width: 100%;
-    position: relative;
-  }
-
-  /* Dotted line confirmation */
-  .dotted-confirm {
-    position: absolute;
-    right: -24px;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .dotted-line {
-    width: 2px;
-    height: 100%;
-    border-right: 2px dashed var(--text-muted);
-    position: absolute;
-    right: -20px;
-  }
-
-  .dotted-cap {
-    width: 8px;
-    height: 2px;
-    background: var(--text-muted);
-    position: absolute;
-    right: -22px;
-  }
-
-  .dotted-cap.top { top: 0; }
-  .dotted-cap.bottom { bottom: 0; }
-
-  /* Side-by-side layout for dotted line examples */
-  .bars-sidebyside {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 40px;
-    position: relative;
-  }
-
-  .dotted-bridge {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    align-items: center;
-  }
-
-  .dotted-h-line {
-    width: 40px;
-    border-top: 2px dashed var(--text-muted);
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
   }
 
   /* Response area */
-  .response-area {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    animation: fadeUp 0.3s ease 0.1s both;
-  }
-
-  .response-buttons {
-    display: flex;
-    gap: 12px;
-  }
+  .response-buttons { display: flex; gap: 12px; }
 
   .btn {
-    flex: 1;
-    padding: 16px 24px;
-    border-radius: var(--radius);
-    border: 2px solid var(--border);
-    background: var(--surface);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.15s ease;
-    letter-spacing: 0.2px;
+    flex: 1; padding: 15px 20px; border-radius: var(--radius);
+    border: 2px solid var(--border); background: var(--surface);
+    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600;
+    color: var(--text-primary); cursor: pointer; transition: all 0.15s;
   }
-
-  .btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-light);
-    transform: translateY(-1px);
-  }
-
+  .btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); transform: translateY(-1px); }
   .btn:active { transform: translateY(0); }
 
-  .btn.btn-primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
+  /* Hybrid input row: mic + text + submit */
+  .hybrid-row {
+    display: flex; gap: 8px; align-items: stretch;
   }
 
-  .btn.btn-primary:hover {
-    background: #255C43;
-    border-color: #255C43;
-    color: white;
+  .mic-btn {
+    width: 48px; height: 48px; border-radius: var(--radius); border: 2px solid var(--border);
+    background: var(--surface); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
   }
-
-  .text-input-row {
-    display: flex;
-    gap: 10px;
-  }
+  .mic-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+  .mic-btn.listening { border-color: #C0392B; background: #FDF0F0; animation: pulse 0.8s infinite; }
+  .mic-btn svg { width: 20px; height: 20px; }
 
   .text-input {
-    flex: 1;
-    padding: 14px 18px;
-    border-radius: var(--radius);
-    border: 2px solid var(--border);
-    background: var(--surface);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    color: var(--text-primary);
-    outline: none;
-    transition: border-color 0.15s;
+    flex: 1; padding: 12px 16px; border-radius: var(--radius);
+    border: 2px solid var(--border); background: var(--surface);
+    font-family: 'DM Sans', sans-serif; font-size: 16px;
+    color: var(--text-primary); outline: none; transition: border-color 0.15s;
+    min-width: 0;
   }
-
-  .text-input:focus {
-    border-color: var(--accent);
-  }
-
-  .text-input::placeholder {
-    color: var(--text-muted);
-  }
+  .text-input:focus { border-color: var(--accent); }
+  .text-input::placeholder { color: var(--text-muted); }
 
   .btn-submit {
-    padding: 14px 24px;
-    border-radius: var(--radius);
-    border: none;
-    background: var(--accent);
-    color: white;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
+    padding: 12px 20px; border-radius: var(--radius); border: none;
+    background: var(--accent); color: white;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
   }
-
   .btn-submit:hover { background: #255C43; }
 
-  /* Continue button */
   .btn-continue {
-    width: 100%;
-    padding: 16px;
-    border-radius: var(--radius);
-    border: none;
-    background: var(--accent);
-    color: white;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-top: 4px;
+    width: 100%; padding: 15px; border-radius: var(--radius); border: none;
+    background: var(--accent); color: white;
+    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
   }
-
   .btn-continue:hover { background: #255C43; transform: translateY(-1px); }
 
-  /* Completion screen */
+  /* Bar styles */
+  .bar-h {
+    height: 62px; border-radius: 6px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bar-label {
+    font-size: 12px; font-weight: 600; text-transform: capitalize; letter-spacing: 0.3px;
+  }
+
+  /* Completion */
   .completion {
-    text-align: center;
-    padding: 48px 36px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    animation: fadeUp 0.5s ease;
+    text-align: center; padding: 44px 32px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04); animation: fadeUp 0.5s ease;
   }
-
-  .completion-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-  }
-
   .completion h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    margin-bottom: 12px;
-    color: var(--accent);
+    font-family: 'DM Serif Display', serif; font-size: 26px;
+    margin: 12px 0 10px; color: var(--accent);
   }
+  .completion p { color: var(--text-secondary); font-size: 15px; line-height: 1.6; max-width: 380px; margin: 0 auto; }
 
-  .completion p {
-    color: var(--text-secondary);
-    font-size: 16px;
-    line-height: 1.6;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-
-  /* Relation naming */
-  .relation-prompt {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 28px 32px;
-    animation: fadeUp 0.4s ease;
-  }
-
-  .relation-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 16px;
-    padding: 0 4px;
-  }
-
-  .label-tag {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    background: var(--accent-light);
-    color: var(--accent);
-  }
-
-  .label-tag.unknown {
-    background: var(--accent-warm-light);
-    color: var(--accent-warm);
-  }
-
-  .question-mark {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'DM Serif Display', serif;
-    font-size: 32px;
-    color: rgba(255,255,255,0.9);
-    font-style: italic;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .sr-only {
-    position: absolute; width: 1px; height: 1px;
-    padding: 0; margin: -1px; overflow: hidden;
-    clip: rect(0,0,0,0); border: 0;
-  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
-<div class="app" id="app">
+<div class="app">
   <div class="header">
     <span class="lesson-label">Equal Relations</span>
     <span class="phase-label" id="phaseLabel">Introduction</span>
+    <button class="tts-toggle" id="ttsToggle" onclick="toggleTTS()" title="Toggle audio">
+      <svg id="ttsIcon" viewBox="0 0 24 24">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+      </svg>
+    </button>
   </div>
   <div class="progress-track">
-    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
   </div>
   <div id="mainContent"></div>
   <div id="responseArea"></div>
 </div>
 
 <script>
-// ─── ACCESSIBLE COLOR PALETTE ───────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// TTS TOGGLE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let ttsEnabled = true;
+
+function toggleTTS() {
+  ttsEnabled = !ttsEnabled;
+  const btn = document.getElementById('ttsToggle');
+  if (btn) btn.classList.toggle('on', ttsEnabled);
+  if (!ttsEnabled) window.speechSynthesis.cancel();
+
+  // Re-render current screen so text density updates immediately
+  switch (state.phase) {
+    case 'intro':       showIntro(); break;
+    case 'instruction': showInstruction(); break;
+    case 'practice':    showPractice(); break;
+    case 'naming':      showNaming(); break;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUDIO SYSTEM
+// All speech goes through speak(). To swap in real audio files later,
+// replace this function with one that plays pre-recorded files by key.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let currentUtterance = null;
+let isSpeaking = false;
+
+function speak(text, onEnd) {
+  // If TTS is off, just run the callback immediately
+  if (!ttsEnabled) {
+    if (onEnd) onEnd();
+    return;
+  }
+
+  const clean = text.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  window.speechSynthesis.cancel();
+
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.rate = 0.92;
+  utt.pitch = 1.0;
+  utt.volume = 1.0;
+
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = voices.find(v =>
+    v.name.includes('Samantha') || v.name.includes('Karen') ||
+    v.name.includes('Daniel') || v.name.includes('Google') ||
+    v.lang === 'en-US'
+  );
+  if (preferred) utt.voice = preferred;
+
+  utt.onstart = () => {
+    isSpeaking = true;
+    const btn = document.getElementById('audioBtn');
+    if (btn) btn.classList.add('speaking');
+  };
+  utt.onend = () => {
+    isSpeaking = false;
+    const btn = document.getElementById('audioBtn');
+    if (btn) btn.classList.remove('speaking');
+    if (onEnd) onEnd();
+  };
+  utt.onerror = () => {
+    isSpeaking = false;
+    if (onEnd) onEnd();
+  };
+
+  currentUtterance = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+function replayAudio() {
+  if (currentUtterance && ttsEnabled) {
+    speak(currentUtterance.text);
+  }
+}
+
+function audioButton() {
+  return `<button class="audio-indicator" id="audioBtn" onclick="replayAudio()" title="Replay audio">
+    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+  </button>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SPEECH INPUT SYSTEM
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let recognition = null;
+let isListening = false;
+
+function setupSpeech() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return null;
+  const r = new SpeechRecognition();
+  r.continuous = false;
+  r.interimResults = false;
+  r.lang = 'en-US';
+  return r;
+}
+
+function toggleMic(inputId, submitFn) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Speech recognition is not supported in this browser. Please type your answer.');
+    return;
+  }
+
+  if (isListening) {
+    if (recognition) recognition.stop();
+    isListening = false;
+    updateMicBtn(false);
+    return;
+  }
+
+  recognition = setupSpeech();
+  if (!recognition) return;
+
+  recognition.onstart = () => {
+    isListening = true;
+    updateMicBtn(true);
+  };
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    const input = document.getElementById(inputId);
+    if (input) {
+      input.value = transcript;
+      // Auto-submit after speech
+      setTimeout(() => submitFn(), 400);
+    }
+  };
+
+  recognition.onerror = () => {
+    isListening = false;
+    updateMicBtn(false);
+  };
+
+  recognition.onend = () => {
+    isListening = false;
+    updateMicBtn(false);
+  };
+
+  recognition.start();
+}
+
+function updateMicBtn(listening) {
+  const btn = document.getElementById('micBtn');
+  if (!btn) return;
+  btn.classList.toggle('listening', listening);
+  btn.title = listening ? 'Listening...' : 'Speak your answer';
+}
+
+function micButton(inputId, submitFn) {
+  return `<button class="mic-btn" id="micBtn" onclick="toggleMic('${inputId}', ${submitFn})" title="Speak your answer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="9" y="2" width="6" height="11" rx="3"/>
+      <path d="M5 10a7 7 0 0 0 14 0"/>
+      <line x1="12" y1="19" x2="12" y2="22"/>
+      <line x1="8" y1="22" x2="16" y2="22"/>
+    </svg>
+  </button>`;
+}
+
+function hybridInput(inputId, placeholder, submitFn) {
+  return `<div class="hybrid-row">
+    ${micButton(inputId, submitFn)}
+    <input class="text-input" id="${inputId}" type="text"
+           placeholder="${placeholder}"
+           onkeydown="if(event.key==='Enter')${submitFn}()">
+    <button class="btn-submit" onclick="${submitFn}()">Submit</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COLOR SYSTEM
+// ═══════════════════════════════════════════════════════════════════════════════
+
 const COLORS = [
-  { name: 'blue',   hex: '#1B6CA8' },
-  { name: 'orange', hex: '#D4600A' },
-  { name: 'green',  hex: '#2D6A4F' },
-  { name: 'red',    hex: '#C0392B' },
-  { name: 'purple', hex: '#6C3483' },
-  { name: 'teal',   hex: '#0E7E7E' },
-  { name: 'pink',   hex: '#B03A6E' },
-  { name: 'navy',   hex: '#1A3A5C' },
+  { name:'blue',   hex:'#1B6CA8' },
+  { name:'orange', hex:'#D4600A' },
+  { name:'green',  hex:'#2D6A4F' },
+  { name:'red',    hex:'#C0392B' },
+  { name:'purple', hex:'#6C3483' },
+  { name:'teal',   hex:'#0E7E7E' },
+  { name:'pink',   hex:'#B03A6E' },
+  { name:'navy',   hex:'#1A3A5C' },
 ];
 
-// ─── COLOR FAMILY MAP (Fix 3) ────────────────────────────────────────────────
-// Learner can say "blue" and it matches "navy" or "teal"
 const COLOR_FAMILIES = {
-  'blue':   ['blue', 'navy', 'teal', 'dark blue'],
-  'navy':   ['navy', 'blue', 'dark blue'],
-  'teal':   ['teal', 'blue', 'green', 'dark green'],
-  'green':  ['green', 'teal', 'dark green'],
-  'red':    ['red', 'pink', 'dark red'],
-  'pink':   ['pink', 'red'],
-  'orange': ['orange'],
-  'purple': ['purple', 'violet'],
+  blue:   ['blue','navy','teal','dark blue'],
+  navy:   ['navy','blue','dark blue'],
+  teal:   ['teal','blue','green','dark green'],
+  green:  ['green','teal','dark green'],
+  red:    ['red','pink','dark red'],
+  pink:   ['pink','red'],
+  orange: ['orange'],
+  purple: ['purple','violet'],
 };
+
+function getSameFamily(n) {
+  const f = COLOR_FAMILIES[n] || [n];
+  return COLORS.filter(c => f.includes(c.name) || (COLOR_FAMILIES[c.name]||[c.name]).includes(n)).map(c=>c.name);
+}
+
+function randColor(excl=[]) {
+  const ef = excl.flatMap(n => getSameFamily(n));
+  const pool = COLORS.filter(c => !ef.includes(c.name));
+  return pool.length ? pool[Math.floor(Math.random()*pool.length)]
+                     : COLORS.filter(c => !excl.includes(c.name))[0];
+}
 
 function colorMatches(spoken, actual) {
   const s = spoken.toLowerCase().trim();
   const a = actual.toLowerCase().trim();
   if (s === a) return true;
-  const family = COLOR_FAMILIES[a] || [a];
-  return family.includes(s);
+  return (COLOR_FAMILIES[a] || [a]).includes(s);
 }
 
-function getSameFamily(colorName) {
-  const family = COLOR_FAMILIES[colorName] || [colorName];
-  return COLORS
-    .filter(c => family.includes(c.name) || (COLOR_FAMILIES[c.name] || [c.name]).includes(colorName))
-    .map(c => c.name);
-}
-
-function randColor(exclude = []) {
-  const excludeFamilies = exclude.flatMap(name => getSameFamily(name));
-  const pool = COLORS.filter(c => !excludeFamilies.includes(c.name));
-  if (pool.length === 0) {
-    return COLORS.filter(c => !exclude.includes(c.name))[0];
-  }
-  return pool[Math.floor(Math.random() * pool.length)];
+function textColor(hex) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return (0.299*r + 0.587*g + 0.114*b)/255 > 0.55 ? '#1A1714' : '#FFFFFF';
 }
 
 function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
 
-// ─── BAR MODEL GENERATOR ─────────────────────────────────────────────────────
-// discriminationLevel: 1 = far (obvious), 2 = medium, 3 = close
-// type: 'equal_stacked' | 'equal_dotted' | 'notequal_clear' | 'notequal_ambiguous'
+// ═══════════════════════════════════════════════════════════════════════════════
+// BAR RENDERERS
+// ═══════════════════════════════════════════════════════════════════════════════
 
-function generateBarModel(type, discriminationLevel) {
-  const c1 = randColor();
-  const c2 = randColor([c1.name]);
-  const baseWidth = 360;
+const BH = 62;
 
-  if (type === 'equal_stacked') {
-    const w = baseWidth * (0.5 + Math.random() * 0.4);
-    return { type, c1, c2, w1: w, w2: w, layout: 'stacked' };
-  }
-
-  if (type === 'equal_dotted') {
-    const w = baseWidth * (0.5 + Math.random() * 0.4);
-    return { type, c1, c2, w1: w, w2: w, layout: 'dotted' };
-  }
-
-  if (type === 'notequal_clear') {
-    // Far: large difference. Close: still clearly different but less so.
-    const diff = discriminationLevel === 1 ? 0.35 + Math.random() * 0.2
-               : discriminationLevel === 2 ? 0.20 + Math.random() * 0.15
-               :                             0.12 + Math.random() * 0.10;
-    const w1 = baseWidth * (0.45 + Math.random() * 0.2);
-    const w2 = Math.random() > 0.5 ? w1 * (1 + diff) : w1 * (1 - diff);
-    return { type, c1, c2, w1, w2: Math.max(w2, 60), layout: 'stacked' };
-  }
-
-  if (type === 'notequal_ambiguous') {
-    // Looks similar but no confirmation marker. Not equal.
-    const diff = discriminationLevel === 1 ? 0.12 + Math.random() * 0.08
-               : discriminationLevel === 2 ? 0.06 + Math.random() * 0.06
-               :                             0.02 + Math.random() * 0.04;
-    const w1 = baseWidth * (0.5 + Math.random() * 0.2);
-    const w2 = Math.random() > 0.5 ? w1 * (1 + diff) : w1 * (1 - diff);
-    return { type, c1, c2, w1, w2: Math.max(w2, 60), layout: 'stacked' };
-  }
+function singleBar(hex, name, w, isUnknown=false) {
+  const tc = textColor(hex);
+  const content = isUnknown
+    ? `<span style="font-family:'DM Serif Display',serif;font-size:24px;font-style:italic;color:${tc}">?</span>`
+    : `<span class="bar-label" style="color:${tc}">${name}</span>`;
+  return `<div class="bar-h" style="width:${w}px;background:${hex}">${content}</div>`;
 }
 
 function renderBarModel(model) {
   if (model.layout === 'dotted') {
-    // Both bars same width, stacked, with vertical dotted lines
-    // at BOTH ends showing they start and end at the same point
     const w = model.w1;
     return `
-      <div style="position:relative;display:inline-block;padding:0 18px">
-        <!-- Left vertical dotted line -->
-        <div style="position:absolute;left:14px;top:0;bottom:0;
-                    border-left:2px dashed #9B9591;"></div>
-        <!-- Right vertical dotted line -->
-        <div style="position:absolute;right:14px;top:0;bottom:0;
-                    border-left:2px dashed #9B9591;"></div>
-        <!-- Top bar -->
-        <div class="bar" style="width:${w}px;background:${model.c1.hex};margin-bottom:8px;position:relative">
-          <!-- Left cap -->
-          <div style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);
-                      width:8px;height:2px;background:#9B9591"></div>
-          <!-- Right cap -->
-          <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);
-                      width:8px;height:2px;background:#9B9591"></div>
-        </div>
-        <!-- Bottom bar -->
-        <div class="bar" style="width:${w}px;background:${model.c2.hex};position:relative">
-          <div style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);
-                      width:8px;height:2px;background:#9B9591"></div>
-          <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);
-                      width:8px;height:2px;background:#9B9591"></div>
-        </div>
-      </div>
-    `;
+      <div style="position:relative;display:inline-block;padding:0 20px">
+        <div style="position:absolute;left:16px;top:0;bottom:0;border-left:2px dashed #9B9591"></div>
+        <div style="position:absolute;right:16px;top:0;bottom:0;border-right:2px dashed #9B9591"></div>
+        <div style="margin-bottom:8px">${singleBar(model.c1.hex, model.c1.name, w)}</div>
+        ${singleBar(model.c2.hex, model.c2.name, w)}
+      </div>`;
   }
-
-  // stacked (left-aligned, no confirmation markers)
   return `
-    <div class="bars-container">
-      <div class="bar-wrapper">
-        <div class="bar" style="width:${model.w1}px;background:${model.c1.hex}"></div>
-      </div>
-      <div style="height:8px"></div>
-      <div class="bar-wrapper">
-        <div class="bar" style="width:${model.w2}px;background:${model.c2.hex}"></div>
-      </div>
-    </div>
-  `;
+    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+      ${singleBar(model.c1.hex, model.c1.name, model.w1)}
+      ${singleBar(model.c2.hex, model.c2.name, model.w2)}
+    </div>`;
 }
 
 function renderBarModelWithLabels(model, knownColor, unknownColor) {
   return `
-    <div class="bars-container">
-      <div class="bar-wrapper">
-        <div class="bar" style="width:${model.w1}px;background:${model.c1.hex};position:relative">
-          ${model.c1.name === unknownColor ? '<div class="question-mark">?</div>' : ''}
-        </div>
-        <div style="font-size:13px;font-weight:600;color:#6B6560;margin-top:5px;text-transform:capitalize;">
-          ${model.c1.name}
-        </div>
-      </div>
-      <div style="height:12px"></div>
-      <div class="bar-wrapper">
-        <div class="bar" style="width:${model.w2}px;background:${model.c2.hex};position:relative">
-          ${model.c2.name === unknownColor ? '<div class="question-mark">?</div>' : ''}
-        </div>
-        <div style="font-size:13px;font-weight:600;color:#6B6560;margin-top:5px;text-transform:capitalize;">
-          ${model.c2.name}
-        </div>
-      </div>
-    </div>
-  `;
+    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+      ${singleBar(model.c1.hex, model.c1.name, model.w1, model.c1.name === unknownColor)}
+      ${singleBar(model.c2.hex, model.c2.name, model.w2, model.c2.name === unknownColor)}
+    </div>`;
 }
 
-// ─── LEARNER STATE ────────────────────────────────────────────────────────────
-const state = {
-  phase: 'intro',        // intro | instruction | practice | naming | complete
-  introStep: 0,
-  instructionStep: 0,
-  practiceStep: 0,
-  namingStep: 0,
-  discriminationLevel: 1,
-  consecutiveCorrect: 0,
-  errorCount: 0,
-  consecutiveErrors: 0,
-  lastErrorType: null,
-  currentModel: null,
-  currentAnswer: null,   // for practice: 'equal' | 'notequal'
-  currentNaming: null,   // { known, unknown }
-  totalPractice: 12,
-  totalNaming: 8,
-};
+// ═══════════════════════════════════════════════════════════════════════════════
+// GENERATORS
+// ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── INTRO STEPS ─────────────────────────────────────────────────────────────
-const introSteps = [
-  {
-    text: `You are going to learn to <strong>name relations</strong>.<br><br>
-           A relation tells how two things are similar or different.<br><br>
-           Good problem solvers are good at finding relations.<br><br>
-           The first relation you will learn is <strong>Equal</strong>.`,
-    btn: 'Continue'
-  },
-  {
-    text: `When two things are of the <strong>same size or number</strong>, they are <strong>equal</strong>.<br><br>
-           Look at the shapes in each picture. Your job is to tell me what you notice about the relationship between them.`,
-    btn: 'I\'m ready'
+function generateBarModel(type, level) {
+  const c1 = randColor();
+  const c2 = randColor([c1.name]);
+  const base = 340;
+
+  if (type === 'equal_stacked') {
+    const w = base * (0.5 + Math.random()*0.4);
+    return { type, c1, c2, w1:w, w2:w, layout:'stacked' };
   }
-];
-
-// ─── INSTRUCTION STEPS ───────────────────────────────────────────────────────
-// Each step has: model, explain text, a confirmation question, accepted answers, and correction text
-const instructionSequence = [
-  {
-    model: { type: 'equal_stacked', layout: 'stacked',
-             c1: COLORS[0], c2: COLORS[2],
-             w1: 320, w2: 320 },
-    explain: 'These two rectangles are <strong>equal</strong>. They are the same size, stacked right on top of each other. We can say that the blue rectangle is equal to the green rectangle — and the green rectangle is equal to the blue rectangle.',
-    question: 'What is the relation between these two rectangles?',
-    accepted: ['equal', 'same', 'same size', 'the same'],
-    correction: 'Look at the two rectangles. Are they the same size? When two things are the same size, we call them <strong>equal</strong>. What is the relation?'
-  },
-  {
-    model: { type: 'equal_stacked', layout: 'stacked',
-             c1: COLORS[4], c2: COLORS[1],
-             w1: 260, w2: 260 },
-    explain: 'These two rectangles are also <strong>equal</strong>.',
-    question: 'Are these rectangles equal or not equal?',
-    accepted: ['equal', 'same', 'same size', 'the same', 'yes'],
-    correction: 'Look carefully — are these two rectangles the same size? What do we call two things that are the same size?'
-  },
-  {
-    model: { type: 'notequal_clear', layout: 'stacked',
-             c1: COLORS[0], c2: COLORS[6],
-             w1: 360, w2: 180 },
-    explain: 'These two rectangles are <strong>not equal</strong>. Two things are equal if they are of the same size — these rectangles are different sizes, so they are not equal.',
-    question: 'Are these rectangles equal or not equal?',
-    accepted: ['not equal', 'not the same', 'different', 'no', 'unequal'],
-    correction: 'Look at the sizes. Is one rectangle bigger than the other? Two things are only equal if they are the <strong>same</strong> size. What is the relation here?'
-  },
-  {
-    model: { type: 'notequal_ambiguous', layout: 'stacked',
-             c1: COLORS[2], c2: COLORS[3],
-             w1: 310, w2: 295 },
-    explain: `These rectangles <em>look</em> like they might be equal. They look about the same size.<br><br>
-              But I <strong>cannot say</strong> that these rectangles are equal. The picture does not show me that they are exactly the same size.<br><br>
-              To call two things equal, the picture must <em>show</em> me — by stacking them directly on top of each other, or by using dotted lines.`,
-    question: 'Can I call these rectangles equal? Yes or No.',
-    accepted: ['no', 'not equal', 'no you cannot', 'cannot', "can't"],
-    correction: 'Look carefully — does this picture <strong>show</strong> that these rectangles are exactly the same size? Remember, they need to be stacked directly, or have dotted lines. Without that, we cannot call them equal.'
-  },
-  {
-    model: { type: 'equal_dotted', layout: 'dotted',
-             c1: COLORS[3], c2: COLORS[1],
-             w1: 280, w2: 280 },
-    explain: `These rectangles are not stacked on top of each other, but the <strong>dotted lines</strong> on each end show me they start and end at the same point — they are exactly the same size.<br><br>
-              The picture shows me they are equal — so I can call them equal.`,
-    question: 'How does this picture show that the rectangles are equal?',
-    accepted: ['dotted', 'lines', 'dotted lines', 'same size', 'they line up', 'end at the same', 'same length'],
-    correction: 'Look at the ends of the rectangles. What do you see there? The <strong>dotted lines</strong> show that both rectangles end at exactly the same point. That is how the picture confirms they are equal.'
+  if (type === 'equal_dotted') {
+    const w = base * (0.5 + Math.random()*0.4);
+    return { type, c1, c2, w1:w, w2:w, layout:'dotted' };
   }
-];
+  if (type === 'notequal_clear') {
+    const diff = level===1 ? 0.35+Math.random()*0.2 : level===2 ? 0.20+Math.random()*0.15 : 0.12+Math.random()*0.10;
+    const w1 = base * (0.45+Math.random()*0.2);
+    const w2 = Math.random()>0.5 ? w1*(1+diff) : w1*(1-diff);
+    return { type, c1, c2, w1, w2:Math.max(w2,60), layout:'stacked' };
+  }
+  if (type === 'notequal_ambiguous') {
+    const diff = level===1 ? 0.12+Math.random()*0.08 : level===2 ? 0.06+Math.random()*0.06 : 0.02+Math.random()*0.04;
+    const w1 = base * (0.5+Math.random()*0.2);
+    const w2 = Math.random()>0.5 ? w1*(1+diff) : w1*(1-diff);
+    return { type, c1, c2, w1, w2:Math.max(w2,60), layout:'stacked' };
+  }
+}
 
-// ─── INSTRUCTION CONFIRMATION STATE ──────────────────────────────────────────
-// Tracks whether learner has confirmed the current instruction step
-let awaitingConfirmation = false;
-
-// ─── PRACTICE LOGIC ──────────────────────────────────────────────────────────
 function getNextPracticeModel() {
   const level = state.discriminationLevel;
-
-  // After repeated errors, go back to obvious examples
   if (state.consecutiveErrors >= 2) {
     state.discriminationLevel = Math.max(1, state.discriminationLevel - 1);
     state.consecutiveErrors = 0;
   }
-
-  // Types weighted by level
-  const types = level === 1
-    ? shuffle(['equal_stacked', 'equal_stacked', 'notequal_clear', 'notequal_clear'])
-    : level === 2
-    ? shuffle(['equal_stacked', 'equal_dotted', 'notequal_clear', 'notequal_ambiguous'])
-    : shuffle(['equal_dotted', 'notequal_ambiguous', 'notequal_ambiguous', 'equal_stacked']);
-
+  const types = level===1
+    ? shuffle(['equal_stacked','equal_stacked','notequal_clear','notequal_clear'])
+    : level===2
+    ? shuffle(['equal_stacked','equal_dotted','notequal_clear','notequal_ambiguous'])
+    : shuffle(['equal_dotted','notequal_ambiguous','notequal_ambiguous','equal_stacked']);
   const type = types[0];
   const model = generateBarModel(type, level);
-  const isEqual = type === 'equal_stacked' || type === 'equal_dotted';
-  return { model, isEqual };
+  return { model, isEqual: type==='equal_stacked'||type==='equal_dotted' };
 }
 
-function getCorrectAnswer(isEqual) {
-  return isEqual ? 'equal' : 'notequal';
-}
-
-// ─── NAMING LOGIC ────────────────────────────────────────────────────────────
 function getNextNamingModel() {
   const c1 = randColor();
   const c2 = randColor([c1.name]);
-  const w = 280 + Math.random() * 80;
-  const model = {
-    type: 'equal_stacked', layout: 'stacked',
-    c1, c2, w1: w, w2: w
-  };
-  // randomly assign which is unknown
-  const unknownColor = Math.random() > 0.5 ? c1.name : c2.name;
-  const knownColor = unknownColor === c1.name ? c2.name : c1.name;
+  const w = 260 + Math.random()*80;
+  const model = { type:'equal_stacked', layout:'stacked', c1, c2, w1:w, w2:w };
+  const unknownColor = Math.random()>0.5 ? c1.name : c2.name;
+  const knownColor = unknownColor===c1.name ? c2.name : c1.name;
   return { model, knownColor, unknownColor };
 }
 
 function checkNamingResponse(response, knownColor, unknownColor) {
   const r = response.toLowerCase().trim();
   const hasRelation = r.includes('equal') || r.includes('same');
-
-  // Extract which color words appear and where
-  // Check all color names AND their family synonyms
-  const allColorNames = COLORS.map(c => c.name);
-  const synonyms = ['dark blue', 'dark green', 'dark red', 'violet'];
-  const allTerms = [...allColorNames, ...synonyms];
-
-  // Find which spoken color terms match known and unknown
-  const spokenColors = allTerms.filter(t => r.includes(t));
-
-  const spokenMatchesKnown   = spokenColors.some(s => colorMatches(s, knownColor));
-  const spokenMatchesUnknown = spokenColors.some(s => colorMatches(s, unknownColor));
-
-  // Detect order: which match appears first in the string
-  const knownPos   = spokenColors.filter(s => colorMatches(s, knownColor))
-                                  .map(s => r.indexOf(s))
-                                  .filter(i => i >= 0)
-                                  .sort((a,b) => a-b)[0] ?? 9999;
-  const unknownPos = spokenColors.filter(s => colorMatches(s, unknownColor))
-                                  .map(s => r.indexOf(s))
-                                  .filter(i => i >= 0)
-                                  .sort((a,b) => a-b)[0] ?? 9999;
-
-  // Wrong direction: unknown named before known
-  if (spokenMatchesKnown && spokenMatchesUnknown && unknownPos < knownPos) {
-    return 'reversed';
-  }
-
-  // Collapsed: both colors present but no relation word
-  if (spokenMatchesKnown && spokenMatchesUnknown && !hasRelation) {
-    return 'collapsed';
-  }
-
-  // Incomplete: only known mentioned with a relation word
-  if (spokenMatchesKnown && hasRelation && !spokenMatchesUnknown) {
-    return 'incomplete';
-  }
-
-  // Correct
-  if (spokenMatchesKnown && spokenMatchesUnknown && hasRelation) {
-    return 'correct';
-  }
-
+  const allTerms = [...COLORS.map(c=>c.name), 'dark blue','dark green','dark red','violet'];
+  const spoken = allTerms.filter(t => r.includes(t));
+  const matchKnown = spoken.some(s => colorMatches(s, knownColor));
+  const matchUnknown = spoken.some(s => colorMatches(s, unknownColor));
+  const knownPos = spoken.filter(s=>colorMatches(s,knownColor)).map(s=>r.indexOf(s)).filter(i=>i>=0).sort((a,b)=>a-b)[0]??9999;
+  const unknownPos = spoken.filter(s=>colorMatches(s,unknownColor)).map(s=>r.indexOf(s)).filter(i=>i>=0).sort((a,b)=>a-b)[0]??9999;
+  if (matchKnown && matchUnknown && unknownPos < knownPos) return 'reversed';
+  if (matchKnown && matchUnknown && !hasRelation) return 'collapsed';
+  if (matchKnown && hasRelation && !matchUnknown) return 'incomplete';
+  if (matchKnown && matchUnknown && hasRelation) return 'correct';
   return 'unclear';
 }
 
-// ─── RENDER FUNCTIONS ─────────────────────────────────────────────────────────
-function setProgress(pct) {
-  document.getElementById('progressFill').style.width = pct + '%';
-}
+// ═══════════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════════
 
-function setPhaseLabel(label) {
-  document.getElementById('phaseLabel').textContent = label;
-}
+const state = {
+  phase:'intro', introStep:0, instructionStep:0, practiceStep:0, namingStep:0,
+  discriminationLevel:1, consecutiveCorrect:0, errorCount:0, consecutiveErrors:0,
+  currentModel:null, currentAnswer:null, currentNaming:null,
+  totalPractice:12, totalNaming:8,
 
+  // ── Scaffold fading ──────────────────────────────────────────────────────
+  // scaffoldActive: whether the color-identification scaffold shows before naming
+  // scaffoldCorrectStreak: consecutive correct full-relation responses while scaffold on
+  // scaffoldFreeStreak: consecutive correct full-relation responses after scaffold dropped
+  // scaffoldLocked: scaffold permanently off for this session (earned independence)
+  scaffoldActive: true,
+  scaffoldCorrectStreak: 0,
+  scaffoldFreeStreak: 0,
+  scaffoldLocked: false,
+
+  // ── Session data (for future precision teaching chart export) ────────────
+  // Each entry: { phase, correct, responseTimeMs, timestamp }
+  sessionData: [],
+  itemStartTime: null,
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INSTRUCTION DATA
+// Audio text = full explanation (spoken aloud)
+// Key point  = one short line shown on screen
+// Question   = prompt shown on screen and spoken
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const introSteps = [
+  {
+    audio: `You are going to learn to name relations. A relation tells how two things are similar or different. Good problem solvers are good at finding relations. The first relation you will learn is Equal.`,
+    keyPoint: `A relation tells how two things are similar or different.`,
+    btn: 'Continue'
+  },
+  {
+    audio: `When two things are of the same size or number, they are equal. Look at the shapes in each picture. Your job is to tell me what you notice about the relationship between them.`,
+    keyPoint: `When two things are the same size or number, they are equal.`,
+    btn: `I'm ready`
+  }
+];
+
+const instructionSequence = [
+  {
+    model: { type:'equal_stacked', layout:'stacked', c1:COLORS[0], c2:COLORS[2], w1:320, w2:320 },
+    audio: `These two rectangles are equal. They are the same size, stacked right on top of each other. The blue rectangle is equal to the green rectangle, and the green rectangle is equal to the blue rectangle.`,
+    keyPoint: `These two rectangles are equal — same size, stacked on top of each other.`,
+    question: `What is the relation between these two rectangles?`,
+    accepted: ['equal','same','same size','the same'],
+    correction: `Look at the two rectangles. Are they the same size? When two things are the same size, we call them equal. What is the relation?`,
+    correctionKeyPoint: `When two things are the same size, they are equal.`
+  },
+  {
+    model: { type:'equal_stacked', layout:'stacked', c1:COLORS[4], c2:COLORS[1], w1:260, w2:260 },
+    audio: `These two rectangles are also equal.`,
+    keyPoint: `These two rectangles are also equal.`,
+    question: `Are these rectangles equal or not equal?`,
+    accepted: ['equal','same','same size','the same','yes'],
+    correction: `Look carefully — are these two rectangles the same size? What do we call two things that are the same size?`,
+    correctionKeyPoint: `Are they the same size?`
+  },
+  {
+    model: { type:'notequal_clear', layout:'stacked', c1:COLORS[0], c2:COLORS[6], w1:360, w2:180 },
+    audio: `These two rectangles are not equal. Two things are equal if they are of the same size. These rectangles are different sizes, so they are not equal.`,
+    keyPoint: `These rectangles are different sizes — not equal.`,
+    question: `Are these rectangles equal or not equal?`,
+    accepted: ['not equal','not the same','different','no','unequal'],
+    correction: `Look at the sizes. Is one rectangle bigger than the other? Two things are only equal if they are the same size.`,
+    correctionKeyPoint: `One is bigger — they are not equal.`
+  },
+  {
+    model: { type:'notequal_ambiguous', layout:'stacked', c1:COLORS[2], c2:COLORS[3], w1:310, w2:295 },
+    audio: `These rectangles look like they might be equal. They look about the same size. But I cannot say that these rectangles are equal. The picture does not show me that they are exactly the same size. To call two things equal, the picture must show me — by stacking them directly on top of each other, or by using dotted lines.`,
+    keyPoint: `They look similar — but the picture does not confirm equality.`,
+    question: `Can I call these rectangles equal?`,
+    accepted: ['no','not equal','cannot','can\'t'],
+    correction: `Does this picture show that these rectangles are exactly the same size? They need to be stacked directly, or have dotted lines.`,
+    correctionKeyPoint: `The picture must confirm equality — stacking or dotted lines.`
+  },
+  {
+    model: { type:'equal_dotted', layout:'dotted', c1:COLORS[3], c2:COLORS[1], w1:280, w2:280 },
+    audio: `These rectangles are not stacked on top of each other, but the dotted lines on each end show me they start and end at the same point. They are exactly the same size. The picture shows me they are equal — so I can call them equal.`,
+    keyPoint: `Dotted lines confirm equality — both bars end at the same point.`,
+    question: `How does this picture show that the rectangles are equal?`,
+    accepted: ['dotted','lines','dotted lines','same size','same length','end at the same'],
+    correction: `Look at the ends of the rectangles. What do you see there? The dotted lines show that both rectangles end at exactly the same point.`,
+    correctionKeyPoint: `Look at the dotted lines on the ends.`
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function setProgress(pct) { document.getElementById('progressFill').style.width = pct+'%'; }
+function setPhaseLabel(label) { document.getElementById('phaseLabel').textContent = label; }
 function render(mainHTML, responseHTML) {
   document.getElementById('mainContent').innerHTML = mainHTML;
   document.getElementById('responseArea').innerHTML = responseHTML;
 }
+function focusInput(id) { setTimeout(()=>{ const e=document.getElementById(id); if(e)e.focus(); }, 150); }
 
-// ─── PHASE: INTRO ─────────────────────────────────────────────────────────────
+// Returns the text to show on screen — full text when TTS off, key point when TTS on
+function displayText(fullText, keyPoint) {
+  return ttsEnabled ? keyPoint : fullText;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASE: INTRO
+// ═══════════════════════════════════════════════════════════════════════════════
+
 function showIntro() {
   const step = introSteps[state.introStep];
   setPhaseLabel('Introduction');
   setProgress(5);
 
   render(
-    `<div class="instruction-card">${step.text}</div>`,
+    `<div class="key-point neutral">
+       ${ttsEnabled ? audioButton() : ''}
+       <span>${displayText(step.audio, step.keyPoint)}</span>
+     </div>`,
     `<button class="btn-continue" onclick="nextIntro()">${step.btn}</button>`
   );
+
+  speak(step.audio);
 }
 
 function nextIntro() {
   state.introStep++;
   if (state.introStep >= introSteps.length) {
     state.phase = 'instruction';
-    state.instructionStep = 0;
     showInstruction();
   } else {
     showIntro();
   }
 }
 
-// ─── PHASE: INSTRUCTION ───────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASE: INSTRUCTION
+// ═══════════════════════════════════════════════════════════════════════════════
+
 function showInstruction() {
   const step = instructionSequence[state.instructionStep];
   setPhaseLabel('Instruction');
   setProgress(10 + (state.instructionStep / instructionSequence.length) * 20);
-  awaitingConfirmation = false;
 
   render(
-    `<div class="bar-canvas">${renderBarModel(step.model)}</div>
-     <div class="instruction-card">${step.explain}</div>
-     <div class="instruction-card prompt" style="margin-top:0">${step.question}</div>`,
-    `<div class="text-input-row">
-       <input class="text-input" id="confirmInput" type="text"
-              placeholder="Type your answer..."
-              onkeydown="if(event.key==='Enter') submitConfirmation()">
-       <button class="btn-submit" onclick="submitConfirmation()">Submit</button>
-     </div>`
+    `<div class="canvas">${renderBarModel(step.model)}</div>
+     <div class="key-point">
+       ${ttsEnabled ? audioButton() : ''}
+       <span>${displayText(step.audio, step.keyPoint)}</span>
+     </div>
+     <div class="key-point neutral" style="font-weight:500">${step.question}</div>`,
+    hybridInput('confirmInput', 'Type or speak your answer...', 'submitConfirmation')
   );
 
-  setTimeout(() => {
-    const inp = document.getElementById('confirmInput');
-    if (inp) inp.focus();
-  }, 100);
+  speak(step.audio + ' ' + step.question, () => focusInput('confirmInput'));
+  if (!ttsEnabled) focusInput('confirmInput');
 }
 
 function submitConfirmation() {
@@ -834,29 +696,22 @@ function submitConfirmation() {
   if (!response) return;
 
   const step = instructionSequence[state.instructionStep];
-  const accepted = step.accepted;
-
-  const isCorrect = accepted.some(a => response.includes(a));
+  const isCorrect = step.accepted.some(a => response.includes(a));
 
   if (isCorrect) {
     nextInstruction();
   } else {
-    // Show correction, keep same slide
     render(
-      `<div class="bar-canvas">${renderBarModel(step.model)}</div>
-       <div class="instruction-card correction">${step.correction}</div>
-       <div class="instruction-card prompt" style="margin-top:0">${step.question}</div>`,
-      `<div class="text-input-row">
-         <input class="text-input" id="confirmInput" type="text"
-                placeholder="Type your answer..."
-                onkeydown="if(event.key==='Enter') submitConfirmation()">
-         <button class="btn-submit" onclick="submitConfirmation()">Submit</button>
-       </div>`
+      `<div class="canvas">${renderBarModel(step.model)}</div>
+       <div class="key-point correction">
+         ${ttsEnabled ? audioButton() : ''}
+         <span>${displayText(step.correction, step.correctionKeyPoint)}</span>
+       </div>
+       <div class="key-point neutral" style="font-weight:500">${step.question}</div>`,
+      hybridInput('confirmInput', 'Type or speak your answer...', 'submitConfirmation')
     );
-    setTimeout(() => {
-      const inp = document.getElementById('confirmInput');
-      if (inp) inp.focus();
-    }, 100);
+    speak(step.correction + ' ' + step.question, () => focusInput('confirmInput'));
+    if (!ttsEnabled) focusInput('confirmInput');
   }
 }
 
@@ -864,146 +719,210 @@ function nextInstruction() {
   state.instructionStep++;
   if (state.instructionStep >= instructionSequence.length) {
     state.phase = 'practice';
-    state.practiceStep = 0;
     startPractice();
   } else {
     showInstruction();
   }
 }
 
-// ─── PHASE: PRACTICE ──────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASE: PRACTICE
+// ═══════════════════════════════════════════════════════════════════════════════
+
 function startPractice() {
   setPhaseLabel('Practice');
   const { model, isEqual } = getNextPracticeModel();
   state.currentModel = model;
-  state.currentAnswer = getCorrectAnswer(isEqual);
-  showPractice(model);
+  state.currentAnswer = isEqual ? 'equal' : 'notequal';
+  startItemTimer();
+  showPractice();
 }
 
-function showPractice(model) {
+function showPractice() {
   const pct = 30 + (state.practiceStep / state.totalPractice) * 35;
   setProgress(pct);
 
   render(
-    `<div class="bar-canvas">${renderBarModel(model)}</div>
-     <div class="instruction-card prompt">What is the relation between these shapes?</div>`,
+    `<div class="canvas">${renderBarModel(state.currentModel)}</div>
+     <div class="key-point neutral" style="font-weight:500">Equal or Not Equal?</div>`,
     `<div class="response-buttons">
        <button class="btn" onclick="submitPractice('equal')">Equal</button>
        <button class="btn" onclick="submitPractice('notequal')">Not Equal</button>
      </div>`
   );
+
+  speak('Equal or Not Equal?');
 }
 
 function submitPractice(response) {
   const correct = state.currentAnswer;
 
   if (response === correct) {
-    // Correct
+    recordResponse('practice', true);
     state.consecutiveCorrect++;
     state.consecutiveErrors = 0;
-
-    // Level up after 2 consecutive correct
     if (state.consecutiveCorrect >= 2 && state.discriminationLevel < 3) {
       state.discriminationLevel++;
       state.consecutiveCorrect = 0;
     }
-
     state.practiceStep++;
-
     if (state.practiceStep >= state.totalPractice) {
-      // Move to naming phase
       state.phase = 'naming';
-      state.namingStep = 0;
       showNamingIntro();
       return;
     }
-
     const { model, isEqual } = getNextPracticeModel();
     state.currentModel = model;
-    state.currentAnswer = getCorrectAnswer(isEqual);
-    showPractice(model);
-
+    state.currentAnswer = isEqual ? 'equal' : 'notequal';
+    startItemTimer();
+    showPractice();
   } else {
-    // Error
+    recordResponse('practice', false);
     state.consecutiveErrors++;
     state.consecutiveCorrect = 0;
     state.errorCount++;
-
-    showPracticeCorrection(response, correct);
+    showPracticeCorrection(response);
   }
 }
 
-function showPracticeCorrection(given, correct) {
+function showPracticeCorrection(given) {
+  const correct = state.currentAnswer;
   const isAmbiguous = state.currentModel.type === 'notequal_ambiguous';
-  const calledEqualWhenNot = given === 'equal' && correct === 'notequal';
+  const calledEqualWhenNot = given==='equal' && correct==='notequal';
 
-  let correctionText = '';
-
+  let msg, audio;
   if (calledEqualWhenNot && isAmbiguous) {
-    correctionText = `Look carefully at this picture. Does it <strong>show</strong> that these shapes are exactly the same size?<br><br>
-                      Remember — to call two shapes equal, the picture must confirm it: by stacking them directly, or by showing dotted lines.`;
+    audio = `Look carefully. Does the picture show that these shapes are exactly the same size? To call two shapes equal, the picture must confirm it — by stacking them directly, or by showing dotted lines.`;
+    msg = `The picture must confirm equality — stacking or dotted lines.`;
   } else if (calledEqualWhenNot) {
-    correctionText = `Look at the sizes of these shapes. Are they the same size? What would the picture need to show for them to be equal?`;
+    audio = `Look at the sizes of these shapes. Are they the same size?`;
+    msg = `Look at the sizes — are they the same?`;
   } else {
-    correctionText = `Look again. How does this picture show the relationship between the shapes?`;
+    audio = `Look again. How does this picture show the relationship between the shapes?`;
+    msg = `Look again — how does this picture show the relationship?`;
   }
 
   render(
-    `<div class="bar-canvas">${renderBarModel(state.currentModel)}</div>
-     <div class="instruction-card correction">${correctionText}</div>`,
+    `<div class="canvas">${renderBarModel(state.currentModel)}</div>
+     <div class="key-point correction">
+       ${ttsEnabled ? audioButton() : ''}
+       <span>${displayText(audio, msg)}</span>
+     </div>`,
     `<div class="response-buttons">
        <button class="btn" onclick="submitPractice('equal')">Equal</button>
        <button class="btn" onclick="submitPractice('notequal')">Not Equal</button>
      </div>`
   );
+
+  speak(audio);
 }
 
-// ─── PHASE: NAMING INTRO ──────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASE: NAMING INTRO
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SESSION TRACKING HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function startItemTimer() {
+  state.itemStartTime = Date.now();
+}
+
+function recordResponse(phase, correct) {
+  const ms = state.itemStartTime ? Date.now() - state.itemStartTime : null;
+  state.sessionData.push({
+    phase,
+    correct,
+    responseTimeMs: ms,
+    timestamp: new Date().toISOString(),
+  });
+  // Future: send to precision teaching chart API here
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCAFFOLD FADING LOGIC
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function updateScaffoldAfterCorrect() {
+  if (state.scaffoldLocked) return; // already off permanently
+
+  if (state.scaffoldActive) {
+    state.scaffoldCorrectStreak++;
+    // After 3 consecutive correct with scaffold, drop it
+    if (state.scaffoldCorrectStreak >= 3) {
+      state.scaffoldActive = false;
+      state.scaffoldCorrectStreak = 0;
+      state.scaffoldFreeStreak = 0;
+    }
+  } else {
+    state.scaffoldFreeStreak++;
+    // After 2 consecutive correct without scaffold, lock it off
+    if (state.scaffoldFreeStreak >= 2) {
+      state.scaffoldLocked = true;
+    }
+  }
+}
+
+function updateScaffoldAfterError() {
+  if (state.scaffoldLocked) return;
+  // Error on naming: reactivate scaffold
+  state.scaffoldActive = true;
+  state.scaffoldCorrectStreak = 0;
+  state.scaffoldFreeStreak = 0;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASE: NAMING INTRO
+// ═══════════════════════════════════════════════════════════════════════════════
+
 function showNamingIntro() {
   setPhaseLabel('Relation Naming');
   setProgress(65);
 
+  const audio = `You can identify equal relations. Now it is time to use that skill. In the next pictures, one shape has a question mark. That shape is the Unknown. Your job is to name the relation. Say it like this — known color equals unknown color.`;
+  const keyPoint = `One shape has a ? — name the relation: known color equals unknown color.`;
+
   render(
-    `<div class="instruction-card">
-       You can identify equal relations. Now it's time to <strong>use that skill</strong>.<br><br>
-       In the next pictures, one shape has a <strong>?</strong> — that shape is called the <strong>Unknown</strong>.<br><br>
-       The other shape is the <strong>Known</strong>.<br><br>
-       Your job is to name the relation. Say it like this:<br><br>
-       <em>"[known color] equals [unknown color]"</em>
+    `<div class="key-point">
+       ${audioButton()}
+       <span>${keyPoint}</span>
      </div>`,
-    `<button class="btn-continue" onclick="startNaming()">I'm ready</button>`
+    `<button class="btn-continue" onclick="startNaming()">Ready</button>`
   );
+
+  speak(audio);
 }
 
 function startNaming() {
   const { model, knownColor, unknownColor } = getNextNamingModel();
   state.currentModel = model;
   state.currentNaming = { knownColor, unknownColor };
-  // Always show scaffold first for each new item
-  state.namingScaffoldDone = false;
-  showNamingScaffold();
+  startItemTimer();
+  // Show scaffold or go straight to naming based on current scaffold state
+  if (!state.scaffoldLocked && state.scaffoldActive) {
+    showNamingScaffold();
+  } else {
+    showNaming();
+  }
 }
 
-// ─── SCAFFOLD: WHAT COLOR IS THE UNKNOWN? ────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// NAMING SCAFFOLD — what color is the unknown?
+// ═══════════════════════════════════════════════════════════════════════════════
+
 function showNamingScaffold() {
   const pct = 68 + (state.namingStep / state.totalNaming) * 28;
   setProgress(pct);
-  const { model, unknownColor } = { model: state.currentModel, ...state.currentNaming };
+  const { unknownColor } = state.currentNaming;
 
   render(
-    `<div class="bar-canvas">${renderBarModelWithLabels(model, state.currentNaming.knownColor, unknownColor)}</div>
-     <div class="instruction-card prompt">What color is the unknown?</div>`,
-    `<div class="text-input-row">
-       <input class="text-input" id="scaffoldInput" type="text"
-              placeholder="Type the color..."
-              onkeydown="if(event.key==='Enter') submitScaffold()">
-       <button class="btn-submit" onclick="submitScaffold()">Submit</button>
-     </div>`
+    `<div class="canvas">${renderBarModelWithLabels(state.currentModel, state.currentNaming.knownColor, unknownColor)}</div>
+     <div class="key-point neutral" style="font-weight:500">What color is the unknown?</div>`,
+    hybridInput('scaffoldInput', 'Type or speak the color...', 'submitScaffold')
   );
-  setTimeout(() => {
-    const inp = document.getElementById('scaffoldInput');
-    if (inp) inp.focus();
-  }, 100);
+
+  speak('What color is the unknown?', () => focusInput('scaffoldInput'));
 }
 
 function submitScaffold() {
@@ -1015,49 +934,35 @@ function submitScaffold() {
   const { unknownColor } = state.currentNaming;
 
   if (colorMatches(response, unknownColor)) {
-    // Correct — move to full relation naming
     showNaming();
   } else {
-    // Incorrect — point to the question mark
-    const { model } = { model: state.currentModel };
     render(
-      `<div class="bar-canvas">${renderBarModelWithLabels(state.currentModel, state.currentNaming.knownColor, unknownColor)}</div>
-       <div class="instruction-card correction">Look for the shape with the <strong>?</strong> on it. That is the unknown. What color is it?</div>`,
-      `<div class="text-input-row">
-         <input class="text-input" id="scaffoldInput" type="text"
-                placeholder="Type the color..."
-                onkeydown="if(event.key==='Enter') submitScaffold()">
-         <button class="btn-submit" onclick="submitScaffold()">Submit</button>
-       </div>`
+      `<div class="canvas">${renderBarModelWithLabels(state.currentModel, state.currentNaming.knownColor, unknownColor)}</div>
+       <div class="key-point correction">
+         ${ttsEnabled ? audioButton() : ''}
+         <span>${displayText('Look for the shape with the question mark. What color is it?', 'Look for the shape with the ?')}</span>
+       </div>`,
+      hybridInput('scaffoldInput', 'Type or speak the color...', 'submitScaffold')
     );
-    setTimeout(() => {
-      const inp = document.getElementById('scaffoldInput');
-      if (inp) inp.focus();
-    }, 100);
+    speak('Look for the shape with the question mark. What color is it?', () => focusInput('scaffoldInput'));
+    if (!ttsEnabled) focusInput('scaffoldInput');
   }
 }
 
-function showNaming() {
-  const pct = 68 + (state.namingStep / state.totalNaming) * 28;
-  setProgress(pct);
+// ═══════════════════════════════════════════════════════════════════════════════
+// NAMING — full relation
+// ═══════════════════════════════════════════════════════════════════════════════
 
-  const { model, knownColor, unknownColor } = { model: state.currentModel, ...state.currentNaming };
+function showNaming() {
+  const { knownColor, unknownColor } = state.currentNaming;
 
   render(
-    `<div class="bar-canvas">${renderBarModelWithLabels(model, knownColor, unknownColor)}</div>
-     <div class="instruction-card prompt">What equals the unknown? Name the full relation.</div>`,
-    `<div class="text-input-row">
-       <input class="text-input" id="namingInput" type="text"
-              placeholder="e.g. blue equals orange"
-              onkeydown="if(event.key==='Enter') submitNaming()">
-       <button class="btn-submit" onclick="submitNaming()">Submit</button>
-     </div>`
+    `<div class="canvas">${renderBarModelWithLabels(state.currentModel, knownColor, unknownColor)}</div>
+     <div class="key-point neutral" style="font-weight:500">What equals the unknown? Name the full relation.</div>`,
+    hybridInput('namingInput', 'e.g. blue equals orange', 'submitNaming')
   );
 
-  setTimeout(() => {
-    const inp = document.getElementById('namingInput');
-    if (inp) inp.focus();
-  }, 100);
+  speak('What equals the unknown? Name the full relation.', () => focusInput('namingInput'));
 }
 
 function submitNaming() {
@@ -1070,74 +975,88 @@ function submitNaming() {
   const result = checkNamingResponse(response, knownColor, unknownColor);
 
   if (result === 'correct') {
+    recordResponse('naming', true);
+    updateScaffoldAfterCorrect();
     state.namingStep++;
-    if (state.namingStep >= state.totalNaming) {
-      showComplete();
-      return;
-    }
-    const { model, knownColor: kc, unknownColor: uc } = getNextNamingModel();
+    if (state.namingStep >= state.totalNaming) { showComplete(); return; }
+    const { model, knownColor:kc, unknownColor:uc } = getNextNamingModel();
     state.currentModel = model;
-    state.currentNaming = { knownColor: kc, unknownColor: uc };
-    // Show scaffold before each new item
-    showNamingScaffold();
-
-  } else {
-    showNamingCorrection(result, knownColor, unknownColor);
+    state.currentNaming = { knownColor:kc, unknownColor:uc };
+    startItemTimer();
+    // Decide scaffold based on current state
+    if (!state.scaffoldLocked && state.scaffoldActive) {
+      showNamingScaffold();
+    } else {
+      showNaming();
+    }
+    return;
   }
-}
 
-function showNamingCorrection(errorType, knownColor, unknownColor) {
-  let correctionText = '';
+  recordResponse('naming', false);
+  updateScaffoldAfterError();
 
-  if (errorType === 'reversed') {
-    correctionText = `Which shape is the unknown — the one with the <strong>?</strong>.<br><br>
-                      Start with the <strong>known</strong> shape. Say: <em>"${knownColor} equals ${unknownColor}"</em>`;
-  } else if (errorType === 'collapsed') {
-    correctionText = `You named the colors — now tell me how they are <strong>related</strong>.<br><br>
-                      Are these shapes equal, or different? Say the full relation.`;
-  } else if (errorType === 'incomplete') {
-    correctionText = `You have the known shape. Now name the unknown shape too.<br><br>
-                      The unknown is the shape with the <strong>?</strong> — what color is it?`;
+  let msg, audio;
+  if (result === 'reversed') {
+    msg = `Start with the known shape, not the unknown.`;
+    audio = `Which shape is the unknown — the one with the question mark. Start with the known shape.`;
+  } else if (result === 'collapsed') {
+    msg = `Tell me how they are related — equal, or the same?`;
+    audio = `You named the colors. Now tell me how they are related. Are these shapes equal?`;
+  } else if (result === 'incomplete') {
+    msg = `Name both colors — the known and the unknown.`;
+    audio = `You have the known shape. Now name the unknown shape too. What color is the shape with the question mark?`;
   } else {
-    correctionText = `Tell me the relation between the two shapes. Start with the <strong>${knownColor}</strong> shape.`;
+    msg = `Start with the ${knownColor} shape.`;
+    audio = `Tell me the relation between the two shapes. Start with the ${knownColor} shape.`;
   }
 
   render(
-    `<div class="bar-canvas">${renderBarModelWithLabels(state.currentModel, knownColor, unknownColor)}</div>
-     <div class="instruction-card correction">${correctionText}</div>`,
-    `<div class="text-input-row">
-       <input class="text-input" id="namingInput" type="text"
-              placeholder="e.g. ${knownColor} equals ${unknownColor}"
-              onkeydown="if(event.key==='Enter') submitNaming()">
-       <button class="btn-submit" onclick="submitNaming()">Submit</button>
-     </div>`
+    `<div class="canvas">${renderBarModelWithLabels(state.currentModel, knownColor, unknownColor)}</div>
+     <div class="key-point correction">
+       ${ttsEnabled ? audioButton() : ''}
+       <span>${displayText(audio, msg)}</span>
+     </div>`,
+    hybridInput('namingInput', `e.g. ${knownColor} equals ${unknownColor}`, 'submitNaming')
   );
 
-  setTimeout(() => {
-    const inp = document.getElementById('namingInput');
-    if (inp) inp.focus();
-  }, 100);
+  speak(audio, () => focusInput('namingInput'));
+  if (!ttsEnabled) focusInput('namingInput');
 }
 
-// ─── COMPLETION ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPLETION
+// ═══════════════════════════════════════════════════════════════════════════════
+
 function showComplete() {
   setProgress(100);
   setPhaseLabel('Complete');
 
   render(
     `<div class="completion">
-       <div class="completion-icon">◈</div>
+       <div style="font-size:44px;margin-bottom:12px">◈</div>
        <h2>Equal Relations</h2>
        <p>You can identify equal relations and name them precisely.<br><br>
-          You know that two things are equal when the picture confirms it — by stacking or by dotted lines.<br><br>
-          You can name the relation: <em>known equals unknown</em>.</p>
-     </div>`,
-    ``
+          Two things are equal when the picture confirms it — stacking or dotted lines.<br><br>
+          <em>known equals unknown</em></p>
+     </div>`, ``
   );
+
+  speak('Well done. You can identify equal relations and name them precisely.');
 }
 
-// ─── START ────────────────────────────────────────────────────────────────────
-state.phase = 'intro';
+// ═══════════════════════════════════════════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Load voices before starting (some browsers need this)
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => {};
+  window.speechSynthesis.getVoices();
+}
+
+// Initialize TTS toggle as ON
+document.getElementById('ttsToggle').classList.add('on');
+
 showIntro();
 </script>
 </body>
