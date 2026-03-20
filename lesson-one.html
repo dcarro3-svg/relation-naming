@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equal Relations — Lesson One</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #F7F4EF;
+    --surface: #FFFFFF;
+    --border: #E2DDD6;
+    --text-primary: #1A1714;
+    --text-secondary: #6B6560;
+    --text-muted: #9B9591;
+    --accent: #2D6A4F;
+    --accent-light: #EAF4EF;
+    --accent-warm: #C17D3C;
+    --accent-warm-light: #FBF0E4;
+    --error-soft: #FDF0F0;
+    --radius: 12px;
+    --radius-lg: 20px;
+
+    /* Accessible bar colors - high contrast, colorblind friendly */
+    --bar-blue: #1B6CA8;
+    --bar-orange: #D4600A;
+    --bar-green: #2D6A4F;
+    --bar-red: #C0392B;
+    --bar-purple: #6C3483;
+    --bar-teal: #0E7E7E;
+    --bar-pink: #B03A6E;
+    --bar-navy: #1A3A5C;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 4px;
+  }
+
+  .lesson-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+  }
+
+  .phase-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  /* Instruction card */
+  .instruction-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px 36px;
+    line-height: 1.7;
+    font-size: 17px;
+    color: var(--text-primary);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    animation: fadeUp 0.4s ease;
+  }
+
+  .instruction-card.prompt {
+    background: var(--accent-light);
+    border-color: #B8DAC8;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .instruction-card.correction {
+    background: var(--accent-warm-light);
+    border-color: #E8C99A;
+  }
+
+  /* Bar model canvas */
+  .bar-canvas {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    animation: fadeUp 0.4s ease;
+  }
+
+  .bars-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .bar {
+    height: 64px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .bar-wrapper {
+    width: 100%;
+    position: relative;
+  }
+
+  /* Dotted line confirmation */
+  .dotted-confirm {
+    position: absolute;
+    right: -24px;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dotted-line {
+    width: 2px;
+    height: 100%;
+    border-right: 2px dashed var(--text-muted);
+    position: absolute;
+    right: -20px;
+  }
+
+  .dotted-cap {
+    width: 8px;
+    height: 2px;
+    background: var(--text-muted);
+    position: absolute;
+    right: -22px;
+  }
+
+  .dotted-cap.top { top: 0; }
+  .dotted-cap.bottom { bottom: 0; }
+
+  /* Side-by-side layout for dotted line examples */
+  .bars-sidebyside {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+    position: relative;
+  }
+
+  .dotted-bridge {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .dotted-h-line {
+    width: 40px;
+    border-top: 2px dashed var(--text-muted);
+  }
+
+  /* Response area */
+  .response-area {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeUp 0.3s ease 0.1s both;
+  }
+
+  .response-buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 16px 24px;
+    border-radius: var(--radius);
+    border: 2px solid var(--border);
+    background: var(--surface);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.2px;
+  }
+
+  .btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+    transform: translateY(-1px);
+  }
+
+  .btn:active { transform: translateY(0); }
+
+  .btn.btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .btn.btn-primary:hover {
+    background: #255C43;
+    border-color: #255C43;
+    color: white;
+  }
+
+  .text-input-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .text-input {
+    flex: 1;
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    border: 2px solid var(--border);
+    background: var(--surface);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .text-input:focus {
+    border-color: var(--accent);
+  }
+
+  .text-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .btn-submit {
+    padding: 14px 24px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-submit:hover { background: #255C43; }
+
+  /* Continue button */
+  .btn-continue {
+    width: 100%;
+    padding: 16px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 4px;
+  }
+
+  .btn-continue:hover { background: #255C43; transform: translateY(-1px); }
+
+  /* Completion screen */
+  .completion {
+    text-align: center;
+    padding: 48px 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    animation: fadeUp 0.5s ease;
+  }
+
+  .completion-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  .completion h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+
+  .completion p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  /* Relation naming */
+  .relation-prompt {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .relation-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding: 0 4px;
+  }
+
+  .label-tag {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+
+  .label-tag.unknown {
+    background: var(--accent-warm-light);
+    color: var(--accent-warm);
+  }
+
+  .question-mark {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: rgba(255,255,255,0.9);
+    font-style: italic;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); border: 0;
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="header">
+    <span class="lesson-label">Equal Relations</span>
+    <span class="phase-label" id="phaseLabel">Introduction</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+  </div>
+  <div id="mainContent"></div>
+  <div id="responseArea"></div>
+</div>
+
+<script>
+// ─── ACCESSIBLE COLOR PALETTE ───────────────────────────────────────────────
+const COLORS = [
+  { name: 'blue',   hex: '#1B6CA8' },
+  { name: 'orange', hex: '#D4600A' },
+  { name: 'green',  hex: '#2D6A4F' },
+  { name: 'red',    hex: '#C0392B' },
+  { name: 'purple', hex: '#6C3483' },
+  { name: 'teal',   hex: '#0E7E7E' },
+  { name: 'pink',   hex: '#B03A6E' },
+  { name: 'navy',   hex: '#1A3A5C' },
+];
+
+// ─── COLOR FAMILY MAP (Fix 3) ────────────────────────────────────────────────
+// Learner can say "blue" and it matches "navy" or "teal"
+const COLOR_FAMILIES = {
+  'blue':   ['blue', 'navy', 'teal', 'dark blue'],
+  'navy':   ['navy', 'blue', 'dark blue'],
+  'teal':   ['teal', 'blue', 'green', 'dark green'],
+  'green':  ['green', 'teal', 'dark green'],
+  'red':    ['red', 'pink', 'dark red'],
+  'pink':   ['pink', 'red'],
+  'orange': ['orange'],
+  'purple': ['purple', 'violet'],
+};
+
+function colorMatches(spoken, actual) {
+  const s = spoken.toLowerCase().trim();
+  const a = actual.toLowerCase().trim();
+  if (s === a) return true;
+  const family = COLOR_FAMILIES[a] || [a];
+  return family.includes(s);
+}
+
+function getSameFamily(colorName) {
+  const family = COLOR_FAMILIES[colorName] || [colorName];
+  return COLORS
+    .filter(c => family.includes(c.name) || (COLOR_FAMILIES[c.name] || [c.name]).includes(colorName))
+    .map(c => c.name);
+}
+
+function randColor(exclude = []) {
+  const excludeFamilies = exclude.flatMap(name => getSameFamily(name));
+  const pool = COLORS.filter(c => !excludeFamilies.includes(c.name));
+  if (pool.length === 0) {
+    return COLORS.filter(c => !exclude.includes(c.name))[0];
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ─── BAR MODEL GENERATOR ─────────────────────────────────────────────────────
+// discriminationLevel: 1 = far (obvious), 2 = medium, 3 = close
+// type: 'equal_stacked' | 'equal_dotted' | 'notequal_clear' | 'notequal_ambiguous'
+
+function generateBarModel(type, discriminationLevel) {
+  const c1 = randColor();
+  const c2 = randColor([c1.name]);
+  const baseWidth = 360;
+
+  if (type === 'equal_stacked') {
+    const w = baseWidth * (0.5 + Math.random() * 0.4);
+    return { type, c1, c2, w1: w, w2: w, layout: 'stacked' };
+  }
+
+  if (type === 'equal_dotted') {
+    const w = baseWidth * (0.5 + Math.random() * 0.4);
+    return { type, c1, c2, w1: w, w2: w, layout: 'dotted' };
+  }
+
+  if (type === 'notequal_clear') {
+    // Far: large difference. Close: still clearly different but less so.
+    const diff = discriminationLevel === 1 ? 0.35 + Math.random() * 0.2
+               : discriminationLevel === 2 ? 0.20 + Math.random() * 0.15
+               :                             0.12 + Math.random() * 0.10;
+    const w1 = baseWidth * (0.45 + Math.random() * 0.2);
+    const w2 = Math.random() > 0.5 ? w1 * (1 + diff) : w1 * (1 - diff);
+    return { type, c1, c2, w1, w2: Math.max(w2, 60), layout: 'stacked' };
+  }
+
+  if (type === 'notequal_ambiguous') {
+    // Looks similar but no confirmation marker. Not equal.
+    const diff = discriminationLevel === 1 ? 0.12 + Math.random() * 0.08
+               : discriminationLevel === 2 ? 0.06 + Math.random() * 0.06
+               :                             0.02 + Math.random() * 0.04;
+    const w1 = baseWidth * (0.5 + Math.random() * 0.2);
+    const w2 = Math.random() > 0.5 ? w1 * (1 + diff) : w1 * (1 - diff);
+    return { type, c1, c2, w1, w2: Math.max(w2, 60), layout: 'stacked' };
+  }
+}
+
+function renderBarModel(model) {
+  if (model.layout === 'dotted') {
+    // Both bars same width, stacked, with vertical dotted lines
+    // at BOTH ends showing they start and end at the same point
+    const w = model.w1;
+    return `
+      <div style="position:relative;display:inline-block;padding:0 18px">
+        <!-- Left vertical dotted line -->
+        <div style="position:absolute;left:14px;top:0;bottom:0;
+                    border-left:2px dashed #9B9591;"></div>
+        <!-- Right vertical dotted line -->
+        <div style="position:absolute;right:14px;top:0;bottom:0;
+                    border-left:2px dashed #9B9591;"></div>
+        <!-- Top bar -->
+        <div class="bar" style="width:${w}px;background:${model.c1.hex};margin-bottom:8px;position:relative">
+          <!-- Left cap -->
+          <div style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+                      width:8px;height:2px;background:#9B9591"></div>
+          <!-- Right cap -->
+          <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);
+                      width:8px;height:2px;background:#9B9591"></div>
+        </div>
+        <!-- Bottom bar -->
+        <div class="bar" style="width:${w}px;background:${model.c2.hex};position:relative">
+          <div style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+                      width:8px;height:2px;background:#9B9591"></div>
+          <div style="position:absolute;right:-10px;top:50%;transform:translateY(-50%);
+                      width:8px;height:2px;background:#9B9591"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  // stacked (left-aligned, no confirmation markers)
+  return `
+    <div class="bars-container">
+      <div class="bar-wrapper">
+        <div class="bar" style="width:${model.w1}px;background:${model.c1.hex}"></div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="bar-wrapper">
+        <div class="bar" style="width:${model.w2}px;background:${model.c2.hex}"></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderBarModelWithLabels(model, knownColor, unknownColor) {
+  return `
+    <div class="bars-container">
+      <div class="bar-wrapper">
+        <div class="bar" style="width:${model.w1}px;background:${model.c1.hex};position:relative">
+          ${model.c1.name === unknownColor ? '<div class="question-mark">?</div>' : ''}
+        </div>
+        <div style="font-size:13px;font-weight:600;color:#6B6560;margin-top:5px;text-transform:capitalize;">
+          ${model.c1.name}
+        </div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="bar-wrapper">
+        <div class="bar" style="width:${model.w2}px;background:${model.c2.hex};position:relative">
+          ${model.c2.name === unknownColor ? '<div class="question-mark">?</div>' : ''}
+        </div>
+        <div style="font-size:13px;font-weight:600;color:#6B6560;margin-top:5px;text-transform:capitalize;">
+          ${model.c2.name}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── LEARNER STATE ────────────────────────────────────────────────────────────
+const state = {
+  phase: 'intro',        // intro | instruction | practice | naming | complete
+  introStep: 0,
+  instructionStep: 0,
+  practiceStep: 0,
+  namingStep: 0,
+  discriminationLevel: 1,
+  consecutiveCorrect: 0,
+  errorCount: 0,
+  consecutiveErrors: 0,
+  lastErrorType: null,
+  currentModel: null,
+  currentAnswer: null,   // for practice: 'equal' | 'notequal'
+  currentNaming: null,   // { known, unknown }
+  totalPractice: 12,
+  totalNaming: 8,
+};
+
+// ─── INTRO STEPS ─────────────────────────────────────────────────────────────
+const introSteps = [
+  {
+    text: `You are going to learn to <strong>name relations</strong>.<br><br>
+           A relation tells how two things are similar or different.<br><br>
+           Good problem solvers are good at finding relations.<br><br>
+           The first relation you will learn is <strong>Equal</strong>.`,
+    btn: 'Continue'
+  },
+  {
+    text: `When two things are of the <strong>same size or number</strong>, they are <strong>equal</strong>.<br><br>
+           Look at the shapes in each picture. Your job is to tell me what you notice about the relationship between them.`,
+    btn: 'I\'m ready'
+  }
+];
+
+// ─── INSTRUCTION STEPS ───────────────────────────────────────────────────────
+// Each step has: model, explain text, a confirmation question, accepted answers, and correction text
+const instructionSequence = [
+  {
+    model: { type: 'equal_stacked', layout: 'stacked',
+             c1: COLORS[0], c2: COLORS[2],
+             w1: 320, w2: 320 },
+    explain: 'These two rectangles are <strong>equal</strong>. They are the same size, stacked right on top of each other. We can say that the blue rectangle is equal to the green rectangle — and the green rectangle is equal to the blue rectangle.',
+    question: 'What is the relation between these two rectangles?',
+    accepted: ['equal', 'same', 'same size', 'the same'],
+    correction: 'Look at the two rectangles. Are they the same size? When two things are the same size, we call them <strong>equal</strong>. What is the relation?'
+  },
+  {
+    model: { type: 'equal_stacked', layout: 'stacked',
+             c1: COLORS[4], c2: COLORS[1],
+             w1: 260, w2: 260 },
+    explain: 'These two rectangles are also <strong>equal</strong>.',
+    question: 'Are these rectangles equal or not equal?',
+    accepted: ['equal', 'same', 'same size', 'the same', 'yes'],
+    correction: 'Look carefully — are these two rectangles the same size? What do we call two things that are the same size?'
+  },
+  {
+    model: { type: 'notequal_clear', layout: 'stacked',
+             c1: COLORS[0], c2: COLORS[6],
+             w1: 360, w2: 180 },
+    explain: 'These two rectangles are <strong>not equal</strong>. Two things are equal if they are of the same size — these rectangles are different sizes, so they are not equal.',
+    question: 'Are these rectangles equal or not equal?',
+    accepted: ['not equal', 'not the same', 'different', 'no', 'unequal'],
+    correction: 'Look at the sizes. Is one rectangle bigger than the other? Two things are only equal if they are the <strong>same</strong> size. What is the relation here?'
+  },
+  {
+    model: { type: 'notequal_ambiguous', layout: 'stacked',
+             c1: COLORS[2], c2: COLORS[3],
+             w1: 310, w2: 295 },
+    explain: `These rectangles <em>look</em> like they might be equal. They look about the same size.<br><br>
+              But I <strong>cannot say</strong> that these rectangles are equal. The picture does not show me that they are exactly the same size.<br><br>
+              To call two things equal, the picture must <em>show</em> me — by stacking them directly on top of each other, or by using dotted lines.`,
+    question: 'Can I call these rectangles equal? Yes or No.',
+    accepted: ['no', 'not equal', 'no you cannot', 'cannot', "can't"],
+    correction: 'Look carefully — does this picture <strong>show</strong> that these rectangles are exactly the same size? Remember, they need to be stacked directly, or have dotted lines. Without that, we cannot call them equal.'
+  },
+  {
+    model: { type: 'equal_dotted', layout: 'dotted',
+             c1: COLORS[3], c2: COLORS[1],
+             w1: 280, w2: 280 },
+    explain: `These rectangles are not stacked on top of each other, but the <strong>dotted lines</strong> on each end show me they start and end at the same point — they are exactly the same size.<br><br>
+              The picture shows me they are equal — so I can call them equal.`,
+    question: 'How does this picture show that the rectangles are equal?',
+    accepted: ['dotted', 'lines', 'dotted lines', 'same size', 'they line up', 'end at the same', 'same length'],
+    correction: 'Look at the ends of the rectangles. What do you see there? The <strong>dotted lines</strong> show that both rectangles end at exactly the same point. That is how the picture confirms they are equal.'
+  }
+];
+
+// ─── INSTRUCTION CONFIRMATION STATE ──────────────────────────────────────────
+// Tracks whether learner has confirmed the current instruction step
+let awaitingConfirmation = false;
+
+// ─── PRACTICE LOGIC ──────────────────────────────────────────────────────────
+function getNextPracticeModel() {
+  const level = state.discriminationLevel;
+
+  // After repeated errors, go back to obvious examples
+  if (state.consecutiveErrors >= 2) {
+    state.discriminationLevel = Math.max(1, state.discriminationLevel - 1);
+    state.consecutiveErrors = 0;
+  }
+
+  // Types weighted by level
+  const types = level === 1
+    ? shuffle(['equal_stacked', 'equal_stacked', 'notequal_clear', 'notequal_clear'])
+    : level === 2
+    ? shuffle(['equal_stacked', 'equal_dotted', 'notequal_clear', 'notequal_ambiguous'])
+    : shuffle(['equal_dotted', 'notequal_ambiguous', 'notequal_ambiguous', 'equal_stacked']);
+
+  const type = types[0];
+  const model = generateBarModel(type, level);
+  const isEqual = type === 'equal_stacked' || type === 'equal_dotted';
+  return { model, isEqual };
+}
+
+function getCorrectAnswer(isEqual) {
+  return isEqual ? 'equal' : 'notequal';
+}
+
+// ─── NAMING LOGIC ────────────────────────────────────────────────────────────
+function getNextNamingModel() {
+  const c1 = randColor();
+  const c2 = randColor([c1.name]);
+  const w = 280 + Math.random() * 80;
+  const model = {
+    type: 'equal_stacked', layout: 'stacked',
+    c1, c2, w1: w, w2: w
+  };
+  // randomly assign which is unknown
+  const unknownColor = Math.random() > 0.5 ? c1.name : c2.name;
+  const knownColor = unknownColor === c1.name ? c2.name : c1.name;
+  return { model, knownColor, unknownColor };
+}
+
+function checkNamingResponse(response, knownColor, unknownColor) {
+  const r = response.toLowerCase().trim();
+  const hasRelation = r.includes('equal') || r.includes('same');
+
+  // Extract which color words appear and where
+  // Check all color names AND their family synonyms
+  const allColorNames = COLORS.map(c => c.name);
+  const synonyms = ['dark blue', 'dark green', 'dark red', 'violet'];
+  const allTerms = [...allColorNames, ...synonyms];
+
+  // Find which spoken color terms match known and unknown
+  const spokenColors = allTerms.filter(t => r.includes(t));
+
+  const spokenMatchesKnown   = spokenColors.some(s => colorMatches(s, knownColor));
+  const spokenMatchesUnknown = spokenColors.some(s => colorMatches(s, unknownColor));
+
+  // Detect order: which match appears first in the string
+  const knownPos   = spokenColors.filter(s => colorMatches(s, knownColor))
+                                  .map(s => r.indexOf(s))
+                                  .filter(i => i >= 0)
+                                  .sort((a,b) => a-b)[0] ?? 9999;
+  const unknownPos = spokenColors.filter(s => colorMatches(s, unknownColor))
+                                  .map(s => r.indexOf(s))
+                                  .filter(i => i >= 0)
+                                  .sort((a,b) => a-b)[0] ?? 9999;
+
+  // Wrong direction: unknown named before known
+  if (spokenMatchesKnown && spokenMatchesUnknown && unknownPos < knownPos) {
+    return 'reversed';
+  }
+
+  // Collapsed: both colors present but no relation word
+  if (spokenMatchesKnown && spokenMatchesUnknown && !hasRelation) {
+    return 'collapsed';
+  }
+
+  // Incomplete: only known mentioned with a relation word
+  if (spokenMatchesKnown && hasRelation && !spokenMatchesUnknown) {
+    return 'incomplete';
+  }
+
+  // Correct
+  if (spokenMatchesKnown && spokenMatchesUnknown && hasRelation) {
+    return 'correct';
+  }
+
+  return 'unclear';
+}
+
+// ─── RENDER FUNCTIONS ─────────────────────────────────────────────────────────
+function setProgress(pct) {
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function setPhaseLabel(label) {
+  document.getElementById('phaseLabel').textContent = label;
+}
+
+function render(mainHTML, responseHTML) {
+  document.getElementById('mainContent').innerHTML = mainHTML;
+  document.getElementById('responseArea').innerHTML = responseHTML;
+}
+
+// ─── PHASE: INTRO ─────────────────────────────────────────────────────────────
+function showIntro() {
+  const step = introSteps[state.introStep];
+  setPhaseLabel('Introduction');
+  setProgress(5);
+
+  render(
+    `<div class="instruction-card">${step.text}</div>`,
+    `<button class="btn-continue" onclick="nextIntro()">${step.btn}</button>`
+  );
+}
+
+function nextIntro() {
+  state.introStep++;
+  if (state.introStep >= introSteps.length) {
+    state.phase = 'instruction';
+    state.instructionStep = 0;
+    showInstruction();
+  } else {
+    showIntro();
+  }
+}
+
+// ─── PHASE: INSTRUCTION ───────────────────────────────────────────────────────
+function showInstruction() {
+  const step = instructionSequence[state.instructionStep];
+  setPhaseLabel('Instruction');
+  setProgress(10 + (state.instructionStep / instructionSequence.length) * 20);
+  awaitingConfirmation = false;
+
+  render(
+    `<div class="bar-canvas">${renderBarModel(step.model)}</div>
+     <div class="instruction-card">${step.explain}</div>
+     <div class="instruction-card prompt" style="margin-top:0">${step.question}</div>`,
+    `<div class="text-input-row">
+       <input class="text-input" id="confirmInput" type="text"
+              placeholder="Type your answer..."
+              onkeydown="if(event.key==='Enter') submitConfirmation()">
+       <button class="btn-submit" onclick="submitConfirmation()">Submit</button>
+     </div>`
+  );
+
+  setTimeout(() => {
+    const inp = document.getElementById('confirmInput');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function submitConfirmation() {
+  const input = document.getElementById('confirmInput');
+  if (!input) return;
+  const response = input.value.toLowerCase().trim();
+  if (!response) return;
+
+  const step = instructionSequence[state.instructionStep];
+  const accepted = step.accepted;
+
+  const isCorrect = accepted.some(a => response.includes(a));
+
+  if (isCorrect) {
+    nextInstruction();
+  } else {
+    // Show correction, keep same slide
+    render(
+      `<div class="bar-canvas">${renderBarModel(step.model)}</div>
+       <div class="instruction-card correction">${step.correction}</div>
+       <div class="instruction-card prompt" style="margin-top:0">${step.question}</div>`,
+      `<div class="text-input-row">
+         <input class="text-input" id="confirmInput" type="text"
+                placeholder="Type your answer..."
+                onkeydown="if(event.key==='Enter') submitConfirmation()">
+         <button class="btn-submit" onclick="submitConfirmation()">Submit</button>
+       </div>`
+    );
+    setTimeout(() => {
+      const inp = document.getElementById('confirmInput');
+      if (inp) inp.focus();
+    }, 100);
+  }
+}
+
+function nextInstruction() {
+  state.instructionStep++;
+  if (state.instructionStep >= instructionSequence.length) {
+    state.phase = 'practice';
+    state.practiceStep = 0;
+    startPractice();
+  } else {
+    showInstruction();
+  }
+}
+
+// ─── PHASE: PRACTICE ──────────────────────────────────────────────────────────
+function startPractice() {
+  setPhaseLabel('Practice');
+  const { model, isEqual } = getNextPracticeModel();
+  state.currentModel = model;
+  state.currentAnswer = getCorrectAnswer(isEqual);
+  showPractice(model);
+}
+
+function showPractice(model) {
+  const pct = 30 + (state.practiceStep / state.totalPractice) * 35;
+  setProgress(pct);
+
+  render(
+    `<div class="bar-canvas">${renderBarModel(model)}</div>
+     <div class="instruction-card prompt">What is the relation between these shapes?</div>`,
+    `<div class="response-buttons">
+       <button class="btn" onclick="submitPractice('equal')">Equal</button>
+       <button class="btn" onclick="submitPractice('notequal')">Not Equal</button>
+     </div>`
+  );
+}
+
+function submitPractice(response) {
+  const correct = state.currentAnswer;
+
+  if (response === correct) {
+    // Correct
+    state.consecutiveCorrect++;
+    state.consecutiveErrors = 0;
+
+    // Level up after 2 consecutive correct
+    if (state.consecutiveCorrect >= 2 && state.discriminationLevel < 3) {
+      state.discriminationLevel++;
+      state.consecutiveCorrect = 0;
+    }
+
+    state.practiceStep++;
+
+    if (state.practiceStep >= state.totalPractice) {
+      // Move to naming phase
+      state.phase = 'naming';
+      state.namingStep = 0;
+      showNamingIntro();
+      return;
+    }
+
+    const { model, isEqual } = getNextPracticeModel();
+    state.currentModel = model;
+    state.currentAnswer = getCorrectAnswer(isEqual);
+    showPractice(model);
+
+  } else {
+    // Error
+    state.consecutiveErrors++;
+    state.consecutiveCorrect = 0;
+    state.errorCount++;
+
+    showPracticeCorrection(response, correct);
+  }
+}
+
+function showPracticeCorrection(given, correct) {
+  const isAmbiguous = state.currentModel.type === 'notequal_ambiguous';
+  const calledEqualWhenNot = given === 'equal' && correct === 'notequal';
+
+  let correctionText = '';
+
+  if (calledEqualWhenNot && isAmbiguous) {
+    correctionText = `Look carefully at this picture. Does it <strong>show</strong> that these shapes are exactly the same size?<br><br>
+                      Remember — to call two shapes equal, the picture must confirm it: by stacking them directly, or by showing dotted lines.`;
+  } else if (calledEqualWhenNot) {
+    correctionText = `Look at the sizes of these shapes. Are they the same size? What would the picture need to show for them to be equal?`;
+  } else {
+    correctionText = `Look again. How does this picture show the relationship between the shapes?`;
+  }
+
+  render(
+    `<div class="bar-canvas">${renderBarModel(state.currentModel)}</div>
+     <div class="instruction-card correction">${correctionText}</div>`,
+    `<div class="response-buttons">
+       <button class="btn" onclick="submitPractice('equal')">Equal</button>
+       <button class="btn" onclick="submitPractice('notequal')">Not Equal</button>
+     </div>`
+  );
+}
+
+// ─── PHASE: NAMING INTRO ──────────────────────────────────────────────────────
+function showNamingIntro() {
+  setPhaseLabel('Relation Naming');
+  setProgress(65);
+
+  render(
+    `<div class="instruction-card">
+       You can identify equal relations. Now it's time to <strong>use that skill</strong>.<br><br>
+       In the next pictures, one shape has a <strong>?</strong> — that shape is called the <strong>Unknown</strong>.<br><br>
+       The other shape is the <strong>Known</strong>.<br><br>
+       Your job is to name the relation. Say it like this:<br><br>
+       <em>"[known color] equals [unknown color]"</em>
+     </div>`,
+    `<button class="btn-continue" onclick="startNaming()">I'm ready</button>`
+  );
+}
+
+function startNaming() {
+  const { model, knownColor, unknownColor } = getNextNamingModel();
+  state.currentModel = model;
+  state.currentNaming = { knownColor, unknownColor };
+  // Always show scaffold first for each new item
+  state.namingScaffoldDone = false;
+  showNamingScaffold();
+}
+
+// ─── SCAFFOLD: WHAT COLOR IS THE UNKNOWN? ────────────────────────────────────
+function showNamingScaffold() {
+  const pct = 68 + (state.namingStep / state.totalNaming) * 28;
+  setProgress(pct);
+  const { model, unknownColor } = { model: state.currentModel, ...state.currentNaming };
+
+  render(
+    `<div class="bar-canvas">${renderBarModelWithLabels(model, state.currentNaming.knownColor, unknownColor)}</div>
+     <div class="instruction-card prompt">What color is the unknown?</div>`,
+    `<div class="text-input-row">
+       <input class="text-input" id="scaffoldInput" type="text"
+              placeholder="Type the color..."
+              onkeydown="if(event.key==='Enter') submitScaffold()">
+       <button class="btn-submit" onclick="submitScaffold()">Submit</button>
+     </div>`
+  );
+  setTimeout(() => {
+    const inp = document.getElementById('scaffoldInput');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function submitScaffold() {
+  const input = document.getElementById('scaffoldInput');
+  if (!input) return;
+  const response = input.value.toLowerCase().trim();
+  if (!response) return;
+
+  const { unknownColor } = state.currentNaming;
+
+  if (colorMatches(response, unknownColor)) {
+    // Correct — move to full relation naming
+    showNaming();
+  } else {
+    // Incorrect — point to the question mark
+    const { model } = { model: state.currentModel };
+    render(
+      `<div class="bar-canvas">${renderBarModelWithLabels(state.currentModel, state.currentNaming.knownColor, unknownColor)}</div>
+       <div class="instruction-card correction">Look for the shape with the <strong>?</strong> on it. That is the unknown. What color is it?</div>`,
+      `<div class="text-input-row">
+         <input class="text-input" id="scaffoldInput" type="text"
+                placeholder="Type the color..."
+                onkeydown="if(event.key==='Enter') submitScaffold()">
+         <button class="btn-submit" onclick="submitScaffold()">Submit</button>
+       </div>`
+    );
+    setTimeout(() => {
+      const inp = document.getElementById('scaffoldInput');
+      if (inp) inp.focus();
+    }, 100);
+  }
+}
+
+function showNaming() {
+  const pct = 68 + (state.namingStep / state.totalNaming) * 28;
+  setProgress(pct);
+
+  const { model, knownColor, unknownColor } = { model: state.currentModel, ...state.currentNaming };
+
+  render(
+    `<div class="bar-canvas">${renderBarModelWithLabels(model, knownColor, unknownColor)}</div>
+     <div class="instruction-card prompt">What equals the unknown? Name the full relation.</div>`,
+    `<div class="text-input-row">
+       <input class="text-input" id="namingInput" type="text"
+              placeholder="e.g. blue equals orange"
+              onkeydown="if(event.key==='Enter') submitNaming()">
+       <button class="btn-submit" onclick="submitNaming()">Submit</button>
+     </div>`
+  );
+
+  setTimeout(() => {
+    const inp = document.getElementById('namingInput');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function submitNaming() {
+  const input = document.getElementById('namingInput');
+  if (!input) return;
+  const response = input.value.trim();
+  if (!response) return;
+
+  const { knownColor, unknownColor } = state.currentNaming;
+  const result = checkNamingResponse(response, knownColor, unknownColor);
+
+  if (result === 'correct') {
+    state.namingStep++;
+    if (state.namingStep >= state.totalNaming) {
+      showComplete();
+      return;
+    }
+    const { model, knownColor: kc, unknownColor: uc } = getNextNamingModel();
+    state.currentModel = model;
+    state.currentNaming = { knownColor: kc, unknownColor: uc };
+    // Show scaffold before each new item
+    showNamingScaffold();
+
+  } else {
+    showNamingCorrection(result, knownColor, unknownColor);
+  }
+}
+
+function showNamingCorrection(errorType, knownColor, unknownColor) {
+  let correctionText = '';
+
+  if (errorType === 'reversed') {
+    correctionText = `Which shape is the unknown — the one with the <strong>?</strong>.<br><br>
+                      Start with the <strong>known</strong> shape. Say: <em>"${knownColor} equals ${unknownColor}"</em>`;
+  } else if (errorType === 'collapsed') {
+    correctionText = `You named the colors — now tell me how they are <strong>related</strong>.<br><br>
+                      Are these shapes equal, or different? Say the full relation.`;
+  } else if (errorType === 'incomplete') {
+    correctionText = `You have the known shape. Now name the unknown shape too.<br><br>
+                      The unknown is the shape with the <strong>?</strong> — what color is it?`;
+  } else {
+    correctionText = `Tell me the relation between the two shapes. Start with the <strong>${knownColor}</strong> shape.`;
+  }
+
+  render(
+    `<div class="bar-canvas">${renderBarModelWithLabels(state.currentModel, knownColor, unknownColor)}</div>
+     <div class="instruction-card correction">${correctionText}</div>`,
+    `<div class="text-input-row">
+       <input class="text-input" id="namingInput" type="text"
+              placeholder="e.g. ${knownColor} equals ${unknownColor}"
+              onkeydown="if(event.key==='Enter') submitNaming()">
+       <button class="btn-submit" onclick="submitNaming()">Submit</button>
+     </div>`
+  );
+
+  setTimeout(() => {
+    const inp = document.getElementById('namingInput');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+// ─── COMPLETION ───────────────────────────────────────────────────────────────
+function showComplete() {
+  setProgress(100);
+  setPhaseLabel('Complete');
+
+  render(
+    `<div class="completion">
+       <div class="completion-icon">◈</div>
+       <h2>Equal Relations</h2>
+       <p>You can identify equal relations and name them precisely.<br><br>
+          You know that two things are equal when the picture confirms it — by stacking or by dotted lines.<br><br>
+          You can name the relation: <em>known equals unknown</em>.</p>
+     </div>`,
+    ``
+  );
+}
+
+// ─── START ────────────────────────────────────────────────────────────────────
+state.phase = 'intro';
+showIntro();
+</script>
+</body>
+</html>
