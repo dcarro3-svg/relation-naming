@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Part-Whole Relations — Lesson Two</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:#F7F4EF; --surface:#FFFFFF; --border:#E2DDD6;
+    --text-primary:#1A1714; --text-secondary:#6B6560; --text-muted:#9B9591;
+    --accent:#2D6A4F; --accent-light:#EAF4EF;
+    --accent-warm:#C17D3C; --accent-warm-light:#FBF0E4;
+    --radius:12px; --radius-lg:20px;
+  }
+
+  * { box-sizing:border-box; margin:0; padding:0; }
+
+  body {
+    font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text-primary);
+    min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; padding:24px;
+  }
+
+  .app { width:100%; max-width:680px; display:flex; flex-direction:column; gap:20px; }
+
+  .header { display:flex; align-items:center; gap:12px; }
+  .lesson-label { font-family:'DM Serif Display',serif; font-size:26px; letter-spacing:-0.5px; }
+  .phase-label { font-size:12px; font-weight:500; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; flex:1; }
+
+  .tts-toggle {
+    width:34px; height:34px; border-radius:50%; border:2px solid var(--border);
+    background:var(--surface); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.15s; flex-shrink:0; margin-left:auto;
+  }
+  .tts-toggle svg { width:16px; height:16px; fill:var(--text-muted); transition:fill 0.15s; }
+  .tts-toggle.on { border-color:var(--accent); background:var(--accent-light); }
+  .tts-toggle.on svg { fill:var(--accent); }
+  .tts-toggle:hover { border-color:var(--accent); }
+  .tts-toggle:hover svg { fill:var(--accent); }
+
+  .progress-track { height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; background:var(--accent); border-radius:2px; transition:width 0.5s ease; }
+
+  .canvas {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius-lg); padding:44px 40px;
+    display:flex; align-items:center; justify-content:center;
+    min-height:220px; box-shadow:0 2px 12px rgba(0,0,0,0.04);
+    animation:fadeUp 0.35s ease; overflow:visible;
+  }
+
+  .key-point {
+    background:var(--accent-light); border:1px solid #B8DAC8;
+    border-radius:var(--radius-lg); padding:18px 24px;
+    font-size:16px; font-weight:500; color:var(--text-primary);
+    line-height:1.6; animation:fadeUp 0.35s ease;
+    display:flex; align-items:flex-start; gap:12px;
+  }
+  .key-point.correction { background:var(--accent-warm-light); border-color:#E8C99A; }
+  .key-point.neutral { background:var(--surface); border-color:var(--border); font-weight:400; }
+  .key-point.bridge { background:#F0EAF8; border-color:#C9B8E8; }
+
+  .audio-indicator {
+    width:32px; height:32px; border-radius:50%; background:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; cursor:pointer; transition:all 0.15s; border:none; margin-top:2px;
+  }
+  .audio-indicator:hover { background:#255C43; transform:scale(1.05); }
+  .audio-indicator.speaking { background:var(--accent-warm); animation:pulse 1s infinite; }
+  .audio-indicator svg { width:16px; height:16px; fill:white; }
+
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+
+  .response-buttons { display:flex; gap:12px; }
+
+  .btn {
+    flex:1; padding:15px 20px; border-radius:var(--radius); border:2px solid var(--border);
+    background:var(--surface); font-family:'DM Sans',sans-serif; font-size:16px;
+    font-weight:600; color:var(--text-primary); cursor:pointer; transition:all 0.15s;
+  }
+  .btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-light); transform:translateY(-1px); }
+  .btn:active { transform:translateY(0); }
+
+  .hybrid-row { display:flex; gap:8px; align-items:stretch; }
+
+  .mic-btn {
+    width:48px; height:48px; border-radius:var(--radius); border:2px solid var(--border);
+    background:var(--surface); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.15s; flex-shrink:0;
+  }
+  .mic-btn:hover { border-color:var(--accent); background:var(--accent-light); }
+  .mic-btn.listening { border-color:#C0392B; background:#FDF0F0; animation:pulse 0.8s infinite; }
+  .mic-btn svg { width:20px; height:20px; }
+
+  .text-input {
+    flex:1; padding:12px 16px; border-radius:var(--radius); border:2px solid var(--border);
+    background:var(--surface); font-family:'DM Sans',sans-serif; font-size:16px;
+    color:var(--text-primary); outline:none; transition:border-color 0.15s; min-width:0;
+  }
+  .text-input:focus { border-color:var(--accent); }
+  .text-input::placeholder { color:var(--text-muted); }
+
+  .btn-submit {
+    padding:12px 20px; border-radius:var(--radius); border:none; background:var(--accent);
+    color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600;
+    cursor:pointer; transition:all 0.15s; flex-shrink:0;
+  }
+  .btn-submit:hover { background:#255C43; }
+
+  .btn-continue {
+    width:100%; padding:15px; border-radius:var(--radius); border:none;
+    background:var(--accent); color:white; font-family:'DM Sans',sans-serif;
+    font-size:16px; font-weight:600; cursor:pointer; transition:all 0.15s;
+  }
+  .btn-continue:hover { background:#255C43; transform:translateY(-1px); }
+
+  .completion {
+    text-align:center; padding:44px 32px; background:var(--surface);
+    border:1px solid var(--border); border-radius:var(--radius-lg);
+    box-shadow:0 2px 12px rgba(0,0,0,0.04); animation:fadeUp 0.5s ease;
+  }
+  .completion h2 { font-family:'DM Serif Display',serif; font-size:26px; margin:12px 0 10px; color:var(--accent); }
+  .completion p { color:var(--text-secondary); font-size:15px; line-height:1.6; max-width:400px; margin:0 auto; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <span class="lesson-label">Part-Whole Relations</span>
+    <span class="phase-label" id="phaseLabel">Review</span>
+    <button class="tts-toggle" id="ttsToggle" onclick="toggleTTS()" title="Toggle audio">
+      <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+    </button>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="mainContent"></div>
+  <div id="responseArea"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════
+// TTS TOGGLE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let ttsEnabled = true;
+
+function toggleTTS() {
+  ttsEnabled = !ttsEnabled;
+  const btn = document.getElementById('ttsToggle');
+  if (btn) btn.classList.toggle('on', ttsEnabled);
+  if (!ttsEnabled) window.speechSynthesis.cancel();
+  // Re-render current screen with correct text density
+  rerenderCurrent();
+}
+
+function rerenderCurrent() {
+  switch(S.phase) {
+    case 'intro':        showIntro(); break;
+    case 'review':       rerenderReview(); break;
+    case 'instruction':  showInstruct(S.instructStep); break;
+    case 'ident':        rerenderIdent(); break;
+    case 'naming':       rerenderNaming(); break;
+    case 'bridge':       showBridge(); break;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUDIO SYSTEM
+// All speech goes through speak(). Swap this function for real audio files later.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let currentUtterance = null;
+
+function speak(text, onEnd) {
+  if (!ttsEnabled) { if (onEnd) onEnd(); return; }
+  const clean = text.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.rate = 0.92; utt.pitch = 1.0; utt.volume = 1.0;
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = voices.find(v =>
+    v.name.includes('Samantha')||v.name.includes('Karen')||
+    v.name.includes('Daniel')||v.name.includes('Google')||v.lang==='en-US'
+  );
+  if (preferred) utt.voice = preferred;
+  utt.onstart = () => { const b=document.getElementById('audioBtn'); if(b) b.classList.add('speaking'); };
+  utt.onend = () => { const b=document.getElementById('audioBtn'); if(b) b.classList.remove('speaking'); if(onEnd) onEnd(); };
+  utt.onerror = () => { if(onEnd) onEnd(); };
+  currentUtterance = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+function replayAudio() {
+  if (currentUtterance && ttsEnabled) speak(currentUtterance.text);
+}
+
+function audioBtn() {
+  return `<button class="audio-indicator" id="audioBtn" onclick="replayAudio()" title="Replay audio">
+    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+  </button>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SPEECH INPUT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let recognition = null;
+let isListening = false;
+
+function toggleMic(inputId, submitFn) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert('Speech recognition not supported. Please type your answer.'); return; }
+  if (isListening) { if(recognition) recognition.stop(); isListening=false; updateMicBtn(false); return; }
+  recognition = new SR();
+  recognition.continuous=false; recognition.interimResults=false; recognition.lang='en-US';
+  recognition.onstart = () => { isListening=true; updateMicBtn(true); };
+  recognition.onresult = (e) => {
+    const t = e.results[0][0].transcript;
+    const inp = document.getElementById(inputId);
+    if (inp) { inp.value=t; setTimeout(()=>submitFn(),400); }
+  };
+  recognition.onerror = () => { isListening=false; updateMicBtn(false); };
+  recognition.onend   = () => { isListening=false; updateMicBtn(false); };
+  recognition.start();
+}
+
+function updateMicBtn(l) {
+  const b=document.getElementById('micBtn');
+  if(b) { b.classList.toggle('listening',l); b.title=l?'Listening...':'Speak your answer'; }
+}
+
+function micBtn(inputId, submitFn) {
+  return `<button class="mic-btn" id="micBtn" onclick="toggleMic('${inputId}',${submitFn})" title="Speak your answer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="9" y="2" width="6" height="11" rx="3"/>
+      <path d="M5 10a7 7 0 0 0 14 0"/>
+      <line x1="12" y1="19" x2="12" y2="22"/>
+      <line x1="8" y1="22" x2="16" y2="22"/>
+    </svg>
+  </button>`;
+}
+
+function hybridInput(id, ph, fn) {
+  return `<div class="hybrid-row">
+    ${micBtn(id,fn)}
+    <input class="text-input" id="${id}" type="text" placeholder="${ph}"
+           onkeydown="if(event.key==='Enter')${fn}()">
+    <button class="btn-submit" onclick="${fn}()">Submit</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DISPLAY TEXT HELPER
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function dt(full, short) { return ttsEnabled ? short : full; }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COLOR SYSTEM
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const COLORS = [
+  {name:'blue',hex:'#1B6CA8'},{name:'orange',hex:'#D4600A'},{name:'green',hex:'#2D6A4F'},
+  {name:'red',hex:'#C0392B'},{name:'purple',hex:'#6C3483'},{name:'teal',hex:'#0E7E7E'},
+  {name:'pink',hex:'#B03A6E'},{name:'navy',hex:'#1A3A5C'},
+];
+const CF = {
+  blue:['blue','navy','teal','dark blue'], navy:['navy','blue','dark blue'],
+  teal:['teal','blue','green','dark green'], green:['green','teal','dark green'],
+  red:['red','pink','dark red'], pink:['pink','red'],
+  orange:['orange'], purple:['purple','violet'],
+};
+function fam(n){ const f=CF[n]||[n]; return COLORS.filter(c=>f.includes(c.name)||(CF[c.name]||[c.name]).includes(n)).map(c=>c.name); }
+function randColor(ex=[]){ const ef=ex.flatMap(n=>fam(n)); const pool=COLORS.filter(c=>!ef.includes(c.name)); return pool.length?pool[Math.floor(Math.random()*pool.length)]:COLORS.filter(c=>!ex.includes(c.name))[0]; }
+function cmatch(r,name){ return [...(CF[name]||[name]),name].some(f=>r.includes(f)); }
+function colorMatches(spoken,actual){ return (CF[actual]||[actual]).includes(spoken)||spoken===actual; }
+function tc(hex){ const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); return (0.299*r+0.587*g+0.114*b)/255>0.55?'#1A1714':'#FFFFFF'; }
+function shuffle(a){ const arr=[...a]; for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BAR RENDERERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const BH=62, BW=62, BASE=340;
+
+function sbar(hex, name, w, h, isUnknown=false, faded=false) {
+  const bg = faded ? hex+'44' : hex;
+  const col = faded ? '#777' : tc(hex);
+  const bdr = faded ? '2px dashed #9B9591' : 'none';
+  const content = isUnknown
+    ? `<span style="font-family:'DM Serif Display',serif;font-size:24px;font-style:italic;color:${col}">?</span>`
+    : `<span style="font-size:12px;font-weight:600;text-transform:capitalize;letter-spacing:0.3px;color:${col}">${name}</span>`;
+  return `<div style="width:${w}px;height:${h}px;background:${bg};border-radius:6px;border:${bdr};display:flex;align-items:center;justify-content:center;flex-shrink:0">${content}</div>`;
+}
+
+// Equal renderer (review phase)
+function renderEqual(m) {
+  const isH = m.orientation!=='v';
+  if (isH) {
+    const w=m.w, w2=m.layout==='unequal'?m.w2:w;
+    if (m.layout==='dotted') {
+      return `<div style="position:relative;display:inline-block;padding:0 20px">
+        <div style="position:absolute;left:16px;top:0;bottom:0;border-left:2px dashed #9B9591"></div>
+        <div style="position:absolute;right:16px;top:0;bottom:0;border-right:2px dashed #9B9591"></div>
+        <div style="margin-bottom:8px">${sbar(m.c1.hex,m.c1.name,w,BH)}</div>
+        ${sbar(m.c2.hex,m.c2.name,w2,BH)}
+      </div>`;
+    }
+    return `<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+      ${sbar(m.c1.hex,m.c1.name,w,BH)}${sbar(m.c2.hex,m.c2.name,w2,BH)}</div>`;
+  }
+  const h=m.w, h2=m.layout==='unequal'?m.w2:h;
+  if (m.layout==='dotted') {
+    return `<div style="position:relative;padding:14px 0;display:inline-block">
+      <div style="position:absolute;top:10px;left:0;right:0;border-top:2px dashed #9B9591"></div>
+      <div style="position:absolute;bottom:10px;left:0;right:0;border-top:2px dashed #9B9591"></div>
+      <div style="display:flex;flex-direction:row;gap:16px">
+        ${sbar(m.c1.hex,m.c1.name,BW,h)}${sbar(m.c2.hex,m.c2.name,BW,h2)}
+      </div></div>`;
+  }
+  return `<div style="display:flex;flex-direction:row;align-items:flex-end;gap:8px">
+    ${sbar(m.c1.hex,m.c1.name,BW,h)}${sbar(m.c2.hex,m.c2.name,BW,h2)}</div>`;
+}
+
+// Part-whole renderer
+function renderPW(m) {
+  const {whole,p1,p2,confirmed,layout,fadedPart} = m;
+  const isH = m.orientation!=='v';
+  const fp = fadedPart||null;
+
+  if (isH) {
+    const wBar = sbar(whole.color.hex,whole.color.name,whole.w,BH,whole.unknown||false);
+    const p1Bar = sbar(p1.color.hex,p1.color.name,p1.w,BH,p1.unknown||false,fp==='p1');
+    const p2Bar = sbar(p2.color.hex,p2.color.name,p2.w,BH,p2.unknown||false,fp==='p2');
+    const partsRow = `<div style="display:flex;flex-direction:row;gap:0">${p1Bar}${p2Bar}</div>`;
+    const dotted = confirmed
+      ? `<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div>
+         <div style="position:absolute;right:0;top:0;bottom:0;border-right:2px dashed #9B9591;pointer-events:none"></div>` : '';
+    if (layout==='above') return `<div style="position:relative;display:inline-block">${dotted}<div style="margin-bottom:6px">${partsRow}</div>${wBar}</div>`;
+    if (layout==='below') return `<div style="position:relative;display:inline-block">${dotted}<div style="margin-bottom:6px">${wBar}</div>${partsRow}</div>`;
+    return `<div style="display:flex;align-items:center;gap:20px">${wBar}<div style="font-size:22px;color:#9B9591;font-weight:300">=</div><div style="position:relative;display:inline-block">${confirmed?`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591"></div><div style="position:absolute;right:0;top:0;bottom:0;border-right:2px dashed #9B9591"></div>`:''} ${partsRow}</div></div>`;
+  }
+
+  // Vertical — all bars same width BW, heights vary, dotted lines horizontal at top/bottom
+  const wBar = sbar(whole.color.hex,whole.color.name,BW,whole.h,whole.unknown||false);
+  const p1Bar = sbar(p1.color.hex,p1.color.name,BW,p1.h,p1.unknown||false,fp==='p1');
+  const p2Bar = sbar(p2.color.hex,p2.color.name,BW,p2.h,p2.unknown||false,fp==='p2');
+  const partsCol = `<div style="display:flex;flex-direction:column;gap:0">${p1Bar}${p2Bar}</div>`;
+  const dotted = confirmed
+    ? `<div style="position:absolute;top:0;left:0;right:0;border-top:2px dashed #9B9591;pointer-events:none"></div>
+       <div style="position:absolute;bottom:0;left:0;right:0;border-bottom:2px dashed #9B9591;pointer-events:none"></div>` : '';
+  if (layout==='above') return `<div style="display:flex;flex-direction:row;align-items:flex-start;gap:20px"><div style="position:relative">${dotted}${partsCol}</div>${wBar}</div>`;
+  if (layout==='below') return `<div style="display:flex;flex-direction:row;align-items:flex-start;gap:20px">${wBar}<div style="position:relative">${dotted}${partsCol}</div></div>`;
+  return `<div style="display:flex;flex-direction:column;align-items:flex-start;gap:12px">${wBar}<div style="font-size:18px;color:#9B9591">=</div><div style="position:relative">${dotted}${partsCol}</div></div>`;
+}
+
+// Non-example renderer
+function renderNE(m) {
+  return `<div style="display:flex;flex-direction:column;align-items:flex-start;gap:10px">
+    ${m.bars.map(b=>sbar(b.color.hex,b.color.name,b.w,BH)).join('')}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GENERATORS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function genEq() {
+  const c1=randColor(),c2=randColor([c1.name]);
+  const w=BASE*(0.5+Math.random()*0.4);
+  return {c1,c2,w,orientation:Math.random()>0.5?'h':'v',layout:Math.random()>0.5?'stacked':'dotted',isEqual:true};
+}
+function genUneq() {
+  const c1=randColor(),c2=randColor([c1.name]);
+  const diff=0.25+Math.random()*0.3,w=BASE*0.5;
+  return {c1,c2,w,w2:w*(1+diff),orientation:'h',layout:'unequal',isEqual:false};
+}
+function genPW(unknownRole=null) {
+  const wC=randColor(),p1C=randColor([wC.name]),p2C=randColor([wC.name,p1C.name]);
+  const totalW=BASE*(0.55+Math.random()*0.35);
+  const split=0.3+Math.random()*0.4;
+  const totalH=160+Math.random()*100;
+  const ori=Math.random()>0.5?'h':'v';
+  const lay=['above','below','beside'][Math.floor(Math.random()*3)];
+  return {
+    whole:{color:wC,w:totalW,h:totalH,unknown:unknownRole==='whole'},
+    p1:{color:p1C,w:totalW*split,h:totalH*split,unknown:unknownRole==='p1'},
+    p2:{color:p2C,w:totalW*(1-split),h:totalH*(1-split),unknown:unknownRole==='p2'},
+    orientation:ori,layout:lay,confirmed:Math.random()>0.3,unknownRole,fadedPart:null,
+  };
+}
+function genNE() {
+  const t=['solo','two_unrelated','two_no_whole','size_compare','parts_dont_sum'];
+  const nt=t[Math.floor(Math.random()*t.length)];
+  const c1=randColor(),c2=randColor([c1.name]),c3=randColor([c1.name,c2.name]);
+  if(nt==='solo') return{nonType:nt,bars:[{color:c1,w:BASE*0.6}]};
+  if(nt==='two_unrelated') return{nonType:nt,bars:[{color:c1,w:BASE*(0.4+Math.random()*0.3)},{color:c2,w:BASE*(0.3+Math.random()*0.4)}]};
+  if(nt==='two_no_whole') return{nonType:nt,bars:[{color:c1,w:BASE*0.35},{color:c2,w:BASE*0.3}]};
+  if(nt==='size_compare') return{nonType:nt,bars:[{color:c1,w:BASE*0.7},{color:c2,w:BASE*0.4}]};
+  return{nonType:nt,bars:[{color:c1,w:BASE*0.7},{color:c2,w:BASE*0.2},{color:c3,w:BASE*0.2}]};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const S = {
+  phase:'intro', reviewStep:0, instructStep:0, identStep:0, namingStep:0, bridgeStep:0,
+  currentModel:null, currentAnswer:null, currentNaming:null,
+  instructFU:false, instructM:null,
+  totalReview:6, totalIdent:12, totalNaming:8,
+
+  // ── Scaffold fading — two independent scaffolds ──────────────────────────
+  // Scaffold 1: color identification (which bar is the unknown)
+  scaffoldColorActive: true,
+  scaffoldColorStreak: 0,
+  scaffoldColorLocked: false,
+
+  // Scaffold 2: role identification (is the unknown a part or the whole)
+  scaffoldRoleActive: true,
+  scaffoldRoleStreak: 0,
+  scaffoldRoleLocked: false,
+
+  // ── Session data for precision teaching chart ────────────────────────────
+  sessionData: [],
+  itemStartTime: null,
+};
+
+// ── Session tracking ──────────────────────────────────────────────────────────
+function startTimer() { S.itemStartTime = Date.now(); }
+function recordResp(phase, correct) {
+  S.sessionData.push({ phase, correct, responseTimeMs: S.itemStartTime ? Date.now()-S.itemStartTime : null, timestamp: new Date().toISOString() });
+}
+
+// ── Scaffold fading logic ─────────────────────────────────────────────────────
+function updateColorScaffold(correct) {
+  if (S.scaffoldColorLocked) return;
+  if (correct) {
+    S.scaffoldColorStreak++;
+    if (S.scaffoldColorStreak >= 3) { S.scaffoldColorActive=false; S.scaffoldColorLocked=true; }
+  } else {
+    S.scaffoldColorActive=true; S.scaffoldColorStreak=0;
+  }
+}
+function updateRoleScaffold(correct) {
+  if (S.scaffoldRoleLocked) return;
+  if (correct) {
+    S.scaffoldRoleStreak++;
+    if (S.scaffoldRoleStreak >= 3) { S.scaffoldRoleActive=false; S.scaffoldRoleLocked=true; }
+  } else {
+    S.scaffoldRoleActive=true; S.scaffoldRoleStreak=0;
+  }
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function setProgress(p) { document.getElementById('progressFill').style.width=p+'%'; }
+function setPhase(l) { document.getElementById('phaseLabel').textContent=l; }
+function render(m,r) { document.getElementById('mainContent').innerHTML=m; document.getElementById('responseArea').innerHTML=r; }
+function focus(id) { setTimeout(()=>{ const e=document.getElementById(id); if(e) e.focus(); },150); }
+
+// ── Rerender helpers for toggle ───────────────────────────────────────────────
+function rerenderReview() {
+  if (!S.currentModel) return;
+  const html = S.currentModel.isEqual!==undefined ? renderEqual(S.currentModel) : renderNE(S.currentModel);
+  render(`<div class="canvas">${html}</div><div class="key-point neutral" style="font-weight:500">Equal or Not Equal?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitReview('equal')">Equal</button><button class="btn" onclick="submitReview('notequal')">Not Equal</button></div>`);
+}
+function rerenderIdent() {
+  if (!S.currentModel) return;
+  const html = S.currentModel.displayType==='pw' ? renderPW(S.currentModel) : renderNE(S.currentModel);
+  render(`<div class="canvas">${html}</div><div class="key-point neutral" style="font-weight:500">Part-Whole or Not?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitIdent('partwhole')">Part-Whole</button><button class="btn" onclick="submitIdent('not')">Not</button></div>`);
+}
+function rerenderNaming() {
+  if (!S.currentNaming) return;
+  showNamingItem();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INSTRUCTION DATA
+// audio = full text spoken aloud / shown when TTS off
+// keyPoint = short text shown when TTS on
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const introData = {
+  audio: `Last time, you learned to name equal relations. When two things are equal they are the same size or number. Today you will learn a new relation called Part-Whole. First, let's review what you already know.`,
+  keyPoint: `Today: Part-Whole relations. First, a quick review of Equal.`,
+  btn: `Let's review`
+};
+
+const INSTRUCT = [
+  {
+    build() { const m=genPW(); m.confirmed=true; m.layout='below'; m.orientation='h'; return m; },
+    audio(m) { return `Look at this picture. The ${m.whole.color.name} bar is on top. The ${m.p1.color.name} and ${m.p2.color.name} bars are on the bottom. You know that when two things are the same size, they are what?`; },
+    keyPoint(m) { return `The ${m.whole.color.name} bar is on top. The ${m.p1.color.name} and ${m.p2.color.name} bars are below. What relation do you already know about these?`; },
+    question: `When two things are the same size, they are...?`,
+    acc: ['equal','same','the same','same size'],
+    cor: `When two things are the same size, we call them equal. What do we call two things that are the same size?`,
+    corKey: `Two things of the same size are equal.`,
+    fu(m) { return `That's right — equal. The ${m.p1.color.name} and ${m.p2.color.name} bars together are the same size as the ${m.whole.color.name} bar. So: the ${m.whole.color.name} bar is equal to the ${m.p1.color.name} and ${m.p2.color.name} bars together. That is a Part-Whole relation. The ${m.whole.color.name} bar is the whole. The ${m.p1.color.name} and ${m.p2.color.name} bars are the parts.`; },
+    fuKey(m) { return `The ${m.whole.color.name} bar equals both parts together — that makes it the whole.`; },
+    fuQ(m) { return `What color is the whole?`; },
+    fuAcc(m) { return [m.whole.color.name,...fam(m.whole.color.name)]; },
+    fuCor(m) { return `Look at the single bar that equals both parts together. That is the whole. What color is it?`; },
+    fuCorKey(m) { return `The whole equals both parts combined. What color is it?`; },
+  },
+  {
+    build() { const m=genPW(); m.confirmed=true; m.layout='above'; m.orientation='h'; return m; },
+    audio(m) { return `Here is another part-whole relation. What colors are the parts?`; },
+    keyPoint(m) { return `Another part-whole relation. What colors are the parts?`; },
+    question: `What colors are the parts?`,
+    acc(m) { return [m.p1.color.name,m.p2.color.name,`${m.p1.color.name} and ${m.p2.color.name}`,`${m.p2.color.name} and ${m.p1.color.name}`]; },
+    cor(m) { return `The parts are the two bars that together equal the whole. What colors are they?`; },
+    corKey(m) { return `The parts together equal the whole. What colors are the parts?`; },
+    fu(m) { return `Right. And what color is the whole?`; },
+    fuKey(m) { return `Good. What color is the whole?`; },
+    fuQ(m) { return `What color is the whole?`; },
+    fuAcc(m) { return [m.whole.color.name,...fam(m.whole.color.name)]; },
+    fuCor(m) { return `The whole is the single bar that equals both parts together. What color is it?`; },
+    fuCorKey(m) { return `The whole equals both parts. What color is it?`; },
+  },
+  {
+    build() { const m=genPW(); m.confirmed=true; m.layout='below'; m.orientation='h'; m.fadedPart='p1'; return m; },
+    audio(m) { return `Look at this picture. The ${m.p1.color.name} part has been faded out — imagine it is taken away. What is left of the whole after the ${m.p1.color.name} part is removed?`; },
+    keyPoint(m) { return `The ${m.p1.color.name} part is faded — imagine it's removed. What remains?`; },
+    question: `What color part remains?`,
+    acc(m) { return [m.p2.color.name,...fam(m.p2.color.name)]; },
+    cor(m) { return `Look at the part that is not faded. What color is the remaining part?`; },
+    corKey(m) { return `Look at the part that is not faded. What color is it?`; },
+    fu(m) { return `Right — the ${m.p2.color.name} part remains. When we take away the ${m.p1.color.name} part from the ${m.whole.color.name} whole, we are left with the ${m.p2.color.name} part. We can say: ${m.whole.color.name} without ${m.p1.color.name} equals ${m.p2.color.name}.`; },
+    fuKey(m) { return `${m.whole.color.name} without ${m.p1.color.name} equals ${m.p2.color.name}.`; },
+    fuQ(m) { return `Say the relation: what equals ${m.p2.color.name}?`; },
+    fuAcc(m) { return [`${m.whole.color.name} without ${m.p1.color.name}`,`${m.whole.color.name} takeaway ${m.p1.color.name}`,`${m.whole.color.name} take away ${m.p1.color.name}`,`${m.whole.color.name} minus ${m.p1.color.name}`]; },
+    fuCor(m) { return `Say it this way: ${m.whole.color.name} without ${m.p1.color.name} equals ${m.p2.color.name}.`; },
+    fuCorKey(m) { return `Try: ${m.whole.color.name} without ${m.p1.color.name} equals ${m.p2.color.name}.`; },
+  },
+];
+
+const BRIDGE = [
+  {
+    build() { return genPW(null); },
+    audio(m) { return `You know how to say: ${m.p1.color.name} and ${m.p2.color.name} equals ${m.whole.color.name}. When we say and or together, we mean we are adding. So we can also say: ${m.p1.color.name} plus ${m.p2.color.name} equals ${m.whole.color.name}. Say the relation using plus.`; },
+    keyPoint(m) { return `"and" = plus. Say it using plus: ${m.p1.color.name} plus ${m.p2.color.name} equals ${m.whole.color.name}.`; },
+    check(r,m) { return r.includes('plus')&&cmatch(r,m.p1.color.name)&&cmatch(r,m.p2.color.name); },
+    cor(m) { return `Use the word plus. Say: ${m.p1.color.name} plus ${m.p2.color.name} equals ${m.whole.color.name}.`; },
+    corKey(m) { return `Use plus. Try: ${m.p1.color.name} plus ${m.p2.color.name} equals...`; },
+  },
+  {
+    build() { return genPW(null); },
+    audio(m) { return `You know how to say: ${m.whole.color.name} without ${m.p1.color.name} equals ${m.p2.color.name}. When we say without or takeaway, we mean we are subtracting. So we can also say: ${m.whole.color.name} minus ${m.p1.color.name} equals ${m.p2.color.name}. Say the relation using minus.`; },
+    keyPoint(m) { return `"without" = minus. Say it using minus: ${m.whole.color.name} minus ${m.p1.color.name} equals ${m.p2.color.name}.`; },
+    check(r,m) { return r.includes('minus')&&cmatch(r,m.whole.color.name)&&cmatch(r,m.p1.color.name); },
+    cor(m) { return `Use the word minus. Say: ${m.whole.color.name} minus ${m.p1.color.name} equals ${m.p2.color.name}.`; },
+    corKey(m) { return `Use minus. Try: ${m.whole.color.name} minus ${m.p1.color.name} equals...`; },
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Intro ─────────────────────────────────────────────────────────────────────
+function showIntro() {
+  S.phase='intro'; setPhase('Introduction'); setProgress(2);
+  render(
+    `<div class="key-point neutral">${ttsEnabled?audioBtn():''}<span>${dt(introData.audio,introData.keyPoint)}</span></div>`,
+    `<button class="btn-continue" onclick="startReview()">${introData.btn}</button>`
+  );
+  speak(introData.audio);
+}
+
+// ── Review Equal ──────────────────────────────────────────────────────────────
+function startReview() { S.phase='review'; setPhase('Review — Equal'); S.reviewStep=0; nextReview(); }
+
+function nextReview() {
+  if (S.reviewStep>=S.totalReview) { showPWIntro(); return; }
+  setProgress(5+(S.reviewStep/S.totalReview)*15);
+  S.currentModel = Math.random()>0.4 ? genEq() : genUneq();
+  startTimer();
+  render(
+    `<div class="canvas">${renderEqual(S.currentModel)}</div><div class="key-point neutral" style="font-weight:500">Equal or Not Equal?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitReview('equal')">Equal</button><button class="btn" onclick="submitReview('notequal')">Not Equal</button></div>`
+  );
+  speak('Equal or Not Equal?');
+}
+
+function submitReview(r) {
+  const ok = S.currentModel.isEqual?'equal':'notequal';
+  recordResp('review', r===ok);
+  if (r===ok) { S.reviewStep++; nextReview(); return; }
+  const audioMsg = S.currentModel.isEqual
+    ? `Look carefully. Does the picture show these shapes are the same size? Stacking or dotted lines confirm equality.`
+    : `Look at the sizes. Are these shapes the same size? The picture must confirm equality.`;
+  const shortMsg = S.currentModel.isEqual ? `Does the picture confirm equality?` : `Are they the same size?`;
+  render(
+    `<div class="canvas">${renderEqual(S.currentModel)}</div>
+     <div class="key-point correction">${ttsEnabled?audioBtn():''}<span>${dt(audioMsg,shortMsg)}</span></div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitReview('equal')">Equal</button><button class="btn" onclick="submitReview('notequal')">Not Equal</button></div>`
+  );
+  speak(audioMsg);
+}
+
+// ── Part-Whole Instruction ────────────────────────────────────────────────────
+function showPWIntro() {
+  S.phase='instruction'; S.instructStep=0; setPhase('Instruction'); setProgress(22);
+  const audio=`You know equal relations. Now look at something new. A Part-Whole relation shows two parts that together equal one whole. Let me show you what I mean.`;
+  const short=`A Part-Whole relation: two parts together equal one whole.`;
+  render(
+    `<div class="key-point">${ttsEnabled?audioBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="showInstruct(0)">Show me</button>`
+  );
+  speak(audio);
+}
+
+function showInstruct(step) {
+  S.instructStep=step; S.instructFU=false;
+  if (step>=INSTRUCT.length) { showIdentIntro(); return; }
+  setProgress(24+(step/INSTRUCT.length)*18);
+  const def=INSTRUCT[step];
+  S.instructM=def.build();
+  const m=S.instructM;
+  const audio=def.audio(m), short=def.keyPoint(m);
+  render(
+    `<div class="canvas">${renderPW(m)}</div>
+     <div class="key-point">${ttsEnabled?audioBtn():''}<span>${dt(audio,short)}</span></div>
+     <div class="key-point neutral" style="font-weight:500">${def.question}</div>`,
+    hybridInput('iIn','Type or speak your answer...','submitInstruct')
+  );
+  speak(audio+' '+def.question, ()=>focus('iIn'));
+  if (!ttsEnabled) focus('iIn');
+}
+
+function submitInstruct() {
+  const el=document.getElementById('iIn'); if(!el) return;
+  const r=el.value.toLowerCase().trim(); if(!r) return;
+  const def=INSTRUCT[S.instructStep], m=S.instructM;
+
+  if (!S.instructFU) {
+    const acc=typeof def.acc==='function'?def.acc(m):def.acc;
+    const cor=typeof def.cor==='function'?def.cor(m):def.cor;
+    const corKey=typeof def.corKey==='function'?def.corKey(m):def.corKey;
+    const ok=acc.some(a=>r.includes(a.toLowerCase()));
+    if (ok) {
+      S.instructFU=true;
+      const fuAudio=def.fu(m), fuShort=def.fuKey(m), fuQ=def.fuQ(m);
+      render(
+        `<div class="canvas">${renderPW(m)}</div>
+         <div class="key-point bridge">${ttsEnabled?audioBtn():''}<span>${dt(fuAudio,fuShort)}</span></div>
+         <div class="key-point neutral" style="font-weight:500">${fuQ}</div>`,
+        hybridInput('iIn','Type or speak your answer...','submitInstruct')
+      );
+      speak(fuAudio+' '+fuQ, ()=>focus('iIn'));
+      if (!ttsEnabled) focus('iIn');
+    } else {
+      render(
+        `<div class="canvas">${renderPW(m)}</div>
+         <div class="key-point correction">${ttsEnabled?audioBtn():''}<span>${dt(cor,corKey)}</span></div>
+         <div class="key-point neutral" style="font-weight:500">${def.question}</div>`,
+        hybridInput('iIn','Type or speak your answer...','submitInstruct')
+      );
+      speak(cor+' '+def.question, ()=>focus('iIn'));
+      if (!ttsEnabled) focus('iIn');
+    }
+  } else {
+    const fuAcc=def.fuAcc(m);
+    const fuCor=def.fuCor(m), fuCorKey=def.fuCorKey(m);
+    const ok=fuAcc.some(a=>r.includes(a.toLowerCase()));
+    if (ok) { showInstruct(S.instructStep+1); }
+    else {
+      render(
+        `<div class="canvas">${renderPW(m)}</div>
+         <div class="key-point correction">${ttsEnabled?audioBtn():''}<span>${dt(fuCor,fuCorKey)}</span></div>
+         <div class="key-point neutral" style="font-weight:500">${def.fuQ(m)}</div>`,
+        hybridInput('iIn','Type or speak your answer...','submitInstruct')
+      );
+      speak(fuCor+' '+def.fuQ(m), ()=>focus('iIn'));
+      if (!ttsEnabled) focus('iIn');
+    }
+  }
+}
+
+// ── Identification ────────────────────────────────────────────────────────────
+function showIdentIntro() {
+  S.phase='ident'; S.identStep=0; setPhase('Identification'); setProgress(44);
+  const audio=`Now you will tell me if each picture shows a part-whole relation or not. Say Part-Whole or Not.`;
+  const short=`Part-Whole or Not?`;
+  render(
+    `<div class="key-point">${ttsEnabled?audioBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="nextIdent()">Ready</button>`
+  );
+  speak(audio);
+}
+
+function nextIdent() {
+  if (S.identStep>=S.totalIdent) { showNamingIntro(); return; }
+  setProgress(46+(S.identStep/S.totalIdent)*20);
+  const isPW=Math.random()>0.4;
+  S.currentModel=isPW?genPW():genNE();
+  S.currentModel.displayType=isPW?'pw':'ne';
+  S.currentAnswer=isPW?'partwhole':'not';
+  startTimer();
+  const html=isPW?renderPW(S.currentModel):renderNE(S.currentModel);
+  render(
+    `<div class="canvas">${html}</div><div class="key-point neutral" style="font-weight:500">Part-Whole or Not?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitIdent('partwhole')">Part-Whole</button><button class="btn" onclick="submitIdent('not')">Not</button></div>`
+  );
+  speak('Part-Whole or Not?');
+}
+
+function submitIdent(r) {
+  recordResp('ident', r===S.currentAnswer);
+  if (r===S.currentAnswer) { S.identStep++; nextIdent(); return; }
+  const m=S.currentModel;
+  let audioMsg='', shortMsg='';
+  if (r==='partwhole'&&S.currentAnswer==='not') {
+    const nt=m.nonType;
+    if (nt==='solo') { audioMsg=`A part-whole relation needs at least three bars — a whole and two parts. This picture only shows one bar.`; shortMsg=`One bar alone is not part-whole.`; }
+    else if (nt==='two_no_whole') { audioMsg=`These could be two parts — but where is the whole? A part-whole relation needs a whole bar that equals both parts together.`; shortMsg=`Two parts with no whole shown.`; }
+    else if (nt==='size_compare') { audioMsg=`One bar is larger — but the picture does not show that the smaller bar is a part of the larger one.`; shortMsg=`Size difference alone is not part-whole.`; }
+    else if (nt==='parts_dont_sum') { audioMsg=`Do the two smaller bars together equal the larger bar? In a part-whole relation the parts must equal the whole exactly.`; shortMsg=`The parts must equal the whole exactly.`; }
+    else { audioMsg=`Does this picture show that two parts together equal one whole?`; shortMsg=`Do two parts equal one whole here?`; }
+  } else {
+    audioMsg=`Look again. Can you find a whole bar that equals two parts together?`;
+    shortMsg=`Look for a whole that equals two parts together.`;
+  }
+  const html=m.displayType==='pw'?renderPW(m):renderNE(m);
+  render(
+    `<div class="canvas">${html}</div>
+     <div class="key-point correction">${ttsEnabled?audioBtn():''}<span>${dt(audioMsg,shortMsg)}</span></div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitIdent('partwhole')">Part-Whole</button><button class="btn" onclick="submitIdent('not')">Not</button></div>`
+  );
+  speak(audioMsg);
+}
+
+// ── Relation Naming ───────────────────────────────────────────────────────────
+function showNamingIntro() {
+  S.phase='naming'; S.namingStep=0; setPhase('Relation Naming'); setProgress(68);
+  const audio=`You can identify part-whole relations. Now it is time to name them. One shape will have a question mark — that is the unknown. If the unknown is the whole, say: part one and part two equals whole. If the unknown is a part, say: whole without known part equals unknown part.`;
+  const short=`Name the relation. Unknown whole: parts and parts equals whole. Unknown part: whole without part equals part.`;
+  render(
+    `<div class="key-point">${ttsEnabled?audioBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="nextNaming()">Ready</button>`
+  );
+  speak(audio);
+}
+
+function nextNaming() {
+  if (S.namingStep>=S.totalNaming) { showBridgeIntro(); return; }
+  setProgress(70+(S.namingStep/S.totalNaming)*14);
+  const roles=['whole','p1','p2'];
+  const role=roles[S.namingStep%3];
+  const m=genPW(role);
+  S.currentModel=m;
+  S.currentNaming={whole:m.whole.color.name,p1:m.p1.color.name,p2:m.p2.color.name,unknownRole:role};
+  startTimer();
+  showNamingItem();
+}
+
+function showNamingItem() {
+  if (!S.currentNaming) return;
+  // Decide which scaffolds to show
+  const showColor = !S.scaffoldColorLocked && S.scaffoldColorActive;
+  const showRole  = !S.scaffoldRoleLocked  && S.scaffoldRoleActive;
+
+  if (showColor) { showColorScaffold(); }
+  else if (showRole) { showRoleScaffold(); }
+  else { showFullNaming(); }
+}
+
+// ── Scaffold 1: Color identification ─────────────────────────────────────────
+function showColorScaffold() {
+  const {unknownColor} = {unknownColor: S.currentNaming[S.currentNaming.unknownRole==='whole'?'whole':S.currentNaming.unknownRole]};
+  const unknown = S.currentNaming.unknownRole==='whole' ? S.currentNaming.whole
+                : S.currentNaming.unknownRole==='p1'    ? S.currentNaming.p1
+                :                                         S.currentNaming.p2;
+  render(
+    `<div class="canvas">${renderPW(S.currentModel)}</div>
+     <div class="key-point neutral" style="font-weight:500">What color is the unknown?</div>`,
+    hybridInput('cIn','Type or speak the color...','submitColorScaffold')
+  );
+  speak('What color is the unknown?', ()=>focus('cIn'));
+  if (!ttsEnabled) focus('cIn');
+}
+
+function submitColorScaffold() {
+  const el=document.getElementById('cIn'); if(!el) return;
+  const r=el.value.toLowerCase().trim(); if(!r) return;
+  const n=S.currentNaming;
+  const unknownName = n.unknownRole==='whole' ? n.whole : n.unknownRole==='p1' ? n.p1 : n.p2;
+  const correct = colorMatches(r, unknownName) || cmatch(r, unknownName);
+  recordResp('scaffold_color', correct);
+  updateColorScaffold(correct);
+  if (correct) {
+    // Move to role scaffold or full naming
+    if (!S.scaffoldRoleLocked && S.scaffoldRoleActive) showRoleScaffold();
+    else showFullNaming();
+  } else {
+    const audio=`Look for the shape with the question mark. What color is it?`;
+    const short=`Look for the shape with the ?`;
+    render(
+      `<div class="canvas">${renderPW(S.currentModel)}</div>
+       <div class="key-point correction">${ttsEnabled?audioBtn():''}<span>${dt(audio,short)}</span></div>`,
+      hybridInput('cIn','Type or speak the color...','submitColorScaffold')
+    );
+    speak(audio, ()=>focus('cIn'));
+    if (!ttsEnabled) focus('cIn');
+  }
+}
+
+// ── Scaffold 2: Role identification ──────────────────────────────────────────
+function showRoleScaffold() {
+  const n=S.currentNaming;
+  const unknownName = n.unknownRole==='whole' ? n.whole : n.unknownRole==='p1' ? n.p1 : n.p2;
+  render(
+    `<div class="canvas">${renderPW(S.currentModel)}</div>
+     <div class="key-point neutral" style="font-weight:500">Is the ${unknownName} bar the whole or a part?</div>`,
+    `<div class="response-buttons">
+       <button class="btn" onclick="submitRoleScaffold('whole')">The Whole</button>
+       <button class="btn" onclick="submitRoleScaffold('part')">A Part</button>
+     </div>`
+  );
+  speak(`Is the ${unknownName} bar the whole or a part?`);
+}
+
+function submitRoleScaffold(r) {
+  const n=S.currentNaming;
+  const correct = (r==='whole' && n.unknownRole==='whole') || (r==='part' && n.unknownRole!=='whole');
+  recordResp('scaffold_role', correct);
+  updateRoleScaffold(correct);
+  if (correct) {
+    showFullNaming();
+  } else {
+    const isWhole = n.unknownRole==='whole';
+    const unknownName = isWhole ? n.whole : n.unknownRole==='p1' ? n.p1 : n.p2;
+    const audio = isWhole
+      ? `Look at the ${unknownName} bar. It equals both other bars together — that makes it the whole.`
+      : `Look at the ${unknownName} bar. It is one of the smaller bars — that makes it a part.`;
+    const short = isWhole ? `${unknownName} equals both others — it's the whole.` : `${unknownName} is one of the smaller bars — it's a part.`;
+    render(
+      `<div class="canvas">${renderPW(S.currentModel)}</div>
+       <div class="key-point correction">${ttsEnabled?audioBtn():''}<span>${dt(audio,short)}</span></div>`,
+      `<div class="response-buttons">
+         <button class="btn" onclick="submitRoleScaffold('whole')">The Whole</button>
+         <button class="btn" onclick="submitRoleScaffold('part')">A Part</button>
+       </div>`
+    );
+    speak(audio);
+  }
+}
+
+// ── Full Naming ───────────────────────────────────────────────────────────────
+function showFullNaming() {
+  const n=S.currentNaming;
+  const hint = n.unknownRole==='whole'
+    ? `Say: ${n.p1} and ${n.p2} equals...`
+    : `Say: ${n.whole} without... equals...`;
+  render(
+    `<div class="canvas">${renderPW(S.currentModel)}</div>
+     <div class="key-point neutral" style="font-weight:500">What equals the unknown?</div>`,
+    hybridInput('nIn',hint,'submitNaming')
+  );
+  speak('What equals the unknown? Name the full relation.', ()=>focus('nIn'));
+  if (!ttsEnabled) focus('nIn');
+}
+
+function checkNaming(r,n) {
+  const hasAnd=r.includes('and')||r.includes('together')||r.includes('plus');
+  const hasWo=r.includes('without')||r.includes('takeaway')||r.includes('take away')||r.includes('minus');
+  if (n.unknownRole==='whole') {
+    if (cmatch(r,n.p1)&&cmatch(r,n.p2)&&hasAnd) return 'correct';
+    if (hasWo) return 'wrong_op';
+    return 'unclear';
+  }
+  const kp=n.unknownRole==='p1'?n.p2:n.p1;
+  if (cmatch(r,n.whole)&&cmatch(r,kp)&&hasWo) return 'correct';
+  if (hasAnd) return 'wrong_op';
+  if (cmatch(r,n.whole)&&!hasWo) return 'missing_op';
+  return 'unclear';
+}
+
+function submitNaming() {
+  const el=document.getElementById('nIn'); if(!el) return;
+  const r=el.value.trim(); if(!r) return;
+  const res=checkNaming(r.toLowerCase(),S.currentNaming);
+  const n=S.currentNaming;
+
+  if (res==='correct') {
+    recordResp('naming', true);
+    // Update role scaffold on correct naming (confirms role was understood)
+    updateRoleScaffold(true);
+    S.namingStep++;
+    if (S.namingStep>=S.totalNaming) { showComplete(); return; }
+    const roles=['whole','p1','p2'];
+    const role=roles[S.namingStep%3];
+    const m=genPW(role);
+    S.currentModel=m;
+    S.currentNaming={whole:m.whole.color.name,p1:m.p1.color.name,p2:m.p2.color.name,unknownRole:role};
+    startTimer();
+    showNamingItem();
+    return;
+  }
+
+  recordResp('naming', false);
+
+  let audio='', short='';
+  if (res==='wrong_op'&&n.unknownRole==='whole') {
+    audio=`The unknown is the whole. To find the whole, put the parts together. Say: ${n.p1} and ${n.p2} equals...`;
+    short=`Unknown is the whole — use and. Say: ${n.p1} and ${n.p2} equals...`;
+    // Wrong operation = role misidentified — reactivate role scaffold
+    updateRoleScaffold(false);
+  } else if (res==='wrong_op') {
+    audio=`The unknown is a part. To find a part, take it away from the whole. Say: ${n.whole} without...`;
+    short=`Unknown is a part — use without. Say: ${n.whole} without...`;
+    updateRoleScaffold(false);
+  } else if (res==='missing_op') {
+    audio=`You have the whole. Now say what you do with it — take away the known part. Say: ${n.whole} without...`;
+    short=`Add the operation — say: ${n.whole} without...`;
+  } else {
+    audio=`Look at the shape with the question mark. Name the relation that tells you what it equals.`;
+    short=`Name the relation for the shape with the ?`;
+    // Unclear = possibly color confusion — reactivate color scaffold
+    updateColorScaffold(false);
+  }
+
+  render(
+    `<div class="canvas">${renderPW(S.currentModel)}</div>
+     <div class="key-point correction">${ttsEnabled?audioBtn():''}<span>${dt(audio,short)}</span></div>`,
+    hybridInput('nIn',`e.g. ${n.unknownRole==='whole'?n.p1+' and '+n.p2:n.whole+' without...'}...`,'submitNaming')
+  );
+  speak(audio, ()=>focus('nIn'));
+  if (!ttsEnabled) focus('nIn');
+}
+
+// ── Bridge to Plus / Minus ────────────────────────────────────────────────────
+function showBridgeIntro() {
+  S.phase='bridge'; S.bridgeStep=0; setPhase('Plus and Minus'); setProgress(86);
+  const audio=`You know how to name part-whole relations using and and without. Now let's connect those words to the ones we use in math: plus and minus. They mean the same thing — just said differently.`;
+  const short=`and = plus. without = minus. Let's practice.`;
+  render(
+    `<div class="key-point bridge">${ttsEnabled?audioBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="showBridge()">Show me</button>`
+  );
+  speak(audio);
+}
+
+let bridgeM=null;
+function showBridge() {
+  if (S.bridgeStep>=BRIDGE.length) { showComplete(); return; }
+  setProgress(88+(S.bridgeStep/BRIDGE.length)*10);
+  const def=BRIDGE[S.bridgeStep];
+  bridgeM=def.build();
+  const audio=def.audio(bridgeM), short=def.keyPoint(bridgeM);
+  render(
+    `<div class="canvas">${renderPW(bridgeM)}</div>
+     <div class="key-point bridge">${ttsEnabled?audioBtn():''}<span>${dt(audio,short)}</span></div>`,
+    hybridInput('bIn','Use plus or minus...','submitBridge')
+  );
+  speak(audio, ()=>focus('bIn'));
+  if (!ttsEnabled) focus('bIn');
+}
+
+function submitBridge() {
+  const el=document.getElementById('bIn'); if(!el) return;
+  const r=el.value.toLowerCase().trim(); if(!r) return;
+  const def=BRIDGE[S.bridgeStep];
+  recordResp('bridge', def.check(r,bridgeM));
+  if (def.check(r,bridgeM)) { S.bridgeStep++; showBridge(); return; }
+  const audio=def.cor(bridgeM), short=def.corKey(bridgeM);
+  render(
+    `<div class="canvas">${renderPW(bridgeM)}</div>
+     <div class="key-point correction">${ttsEnabled?audioBtn():''}<span>${dt(audio,short)}</span></div>`,
+    hybridInput('bIn','Use plus or minus...','submitBridge')
+  );
+  speak(audio, ()=>focus('bIn'));
+  if (!ttsEnabled) focus('bIn');
+}
+
+// ── Completion ────────────────────────────────────────────────────────────────
+function showComplete() {
+  setProgress(100); setPhase('Complete');
+  render(
+    `<div class="completion">
+       <div style="font-size:44px;margin-bottom:12px">◈</div>
+       <h2>Part-Whole Relations</h2>
+       <p>You can identify part-whole relations and name them precisely.<br><br>
+          Two parts together equal the whole.<br><br>
+          <em>part plus part equals whole</em><br>
+          <em>whole minus part equals part</em></p>
+     </div>`, ``
+  );
+  speak('Well done. You can identify part-whole relations and name them precisely.');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════════════════════════════════════════
+
+if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged=()=>{}; window.speechSynthesis.getVoices(); }
+document.getElementById('ttsToggle').classList.add('on');
+showIntro();
+</script>
+</body>
+</html>
