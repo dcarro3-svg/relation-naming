@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparisons and Differences — Lesson Three</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;
+    --text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;
+    --accent:#2D6A4F;--accent-light:#EAF4EF;--accent-warm:#C17D3C;--accent-warm-light:#FBF0E4;
+    --radius:12px;--radius-lg:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+  .app{width:100%;max-width:680px;display:flex;flex-direction:column;gap:20px;}
+  .header{display:flex;align-items:center;gap:12px;}
+  .lesson-label{font-family:'DM Serif Display',serif;font-size:26px;letter-spacing:-0.5px;}
+  .phase-label{font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;flex:1;}
+  .tts-toggle{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);
+    background:var(--surface);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:all 0.15s;flex-shrink:0;margin-left:auto;}
+  .tts-toggle svg{width:16px;height:16px;fill:var(--text-muted);transition:fill 0.15s;}
+  .tts-toggle.on{border-color:var(--accent);background:var(--accent-light);}
+  .tts-toggle.on svg{fill:var(--accent);}
+  .tts-toggle:hover{border-color:var(--accent);}
+  .tts-toggle:hover svg{fill:var(--accent);}
+  .progress-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.5s ease;}
+  .canvas{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:44px 40px;display:flex;align-items:center;justify-content:center;
+    min-height:240px;box-shadow:0 2px 12px rgba(0,0,0,0.04);animation:fadeUp 0.35s ease;overflow:visible;}
+  .key-point{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius-lg);
+    padding:18px 24px;font-size:16px;font-weight:500;color:var(--text-primary);
+    line-height:1.6;animation:fadeUp 0.35s ease;display:flex;align-items:flex-start;gap:12px;}
+  .key-point.correction{background:var(--accent-warm-light);border-color:#E8C99A;}
+  .key-point.neutral{background:var(--surface);border-color:var(--border);font-weight:400;}
+  .key-point.bridge{background:#F0EAF8;border-color:#C9B8E8;}
+  .audio-indicator{width:32px;height:32px;border-radius:50%;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
+    transition:all 0.15s;border:none;margin-top:2px;}
+  .audio-indicator:hover{background:#255C43;transform:scale(1.05);}
+  .audio-indicator.speaking{background:var(--accent-warm);animation:pulse 1s infinite;}
+  .audio-indicator svg{width:16px;height:16px;fill:white;}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  .response-buttons{display:flex;gap:12px;}
+  .btn{flex:1;padding:15px 20px;border-radius:var(--radius);border:2px solid var(--border);
+    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;
+    color:var(--text-primary);cursor:pointer;transition:all 0.15s;}
+  .btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .hybrid-row{display:flex;gap:8px;align-items:stretch;}
+  .mic-btn{width:48px;height:48px;border-radius:var(--radius);border:2px solid var(--border);
+    background:var(--surface);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+  .mic-btn:hover{border-color:var(--accent);background:var(--accent-light);}
+  .mic-btn.listening{border-color:#C0392B;background:#FDF0F0;animation:pulse 0.8s infinite;}
+  .mic-btn svg{width:20px;height:20px;}
+  .text-input{flex:1;padding:12px 16px;border-radius:var(--radius);border:2px solid var(--border);
+    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:16px;
+    color:var(--text-primary);outline:none;transition:border-color 0.15s;min-width:0;}
+  .text-input:focus{border-color:var(--accent);}
+  .text-input::placeholder{color:var(--text-muted);}
+  .btn-submit{padding:12px 20px;border-radius:var(--radius);border:none;background:var(--accent);
+    color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+    cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+  .btn-submit:hover{background:#255C43;}
+  .btn-continue{width:100%;padding:15px;border-radius:var(--radius);border:none;
+    background:var(--accent);color:white;font-family:'DM Sans',sans-serif;
+    font-size:16px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+  .btn-continue:hover{background:#255C43;transform:translateY(-1px);}
+  .completion{text-align:center;padding:44px 32px;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius-lg);
+    box-shadow:0 2px 12px rgba(0,0,0,0.04);animation:fadeUp 0.5s ease;}
+  .completion h2{font-family:'DM Serif Display',serif;font-size:26px;margin:12px 0 10px;color:var(--accent);}
+  .completion p{color:var(--text-secondary);font-size:15px;line-height:1.6;max-width:400px;margin:0 auto;}
+  .relations-found{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .relation-tag{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:20px;
+    padding:4px 12px;font-size:13px;font-weight:500;color:var(--accent);}
+
+  /* Decomposition fade animations */
+  .decomp-bar { transition: opacity 0.45s ease, transform 0.45s ease; }
+  .decomp-bar.fading { opacity: 0; transform: scale(0.96); }
+  .decomp-bar.faded { opacity: 0; pointer-events: none; }
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <span class="lesson-label">Comparisons &amp; Differences</span>
+    <span class="phase-label" id="phaseLabel">Review</span>
+    <button class="tts-toggle" id="ttsToggle" onclick="toggleTTS()" title="Toggle audio">
+      <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+    </button>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="mainContent"></div>
+  <div id="responseArea"></div>
+</div>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════
+// TTS
+// ═══════════════════════════════════════════════════════════════════════════════
+let ttsEnabled=true;
+function toggleTTS(){
+  ttsEnabled=!ttsEnabled;
+  const b=document.getElementById('ttsToggle');
+  if(b) b.classList.toggle('on',ttsEnabled);
+  if(!ttsEnabled) window.speechSynthesis.cancel();
+  rerenderCurrent();
+}
+function rerenderCurrent(){
+  switch(S.phase){
+    case 'intro': showIntro(); break;
+    case 'review': if(S.currentModel) rerenderReview(); break;
+    case 'instruction': showInstruct(S.instructStep); break;
+    case 'decomp': showDecompStep(S.decompStep); break;
+    case 'ident': if(S.currentModel) rerenderIdent(); break;
+    case 'naming': if(S.currentNaming) showNamingItem(); break;
+    case 'bridge': showBridge(); break;
+    case 'free': if(S.freeModel) rerenderFree(); break;
+  }
+}
+let currentUtterance=null;
+function speak(text,onEnd){
+  if(!ttsEnabled){if(onEnd) onEnd();return;}
+  const clean=text.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+  window.speechSynthesis.cancel();
+  const utt=new SpeechSynthesisUtterance(clean);
+  utt.rate=0.92;utt.pitch=1.0;utt.volume=1.0;
+  const voices=window.speechSynthesis.getVoices();
+  const pref=voices.find(v=>v.name.includes('Samantha')||v.name.includes('Karen')||v.name.includes('Daniel')||v.name.includes('Google')||v.lang==='en-US');
+  if(pref) utt.voice=pref;
+  utt.onstart=()=>{const b=document.getElementById('audioBtn');if(b)b.classList.add('speaking');};
+  utt.onend=()=>{const b=document.getElementById('audioBtn');if(b)b.classList.remove('speaking');if(onEnd)onEnd();};
+  utt.onerror=()=>{if(onEnd)onEnd();};
+  currentUtterance=utt;
+  window.speechSynthesis.speak(utt);
+}
+function replayAudio(){if(currentUtterance&&ttsEnabled)speak(currentUtterance.text);}
+function aBtn(){return`<button class="audio-indicator" id="audioBtn" onclick="replayAudio()" title="Replay audio"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></button>`;}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SPEECH INPUT
+// ═══════════════════════════════════════════════════════════════════════════════
+let recognition=null,isListening=false;
+function toggleMic(id,fn){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Speech recognition not supported. Please type.');return;}
+  if(isListening){if(recognition)recognition.stop();isListening=false;updateMicBtn(false);return;}
+  recognition=new SR();recognition.continuous=false;recognition.interimResults=false;recognition.lang='en-US';
+  recognition.onstart=()=>{isListening=true;updateMicBtn(true);};
+  recognition.onresult=(e)=>{const t=e.results[0][0].transcript;const inp=document.getElementById(id);if(inp){inp.value=t;setTimeout(()=>fn(),400);}};
+  recognition.onerror=()=>{isListening=false;updateMicBtn(false);};
+  recognition.onend=()=>{isListening=false;updateMicBtn(false);};
+  recognition.start();
+}
+function updateMicBtn(l){const b=document.getElementById('micBtn');if(b){b.classList.toggle('listening',l);b.title=l?'Listening...':'Speak your answer';}}
+function mBtn(id,fn){return`<button class="mic-btn" id="micBtn" onclick="toggleMic('${id}',${fn})" title="Speak your answer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg></button>`;}
+function hInput(id,ph,fn){return`<div class="hybrid-row">${mBtn(id,fn)}<input class="text-input" id="${id}" type="text" placeholder="${ph}" onkeydown="if(event.key==='Enter')${fn}()"><button class="btn-submit" onclick="${fn}()">Submit</button></div>`;}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COLORS
+// ═══════════════════════════════════════════════════════════════════════════════
+const COLORS=[{name:'blue',hex:'#1B6CA8'},{name:'orange',hex:'#D4600A'},{name:'green',hex:'#2D6A4F'},
+  {name:'red',hex:'#C0392B'},{name:'purple',hex:'#6C3483'},{name:'teal',hex:'#0E7E7E'},
+  {name:'pink',hex:'#B03A6E'},{name:'navy',hex:'#1A3A5C'}];
+const CF={blue:['blue','navy','teal','dark blue'],navy:['navy','blue','dark blue'],
+  teal:['teal','blue','green','dark green'],green:['green','teal','dark green'],
+  red:['red','pink','dark red'],pink:['pink','red'],orange:['orange'],purple:['purple','violet']};
+function fam(n){const f=CF[n]||[n];return COLORS.filter(c=>f.includes(c.name)||(CF[c.name]||[c.name]).includes(n)).map(c=>c.name);}
+function randColor(ex=[]){const ef=ex.flatMap(n=>fam(n));const pool=COLORS.filter(c=>!ef.includes(c.name));return pool.length?pool[Math.floor(Math.random()*pool.length)]:COLORS.filter(c=>!ex.includes(c.name))[0];}
+function cmatch(r,name){return[...(CF[name]||[name]),name].some(f=>r.includes(f));}
+function colorMatches(s,a){return(CF[a]||[a]).includes(s)||s===a;}
+function tc(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(0.299*r+0.587*g+0.114*b)/255>0.55?'#1A1714':'#FFFFFF';}
+function dt(full,short){return ttsEnabled?short:full;}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BAR BUILDER
+// ═══════════════════════════════════════════════════════════════════════════════
+const BH=62,BW=62,BASE=340;
+function sbar(hex,name,w,h,isUnknown=false,faded=false){
+  const bg=faded?hex+'44':hex;
+  const col=faded?'#777':tc(hex);
+  const bdr=faded?'2px dashed #9B9591':'none';
+  const content=isUnknown
+    ?`<span style="font-family:'DM Serif Display',serif;font-size:24px;font-style:italic;color:${col}">?</span>`
+    :`<span style="font-size:12px;font-weight:600;text-transform:capitalize;letter-spacing:0.3px;color:${col}">${name}</span>`;
+  return`<div style="width:${w}px;height:${h}px;background:${bg};border-radius:6px;border:${bdr};display:flex;align-items:center;justify-content:center;flex-shrink:0">${content}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPARISON MODEL RENDERERS
+// ═══════════════════════════════════════════════════════════════════════════════
+// A comparison model has:
+//   larger: { color, w/h }
+//   smaller: { color, w/h }  (smaller.w = larger.w - diff.w)
+//   diff: { color, w/h } — can be null (not shown), 'pale' (pale extension), or full color bar
+//   showBrace: bool — shows curly brace in gap when diff is separate bar
+//   unknownRole: null | 'larger' | 'smaller' | 'diff'
+//   orientation: 'h' | 'v'
+
+function renderComparison(m){
+  return m.orientation==='v' ? renderComparisonV(m) : renderComparisonH(m);
+}
+
+// ── Horizontal comparison ──────────────────────────────────────────────────────
+// Larger bar: full width, top row
+// Smaller bar: left-aligned, bottom row
+// Diff bar: right-aligned, bottom row
+// Two vertical dashed lines mark the left and right edges of the diff bar,
+// running through BOTH rows — same visual language as equal relation confirmation
+function renderComparisonH(m){
+  const{larger,smaller,diff,showBrace,unknownRole}=m;
+  const largeBar=sbar(larger.color.hex,larger.color.name,larger.w,BH,unknownRole==='larger');
+  const smallBar=sbar(smaller.color.hex,smaller.color.name,smaller.w,BH,unknownRole==='smaller');
+
+  if(!diff){
+    return`<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+      ${largeBar}${smallBar}</div>`;
+  }
+
+  if(diff.style==='pale'){
+    const paleExt=`<div style="width:${diff.w}px;height:${BH}px;background:${smaller.color.hex}44;border:2px dashed #9B9591;border-radius:0 6px 6px 0;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <span style="font-size:11px;font-weight:600;color:#9B9591;text-transform:capitalize">${diff.color.name}</span></div>`;
+    return`<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+      ${largeBar}
+      <div style="display:flex;flex-direction:row;gap:0">${smallBar}${paleExt}</div>
+    </div>`;
+  }
+
+  const diffBar=sbar(diff.color.hex,diff.color.name,diff.w,BH,unknownRole==='diff',true);
+  const rowGap=8;
+  const totalH=BH+rowGap+BH; // full height of both rows + gap
+
+  // Two vertical dashed lines running full height of both rows
+  // Left line: at smaller.w (left edge of diff / right edge of smaller)
+  // Right line: at larger.w (right edge of both larger and diff)
+  const lines=showBrace?`
+    <div style="position:absolute;left:${smaller.w}px;top:0;bottom:0;border-left:2px dashed #6B6560;pointer-events:none"></div>
+    <div style="position:absolute;left:${larger.w}px;top:0;bottom:0;border-left:2px dashed #6B6560;pointer-events:none"></div>`:'';
+
+  return`<div style="position:relative;display:inline-block">
+    ${lines}
+    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:${rowGap}px">
+      ${largeBar}
+      <div style="display:flex;flex-direction:row;gap:0">${smallBar}${diffBar}</div>
+    </div>
+  </div>`;
+}
+
+// ── Vertical comparison ───────────────────────────────────────────────────────
+// Larger bar: full height, left column
+// Smaller bar: bottom-aligned, right column
+// Diff bar: top-aligned, right column
+// Two horizontal dashed lines mark the top and bottom edges of the diff bar,
+// running through BOTH columns — same visual language as equal relation confirmation
+function renderComparisonV(m){
+  const{larger,smaller,diff,showBrace,unknownRole}=m;
+  const largeBar=sbar(larger.color.hex,larger.color.name,BW,larger.h,unknownRole==='larger');
+  const smallBar=sbar(smaller.color.hex,smaller.color.name,BW,smaller.h,unknownRole==='smaller');
+
+  if(!diff){
+    return`<div style="display:flex;flex-direction:row;align-items:flex-end;gap:16px">
+      ${largeBar}${smallBar}</div>`;
+  }
+
+  if(diff.style==='pale'){
+    const paleExt=`<div style="width:${BW}px;height:${diff.h}px;background:${smaller.color.hex}44;border:2px dashed #9B9591;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <span style="font-size:10px;font-weight:600;color:#9B9591;text-transform:capitalize;writing-mode:vertical-lr">${diff.color.name}</span></div>`;
+    return`<div style="display:flex;flex-direction:row;align-items:flex-end;gap:16px">
+      ${largeBar}
+      <div style="display:flex;flex-direction:column;gap:0">${paleExt}${smallBar}</div>
+    </div>`;
+  }
+
+  const diffBar=sbar(diff.color.hex,diff.color.name,BW,diff.h,unknownRole==='diff',true);
+  const colGap=16;
+
+  // Two horizontal dashed lines running full width of both columns
+  // Top line: at y=0 (top of diff bar = top of larger bar)
+  // Bottom line: at y=diff.h (bottom of diff bar = top of smaller bar)
+  const lines=showBrace?`
+    <div style="position:absolute;top:0;left:0;right:0;border-top:2px dashed #6B6560;pointer-events:none"></div>
+    <div style="position:absolute;top:${diff.h}px;left:0;right:0;border-top:2px dashed #6B6560;pointer-events:none"></div>`:'';
+
+  return`<div style="position:relative;display:inline-block">
+    ${lines}
+    <div style="display:flex;flex-direction:row;align-items:flex-start;gap:${colGap}px">
+      ${largeBar}
+      <div style="display:flex;flex-direction:column;gap:0">${diffBar}${smallBar}</div>
+    </div>
+  </div>`;
+}
+
+// Part-whole renderer (for review)
+function renderPW(m){
+  const{whole,p1,p2,confirmed,layout}=m;
+  const isH=m.orientation!=='v';
+  if(isH){
+    const wBar=sbar(whole.color.hex,whole.color.name,whole.w,BH,whole.unknown||false);
+    const p1Bar=sbar(p1.color.hex,p1.color.name,p1.w,BH,p1.unknown||false);
+    const p2Bar=sbar(p2.color.hex,p2.color.name,p2.w,BH,p2.unknown||false);
+    const partsRow=`<div style="display:flex;flex-direction:row;gap:0">${p1Bar}${p2Bar}</div>`;
+    const dotted=confirmed?`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div><div style="position:absolute;right:0;top:0;bottom:0;border-right:2px dashed #9B9591;pointer-events:none"></div>`:'';
+    if(layout==='above') return`<div style="position:relative;display:inline-block">${dotted}<div style="margin-bottom:6px">${partsRow}</div>${wBar}</div>`;
+    return`<div style="position:relative;display:inline-block">${dotted}<div style="margin-bottom:6px">${wBar}</div>${partsRow}</div>`;
+  }
+  const wBar=sbar(whole.color.hex,whole.color.name,BW,whole.h,whole.unknown||false);
+  const p1Bar=sbar(p1.color.hex,p1.color.name,BW,p1.h,p1.unknown||false);
+  const p2Bar=sbar(p2.color.hex,p2.color.name,BW,p2.h,p2.unknown||false);
+  const partsCol=`<div style="display:flex;flex-direction:column;gap:0">${p1Bar}${p2Bar}</div>`;
+  const dotted=confirmed?`<div style="position:absolute;top:0;left:0;right:0;border-top:2px dashed #9B9591;pointer-events:none"></div><div style="position:absolute;bottom:0;left:0;right:0;border-bottom:2px dashed #9B9591;pointer-events:none"></div>`:'';
+  return`<div style="display:flex;flex-direction:row;align-items:flex-start;gap:20px"><div style="position:relative">${dotted}${partsCol}</div>${wBar}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GENERATORS
+// ═══════════════════════════════════════════════════════════════════════════════
+function genPWReview(){
+  const wC=randColor(),p1C=randColor([wC.name]),p2C=randColor([wC.name,p1C.name]);
+  const tw=BASE*(0.55+Math.random()*0.35),split=0.3+Math.random()*0.4;
+  const th=160+Math.random()*100;
+  const ori=Math.random()>0.5?'h':'v';
+  const lay=Math.random()>0.5?'above':'below';
+  return{whole:{color:wC,w:tw,h:th,unknown:false},p1:{color:p1C,w:tw*split,h:th*split,unknown:false},
+    p2:{color:p2C,w:tw*(1-split),h:th*(1-split),unknown:false},orientation:ori,layout:lay,confirmed:true};
+}
+
+function genComparison(showDiff=null, unknownRole=null){
+  // showDiff: null (no diff) | 'pale' | 'bar'
+  const largeC=randColor();
+  const smallC=randColor([largeC.name]);
+  const diffC=showDiff==='bar'?randColor([largeC.name,smallC.name]):smallC; // diff uses smallC for pale
+
+  const ori=Math.random()>0.5?'h':'v';
+  const largeW=BASE*(0.55+Math.random()*0.3);
+  const diffW=largeW*(0.2+Math.random()*0.35);
+  const smallW=largeW-diffW;
+  const largeH=180+Math.random()*80;
+  const diffH=largeH*(0.2+Math.random()*0.35);
+  const smallH=largeH-diffH;
+
+  const diff=showDiff?{
+    color:diffC, w:diffW, h:diffH,
+    style:showDiff==='pale'?'pale':'bar'
+  }:null;
+
+  return{
+    larger:{color:largeC,w:largeW,h:largeH,unknown:unknownRole==='larger'},
+    smaller:{color:smallC,w:smallW,h:smallH,unknown:unknownRole==='smaller'},
+    diff:diff?{...diff,unknown:unknownRole==='diff'}:null,
+    showBrace:showDiff==='bar',
+    orientation:ori,
+    unknownRole,
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════════
+const S={
+  phase:'intro', reviewStep:0, instructStep:0, identStep:0, namingStep:0, bridgeStep:0, freeStep:0,
+  currentModel:null, currentAnswer:null, currentNaming:null,
+  instructFU:false, instructM:null,
+  totalReview:4, totalIdent:10, totalNaming:9, totalFree:3,
+
+  // Scaffold fading
+  scaffoldColorActive:true, scaffoldColorStreak:0, scaffoldColorLocked:false,
+  scaffoldRoleActive:true,  scaffoldRoleStreak:0,  scaffoldRoleLocked:false,
+
+  // Free relation phase
+  freeModel:null, freeRelationsFound:[], freeTarget:4,
+
+  // Decomposition phase — single model generated once, used across all three steps
+  decompModel:null, decompStep:0,
+
+  // Session data
+  sessionData:[], itemStartTime:null,
+};
+
+function startTimer(){S.itemStartTime=Date.now();}
+function recordResp(phase,correct){S.sessionData.push({phase,correct,responseTimeMs:S.itemStartTime?Date.now()-S.itemStartTime:null,timestamp:new Date().toISOString()});}
+function updateColorScaffold(ok){if(S.scaffoldColorLocked)return;if(ok){S.scaffoldColorStreak++;if(S.scaffoldColorStreak>=3){S.scaffoldColorActive=false;S.scaffoldColorLocked=true;}}else{S.scaffoldColorActive=true;S.scaffoldColorStreak=0;}}
+function updateRoleScaffold(ok){if(S.scaffoldRoleLocked)return;if(ok){S.scaffoldRoleStreak++;if(S.scaffoldRoleStreak>=3){S.scaffoldRoleActive=false;S.scaffoldRoleLocked=true;}}else{S.scaffoldRoleActive=true;S.scaffoldRoleStreak=0;}}
+
+function setProgress(p){document.getElementById('progressFill').style.width=p+'%';}
+function setPhase(l){document.getElementById('phaseLabel').textContent=l;}
+function render(m,r){document.getElementById('mainContent').innerHTML=m;document.getElementById('responseArea').innerHTML=r;}
+function focus(id){setTimeout(()=>{const e=document.getElementById(id);if(e)e.focus();},150);}
+
+function rerenderReview(){
+  if(!S.currentModel)return;
+  render(`<div class="canvas">${renderPW(S.currentModel)}</div><div class="key-point neutral" style="font-weight:500">Part-Whole or Not?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitReview('partwhole')">Part-Whole</button><button class="btn" onclick="submitReview('not')">Not</button></div>`);
+}
+function rerenderIdent(){
+  if(!S.currentModel)return;
+  render(`<div class="canvas">${renderComparison(S.currentModel)}</div><div class="key-point neutral" style="font-weight:500">Does this picture show the difference?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitIdent('yes')">Yes</button><button class="btn" onclick="submitIdent('no')">No</button></div>`);
+}
+function rerenderFree(){
+  if(!S.freeModel)return;
+  const tags=S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('');
+  const remaining=S.freeTarget-S.freeRelationsFound.length;
+  render(
+    `<div class="canvas">${renderComparison(S.freeModel)}</div>
+     <div class="key-point neutral"><span>Name a true relation. ${remaining} more to find.</span></div>
+     ${S.freeRelationsFound.length>0?`<div class="relations-found">${tags}</div>`:''}`,
+    hInput('freeIn','Name any true relation...','submitFreeRelation')
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INSTRUCTION DATA
+// ═══════════════════════════════════════════════════════════════════════════════
+const INSTRUCT=[
+  // 0: Comparison intro — two bars, no diff, establish more/less
+  {
+    build(){return genComparison(null,null);},
+    audio(m){return`Look at these two bars. Are they equal? No — they are different sizes. One bar is more than the other. One bar is less than the other. The ${m.larger.color.name} bar is more than the ${m.smaller.color.name} bar. That means the ${m.smaller.color.name} bar is what?`;},
+    keyPoint(m){return`Two bars — not equal. ${m.larger.color.name} is more. ${m.smaller.color.name} is less.`;},
+    question:`Which bar is less?`,
+    acc(m){return[m.smaller.color.name,...fam(m.smaller.color.name)];},
+    cor(m){return`The smaller bar is less. Which color is the smaller bar?`;},
+    corKey(m){return`Which bar is smaller?`;},
+    fu(m){return`Right — ${m.smaller.color.name} is less than ${m.larger.color.name}. And ${m.larger.color.name} is more than ${m.smaller.color.name}. When we compare, naming one relation gives us another one for free. That's very useful for problem solving.`;},
+    fuKey(m){return`${m.larger.color.name} is more than ${m.smaller.color.name}. ${m.smaller.color.name} is less than ${m.larger.color.name}.`;},
+    fuQ(){return`Say the inverse: if ${arguments[0]?.larger?.color?.name||'the large bar'} is more — what is the other bar?`;},
+    fuAcc(m){return['less','less than'];},
+    fuCor(){return`If one bar is more, the other must be less. What is the ${arguments[0]?.smaller?.color?.name||'smaller bar'}?`;},
+    fuCorKey(){return`If one is more, the other is less.`;},
+  },
+  // 1: Introduce difference — pale extension
+  {
+    build(){const m=genComparison('pale',null);return m;},
+    audio(m){return`Look at this picture. The ${m.larger.color.name} bar is more than the ${m.smaller.color.name} bar. The faded section shows the difference — how much more the ${m.larger.color.name} bar is. The difference shows how many more, or how many fewer. What is the faded section called?`;},
+    keyPoint(m){return`The faded section is the difference — it shows how much more ${m.larger.color.name} is than ${m.smaller.color.name}.`;},
+    question:`What is the faded section called?`,
+    acc:['difference','the difference'],
+    cor:`The faded section shows how much more one bar is than the other. That is called the difference. What is it called?`,
+    corKey:`The faded gap between the bars is called the difference.`,
+    fu(m){return`Right — the difference. Now look at this. The difference is shown as its own bar.`;},
+    fuKey(m){return`The difference is now shown as its own colored bar.`;},
+    fuQ(){return`What relation does this show now?`;},
+    fuAcc(){return['part','part-whole','part whole','parts'];},
+    fuCor(){return`Look at the three bars together. Does the smaller bar plus the difference equal the larger bar? What kind of relation is that?`;},
+    fuCorKey(){return`Smaller plus difference equals larger — what relation is that?`;},
+  },
+  // 2: Part-whole bridge — show all three embedded relations
+  {
+    build(){const m=genComparison('bar',null);return m;},
+    audio(m){return`Look at this picture. The ${m.smaller.color.name} bar plus the ${m.diff.color.name} difference equals the ${m.larger.color.name} bar. That is a part-whole relation. The ${m.larger.color.name} bar is the whole. The ${m.smaller.color.name} and ${m.diff.color.name} bars are the parts. Can you name all four true relations in this picture?`;},
+    keyPoint(m){return`Part-whole: ${m.larger.color.name} is the whole. ${m.smaller.color.name} and ${m.diff.color.name} are the parts.`;},
+    question:`Name one true relation you can see.`,
+    acc(m){return[
+      `${m.larger.color.name} is more`,`${m.smaller.color.name} is less`,
+      `${m.diff.color.name}`,`part-whole`,`part whole`,
+      `${m.smaller.color.name} plus`,`${m.larger.color.name} minus`,
+      'more','less','difference','equal','part','whole',
+    ];},
+    cor(){return`Look at the bars. What can you say about how they are related? Try: which is more? Which is less? What is the difference?`;},
+    corKey(){return`What is one true thing you can say about these bars?`;},
+    fu(m){return`Right. This comparison shows a part-whole relation. The ${m.smaller.color.name} bar plus the ${m.diff.color.name} difference equals the ${m.larger.color.name} whole. So we have three equal relations, just like in Lesson Two.`;},
+    fuKey(m){return`Smaller plus difference equals larger. Three embedded equal relations.`;},
+    fuQ(m){return`What equals ${m.diff.color.name}?`;},
+    fuAcc(m){return[`${m.larger.color.name} minus ${m.smaller.color.name}`,`${m.larger.color.name} without ${m.smaller.color.name}`,`${m.larger.color.name} takeaway ${m.smaller.color.name}`];},
+    fuCor(m){return`The difference equals the larger bar minus the smaller bar. Say: ${m.larger.color.name} minus ${m.smaller.color.name} equals ${m.diff.color.name}.`;},
+    fuCorKey(m){return`Try: ${m.larger.color.name} minus ${m.smaller.color.name} equals...`;},
+  },
+];
+
+const BRIDGE=[
+  {
+    build(){return genComparison('bar',null);},
+    audio(m){return`You know how to say: ${m.smaller.color.name} and ${m.diff.color.name} together equals ${m.larger.color.name}. That is addition. Say it using plus.`;},
+    keyPoint(m){return`Say using plus: ${m.smaller.color.name} plus ${m.diff.color.name} equals ${m.larger.color.name}.`;},
+    check(r,m){return r.includes('plus')&&cmatch(r,m.smaller.color.name)&&cmatch(r,m.diff.color.name);},
+    cor(m){return`Use the word plus. Say: ${m.smaller.color.name} plus ${m.diff.color.name} equals ${m.larger.color.name}.`;},
+    corKey(m){return`Use plus: ${m.smaller.color.name} plus ${m.diff.color.name} equals...`;},
+  },
+  {
+    build(){return genComparison('bar',null);},
+    audio(m){return`You know how to say: ${m.larger.color.name} without ${m.smaller.color.name} equals ${m.diff.color.name}. That is subtraction. Say it using minus.`;},
+    keyPoint(m){return`Say using minus: ${m.larger.color.name} minus ${m.smaller.color.name} equals ${m.diff.color.name}.`;},
+    check(r,m){return r.includes('minus')&&cmatch(r,m.larger.color.name)&&cmatch(r,m.smaller.color.name);},
+    cor(m){return`Use the word minus. Say: ${m.larger.color.name} minus ${m.smaller.color.name} equals ${m.diff.color.name}.`;},
+    corKey(m){return`Use minus: ${m.larger.color.name} minus ${m.smaller.color.name} equals...`;},
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TRUE RELATION CHECKER
+// Accepts any true relation about a comparison model
+// ═══════════════════════════════════════════════════════════════════════════════
+function checkTrueRelation(r, m){
+  const{larger,smaller,diff}=m;
+  const lN=larger.color.name, sN=smaller.color.name, dN=diff?diff.color.name:null;
+
+  // Normalize
+  const hasLarger=cmatch(r,lN), hasSmaller=cmatch(r,sN);
+  const hasDiff=dN?cmatch(r,dN):false;
+  const hasMore=r.includes('more')||r.includes('greater')||r.includes('bigger')||r.includes('larger');
+  const hasLess=r.includes('less')||r.includes('fewer')||r.includes('smaller');
+  const hasPlus=r.includes('plus')||r.includes('and')||r.includes('together');
+  const hasMinus=r.includes('minus')||r.includes('without')||r.includes('takeaway')||r.includes('take away');
+  const hasEqual=r.includes('equal')||r.includes('same')||r.includes('equals');
+  const hasDiffWord=r.includes('difference');
+
+  const trueRelations=[];
+
+  // larger is more than smaller
+  if(hasLarger&&hasMore) trueRelations.push(`${lN} is more than ${sN}`);
+  if(hasSmaller&&hasLess) trueRelations.push(`${sN} is less than ${lN}`);
+  if(hasLarger&&hasSmaller&&hasMore) trueRelations.push(`${lN} is more than ${sN}`);
+  if(hasLarger&&hasSmaller&&hasLess) trueRelations.push(`${sN} is less than ${lN}`);
+
+  // part-whole relations if diff shown
+  if(dN){
+    if(hasSmaller&&hasDiff&&hasPlus&&hasEqual&&hasLarger) trueRelations.push(`${sN} plus ${dN} equals ${lN}`);
+    if(hasSmaller&&hasPlus&&hasLarger) trueRelations.push(`${sN} plus ${dN} equals ${lN}`);
+    if(hasLarger&&hasMinus&&hasSmaller&&hasEqual&&hasDiff) trueRelations.push(`${lN} minus ${sN} equals ${dN}`);
+    if(hasLarger&&hasMinus&&hasSmaller) trueRelations.push(`${lN} minus ${sN} equals ${dN}`);
+    if(hasLarger&&hasMinus&&hasDiff&&hasEqual&&hasSmaller) trueRelations.push(`${lN} minus ${dN} equals ${sN}`);
+    if(hasLarger&&hasMinus&&hasDiff) trueRelations.push(`${lN} minus ${dN} equals ${sN}`);
+    if(hasDiffWord||(hasDiff&&(hasMore||hasLess||hasEqual))) trueRelations.push(`${dN} is the difference`);
+    if(r.includes('part')||r.includes('whole')) trueRelations.push('part-whole relation');
+  }
+
+  // Broad acceptance: if they name colors with directional language
+  if(trueRelations.length===0){
+    if(hasLarger&&hasMore) return{valid:true,relation:`${lN} is more`};
+    if(hasSmaller&&hasLess) return{valid:true,relation:`${sN} is less`};
+    if(hasMore&&hasLarger) return{valid:true,relation:`${lN} is more`};
+    if(hasLess&&hasSmaller) return{valid:true,relation:`${sN} is less`};
+    if(dN&&(hasDiffWord||hasDiff)) return{valid:true,relation:`${dN} is the difference`};
+    if(dN&&hasPlus&&(hasSmaller||hasLarger)) return{valid:true,relation:`addition relation`};
+    if(dN&&hasMinus&&(hasSmaller||hasLarger)) return{valid:true,relation:`subtraction relation`};
+    return{valid:false,relation:null};
+  }
+
+  return{valid:true,relation:trueRelations[0]};
+}
+
+function isDuplicateRelation(newRel, found){
+  const n=newRel.toLowerCase();
+  return found.some(f=>f.toLowerCase()===n||
+    (f.toLowerCase().includes(n.slice(0,8))&&n.slice(0,8).length>4));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Intro ─────────────────────────────────────────────════════════════════════
+function showIntro(){
+  S.phase='intro';setPhase('Introduction');setProgress(2);
+  const audio=`Last time you learned to name part-whole relations. Today you will learn about comparisons and differences. You will see how a comparison relation is really a part-whole relation in disguise. First, a quick review.`;
+  const short=`Today: Comparisons and Differences. First, a review.`;
+  render(`<div class="key-point neutral">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="startReview()">Let's review</button>`);
+  speak(audio);
+}
+
+// ── Review Part-Whole ─────────────────────────────────────────────────────────
+function startReview(){S.phase='review';setPhase('Review — Part-Whole');S.reviewStep=0;nextReview();}
+function nextReview(){
+  if(S.reviewStep>=S.totalReview){showPWIntro();return;}
+  setProgress(5+(S.reviewStep/S.totalReview)*12);
+  S.currentModel=genPWReview();startTimer();
+  render(`<div class="canvas">${renderPW(S.currentModel)}</div><div class="key-point neutral" style="font-weight:500">Part-Whole or Not?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitReview('partwhole')">Part-Whole</button><button class="btn" onclick="submitReview('not')">Not</button></div>`);
+  speak('Part-Whole or Not?');
+}
+function submitReview(r){
+  recordResp('review',r==='partwhole');
+  if(r==='partwhole'){S.reviewStep++;nextReview();return;}
+  const audio=`Look again. Can you find a whole bar that equals two parts together?`;
+  render(`<div class="canvas">${renderPW(S.currentModel)}</div><div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,'Find a whole that equals two parts together.')}</span></div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitReview('partwhole')">Part-Whole</button><button class="btn" onclick="submitReview('not')">Not</button></div>`);
+  speak(audio);
+}
+
+// ── Instruction ───────────────────────────────────────────────────────────────
+function showPWIntro(){
+  S.phase='instruction';S.instructStep=0;setPhase('Instruction');setProgress(18);
+  const audio=`You know part-whole relations. Now look at something new — a comparison. Two bars that are not equal. Let me show you what I mean.`;
+  const short=`Now: comparisons. Two bars that are not equal.`;
+  render(`<div class="key-point">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="showInstruct(0)">Show me</button>`);
+  speak(audio);
+}
+
+function showInstruct(step){
+  S.instructStep=step;S.instructFU=false;
+  if(step>=INSTRUCT.length){showIdentIntro();return;}
+  setProgress(20+(step/INSTRUCT.length)*20);
+  const def=INSTRUCT[step];
+  S.instructM=def.build();const m=S.instructM;
+  const audio=def.audio(m),short=def.keyPoint(m);
+  render(
+    `<div class="canvas">${renderComparison(m)}</div>
+     <div class="key-point">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>
+     <div class="key-point neutral" style="font-weight:500">${def.question}</div>`,
+    hInput('iIn','Type or speak your answer...','submitInstruct')
+  );
+  speak(audio+' '+def.question,()=>focus('iIn'));
+  if(!ttsEnabled)focus('iIn');
+}
+
+// ─── DECOMPOSITION PHASE ──────────────────────────────────────────────────────
+// Three steps using one consistent randomly generated model.
+// Step 0: All three bars shown — full picture
+// Step 1: Smaller bar removed — larger and diff only, show diff = part of larger
+// Step 2: Diff removed, smaller restored — larger and smaller only, show larger without diff = smaller
+// Step 3: All restored — names the part-whole relation
+
+function startDecomp(){
+  S.phase='decomp';
+  S.decompStep=0;
+  S.decompModel=genComparison('bar',null);
+  setPhase('Instruction');
+  showDecompStep(0);
+}
+
+// ── Decomp bar renderers — orientation-aware, with IDs for animation ──────────
+function decompBarH(hex, name, w, id, isUnknown=false, faded=false){
+  const bg=faded?hex+'44':hex;
+  const col=faded?'#777':tc(hex);
+  const bdr=faded?'2px dashed #9B9591':'none';
+  const content=isUnknown
+    ?`<span style="font-family:'DM Serif Display',serif;font-size:24px;font-style:italic;color:${col}">?</span>`
+    :`<span style="font-size:12px;font-weight:600;text-transform:capitalize;color:${col}">${name}</span>`;
+  return`<div id="${id}" class="decomp-bar" style="width:${w}px;height:${BH}px;background:${bg};border-radius:6px;border:${bdr};display:flex;align-items:center;justify-content:center;flex-shrink:0">${content}</div>`;
+}
+
+function decompBarV(hex, name, h, id, isUnknown=false, faded=false){
+  const bg=faded?hex+'44':hex;
+  const col=faded?'#777':tc(hex);
+  const bdr=faded?'2px dashed #9B9591':'none';
+  const content=isUnknown
+    ?`<span style="font-family:'DM Serif Display',serif;font-size:24px;font-style:italic;color:${col}">?</span>`
+    :`<span style="font-size:12px;font-weight:600;text-transform:capitalize;color:${col}">${name}</span>`;
+  return`<div id="${id}" class="decomp-bar" style="width:${BW}px;height:${h}px;background:${bg};border-radius:6px;border:${bdr};display:flex;align-items:center;justify-content:center;flex-shrink:0">${content}</div>`;
+}
+
+// Renders the full decomp comparison — all three bars — with IDs
+function renderDecompFull(m, hideSmallerAfterRender=false, hideDiffAfterRender=false){
+  const{larger,smaller,diff}=m;
+  const lN=larger.color.name,sN=smaller.color.name,dN=diff.color.name;
+  const isH=m.orientation!=='v';
+
+  if(isH){
+    const lBar=decompBarH(larger.color.hex,lN,larger.w,'dbar-large');
+    const sBar=decompBarH(smaller.color.hex,sN,smaller.w,'dbar-small');
+    const dBar=decompBarH(diff.color.hex,dN,diff.w,'dbar-diff',false,true);
+    const lines=`<div style="position:absolute;left:${smaller.w}px;top:0;bottom:0;border-left:2px dashed #6B6560;pointer-events:none"></div>
+      <div style="position:absolute;left:${larger.w}px;top:0;bottom:0;border-left:2px dashed #6B6560;pointer-events:none"></div>`;
+    return`<div style="position:relative;display:inline-block">${lines}
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+        ${lBar}
+        <div style="display:flex;flex-direction:row;gap:0">${sBar}${dBar}</div>
+      </div></div>`;
+  } else {
+    const lBar=decompBarV(larger.color.hex,lN,larger.h,'dbar-large');
+    const dBar=decompBarV(diff.color.hex,dN,diff.h,'dbar-diff',false,true);
+    const sBar=decompBarV(smaller.color.hex,sN,smaller.h,'dbar-small');
+    const lines=`<div style="position:absolute;top:0;left:0;right:0;border-top:2px dashed #6B6560;pointer-events:none"></div>
+      <div style="position:absolute;top:${diff.h}px;left:0;right:0;border-top:2px dashed #6B6560;pointer-events:none"></div>`;
+    return`<div style="display:flex;flex-direction:row;align-items:flex-start;gap:16px">
+      ${lBar}
+      <div style="position:relative">${lines}
+        <div style="display:flex;flex-direction:column;gap:0">${dBar}${sBar}</div>
+      </div></div>`;
+  }
+}
+
+function showDecompStep(step){
+  S.decompStep=step;
+  setProgress(32);
+  const m=S.decompModel;
+  const lN=m.larger.color.name,sN=m.smaller.color.name,dN=m.diff.color.name;
+
+  let audio='',short='',question='';
+
+  if(step===0){
+    audio=`Look at this picture. You can see three bars — the ${lN} bar, the ${sN} bar, and the ${dN} difference. Watch carefully as I show you how they are related.`;
+    short=`Three bars: ${lN}, ${sN}, and the ${dN} difference.`;
+    question=`What is the relation between ${lN} and ${sN}?`;
+  } else if(step===1){
+    audio=`The ${sN} bar has been removed. Look at what remains — the ${dN} difference lines up with part of the ${lN} bar. The ${dN} difference is equal to that part of ${lN}. What does ${dN} equal?`;
+    short=`${sN} removed. ${dN} equals part of ${lN}.`;
+    question=`What does the ${dN} bar equal?`;
+  } else if(step===2){
+    audio=`Now the ${dN} difference is removed. The ${lN} bar without the difference equals the ${sN} bar. What equals ${sN}?`;
+    short=`${dN} removed. ${lN} without the difference equals ${sN}.`;
+    question=`What equals ${sN}?`;
+  }
+
+  render(
+    `<div class="canvas" id="decompCanvas">${renderDecompFull(m)}</div>
+     <div class="key-point">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>
+     <div class="key-point neutral" style="font-weight:500">${question}</div>`,
+    hInput('dIn','Type or speak your answer...','submitDecomp')
+  );
+
+  // After render, trigger fade-out of the bar being removed in this step
+  if(step===0){
+    // No fade on step 0 — full picture shown fresh
+  } else if(step===1){
+    // Fade out the smaller bar (it was just removed)
+    setTimeout(()=>{
+      const el=document.getElementById('dbar-small');
+      if(el) el.classList.add('faded');
+    },50);
+  } else if(step===2){
+    // Diff is removed, smaller is restored — fade diff only
+    setTimeout(()=>{
+      const el=document.getElementById('dbar-diff');
+      if(el) el.classList.add('faded');
+    },50);
+  }
+
+  speak(audio+' '+question,()=>focus('dIn'));
+  if(!ttsEnabled)focus('dIn');
+}
+
+function submitDecomp(){
+  const el=document.getElementById('dIn');if(!el)return;
+  const r=el.value.toLowerCase().trim();if(!r)return;
+  const m=S.decompModel;
+  const lN=m.larger.color.name,sN=m.smaller.color.name,dN=m.diff.color.name;
+  const step=S.decompStep;
+
+  let accepted=[],correction='',correctionKey='',q='';
+  if(step===0){
+    accepted=['more','less','greater','larger','smaller','compare','different','not equal'];
+    correction=`Look at the sizes. Which bar is more — which is less?`;
+    correctionKey=`Which bar is more, which is less?`;
+    q=`What is the relation between ${lN} and ${sN}?`;
+  } else if(step===1){
+    accepted=[`part of ${lN}`,`part of the ${lN}`,`${lN} minus ${sN}`,`${lN} without ${sN}`,'part','that part',lN];
+    correction=`The ${dN} bar lines up with part of the ${lN} bar. The ${dN} difference equals that part of ${lN}.`;
+    correctionKey=`${dN} equals part of ${lN}.`;
+    q=`What does the ${dN} bar equal?`;
+  } else {
+    accepted=[`${lN} minus ${dN}`,`${lN} without ${dN}`,`${lN} takeaway ${dN}`,`${lN} minus the difference`,`${lN} without the difference`,lN];
+    correction=`Take the ${lN} bar and remove the difference. What is left is the ${sN} bar. Say: ${lN} without the difference equals ${sN}.`;
+    correctionKey=`${lN} without the difference equals ${sN}.`;
+    q=`What equals ${sN}?`;
+  }
+
+  const ok=accepted.some(a=>r.includes(a.toLowerCase()));
+
+  if(ok){
+    recordResp('decomp',true);
+    if(step===0){
+      // Animate smaller bar fading, then go to step 1
+      const smallEl=document.getElementById('dbar-small');
+      if(smallEl){
+        smallEl.classList.add('fading');
+        setTimeout(()=>showDecompStep(1),480);
+      } else { showDecompStep(1); }
+    } else if(step===1){
+      // Animate diff bar fading out, smaller bar fading back in, then go to step 2
+      const diffEl=document.getElementById('dbar-diff');
+      const smallEl=document.getElementById('dbar-small');
+      if(diffEl) diffEl.classList.add('fading');
+      // Restore smaller bar by removing faded class — CSS transition handles the fade-in
+      if(smallEl){
+        smallEl.classList.remove('faded');
+        smallEl.classList.remove('fading');
+      }
+      setTimeout(()=>showDecompStep(2),480);
+    } else {
+      showDecompSummary();
+    }
+  } else {
+    recordResp('decomp',false);
+    // Show correction, re-render same step visual
+    render(
+      `<div class="canvas" id="decompCanvas">${renderDecompFull(m)}</div>
+       <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(correction,correctionKey)}</span></div>
+       <div class="key-point neutral" style="font-weight:500">${q}</div>`,
+      hInput('dIn','Type or speak your answer...','submitDecomp')
+    );
+    // Re-apply faded state for current step
+    setTimeout(()=>{
+      if(step===1){ const e=document.getElementById('dbar-small'); if(e) e.classList.add('faded'); }
+      if(step===2){ const e=document.getElementById('dbar-diff'); if(e) e.classList.add('faded'); }
+    },50);
+    speak(correction+' '+q,()=>focus('dIn'));
+    if(!ttsEnabled)focus('dIn');
+  }
+}
+
+function showDecompSummary(){
+  const m=S.decompModel;
+  const lN=m.larger.color.name,sN=m.smaller.color.name,dN=m.diff.color.name;
+  const audio=`Now look at all three bars together. The ${sN} bar plus the ${dN} difference equals the ${lN} bar. That is a part-whole relation. The ${lN} bar is the whole. The ${sN} and ${dN} bars are the parts.`;
+  const short=`All three: ${sN} plus ${dN} equals ${lN}. Part-whole relation.`;
+  render(
+    `<div class="canvas">${renderComparison(m)}</div>
+     <div class="key-point bridge">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="showInstruct(2)">Continue</button>`
+  );
+  speak(audio);
+}
+
+function submitInstruct(){
+  const el=document.getElementById('iIn');if(!el)return;
+  const r=el.value.toLowerCase().trim();if(!r)return;
+  const def=INSTRUCT[S.instructStep],m=S.instructM;
+  if(!S.instructFU){
+    const acc=typeof def.acc==='function'?def.acc(m):def.acc;
+    const cor=typeof def.cor==='function'?def.cor(m):def.cor;
+    const corKey=typeof def.corKey==='function'?def.corKey(m):def.corKey;
+    const ok=acc.some(a=>r.includes(a.toLowerCase()));
+    if(ok){
+      S.instructFU=true;
+      // Step 1 needs a second model for the separate bar example
+      let displayModel=m;
+      if(S.instructStep===1){displayModel=genComparison('bar',null);}
+      const fuAudio=def.fu(m),fuShort=def.fuKey(m),fuQ=typeof def.fuQ==='function'?def.fuQ(m):def.fuQ;
+      render(
+        `<div class="canvas">${renderComparison(displayModel)}</div>
+         <div class="key-point bridge">${ttsEnabled?aBtn():''}<span>${dt(fuAudio,fuShort)}</span></div>
+         <div class="key-point neutral" style="font-weight:500">${fuQ}</div>`,
+        hInput('iIn','Type or speak your answer...','submitInstruct')
+      );
+      speak(fuAudio+' '+fuQ,()=>focus('iIn'));
+      if(!ttsEnabled)focus('iIn');
+    } else {
+      render(
+        `<div class="canvas">${renderComparison(m)}</div>
+         <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(cor,corKey)}</span></div>
+         <div class="key-point neutral" style="font-weight:500">${def.question}</div>`,
+        hInput('iIn','Type or speak your answer...','submitInstruct')
+      );
+      speak(cor+' '+def.question,()=>focus('iIn'));
+      if(!ttsEnabled)focus('iIn');
+    }
+  } else {
+    const fuAcc=typeof def.fuAcc==='function'?def.fuAcc(m):def.fuAcc;
+    const fuCor=typeof def.fuCor==='function'?def.fuCor(m):def.fuCor;
+    const fuCorKey=typeof def.fuCorKey==='function'?def.fuCorKey(m):def.fuCorKey;
+    const fuQ=typeof def.fuQ==='function'?def.fuQ(m):def.fuQ;
+    const ok=fuAcc.some(a=>r.includes(a.toLowerCase()));
+    if(ok){
+      // After step 1 followup, go to decomposition before step 2
+      if(S.instructStep===1){startDecomp();}
+      else{showInstruct(S.instructStep+1);}
+    }
+    else{
+      render(
+        `<div class="canvas">${renderComparison(S.instructM)}</div>
+         <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(fuCor,fuCorKey)}</span></div>
+         <div class="key-point neutral" style="font-weight:500">${fuQ}</div>`,
+        hInput('iIn','Type or speak your answer...','submitInstruct')
+      );
+      speak(fuCor+' '+fuQ,()=>focus('iIn'));
+      if(!ttsEnabled)focus('iIn');
+    }
+  }
+}
+
+// ── Identification ────────────────────────────────────────────────────────────
+function showIdentIntro(){
+  S.phase='ident';S.identStep=0;setPhase('Identification');setProgress(42);
+  const audio=`Now you will tell me whether each picture shows the difference or not. Say Yes if the difference is shown, No if it is not.`;
+  const short=`Does this picture show the difference? Yes or No.`;
+  render(`<div class="key-point">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="nextIdent()">Ready</button>`);
+  speak(audio);
+}
+function nextIdent(){
+  if(S.identStep>=S.totalIdent){showNamingIntro();return;}
+  setProgress(44+(S.identStep/S.totalIdent)*16);
+  // Mix: diff shown (bar), diff shown (pale), no diff
+  const r=Math.random();
+  const showDiff=r<0.4?'bar':r<0.65?'pale':null;
+  S.currentModel=genComparison(showDiff,null);
+  S.currentAnswer=showDiff?'yes':'no';
+  startTimer();
+  render(
+    `<div class="canvas">${renderComparison(S.currentModel)}</div>
+     <div class="key-point neutral" style="font-weight:500">Does this picture show the difference?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitIdent('yes')">Yes</button><button class="btn" onclick="submitIdent('no')">No</button></div>`
+  );
+  speak('Does this picture show the difference?');
+}
+function submitIdent(r){
+  recordResp('ident',r===S.currentAnswer);
+  if(r===S.currentAnswer){S.identStep++;nextIdent();return;}
+  let audio='',short='';
+  if(r==='yes'&&S.currentAnswer==='no'){
+    audio=`Look carefully. Is there a bar or faded section that shows how much more one bar is than the other? Without that, the difference is not shown.`;
+    short=`No difference bar or faded section is shown.`;
+  } else {
+    audio=`Look again. Is there a faded section or a separate bar showing how much more one bar is?`;
+    short=`Look for a faded section or separate bar in the gap.`;
+  }
+  render(
+    `<div class="canvas">${renderComparison(S.currentModel)}</div>
+     <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitIdent('yes')">Yes</button><button class="btn" onclick="submitIdent('no')">No</button></div>`
+  );
+  speak(audio);
+}
+
+// ── Relation Naming ───────────────────────────────────────────────────────────
+function showNamingIntro(){
+  S.phase='naming';S.namingStep=0;setPhase('Relation Naming');setProgress(62);
+  const audio=`Now you will name the relation to find the unknown. The unknown could be the larger bar, the smaller bar, or the difference bar. Use what you know about part-whole relations.`;
+  const short=`Find the unknown — it could be larger, smaller, or the difference.`;
+  render(`<div class="key-point">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="nextNaming()">Ready</button>`);
+  speak(audio);
+}
+function nextNaming(){
+  if(S.namingStep>=S.totalNaming){showBridgeIntro();return;}
+  setProgress(64+(S.namingStep/S.totalNaming)*14);
+  const roles=['larger','smaller','diff'];
+  const role=roles[S.namingStep%3];
+  const m=genComparison('bar',role);
+  S.currentModel=m;
+  S.currentNaming={
+    larger:m.larger.color.name,
+    smaller:m.smaller.color.name,
+    diff:m.diff.color.name,
+    unknownRole:role,
+  };
+  startTimer();
+  showNamingItem();
+}
+function showNamingItem(){
+  if(!S.currentNaming)return;
+  const showColor=!S.scaffoldColorLocked&&S.scaffoldColorActive;
+  const showRole=!S.scaffoldRoleLocked&&S.scaffoldRoleActive;
+  if(showColor) showColorScaffold();
+  else if(showRole) showRoleScaffold();
+  else showFullNaming();
+}
+
+function showColorScaffold(){
+  const n=S.currentNaming;
+  const unknownName=n.unknownRole==='larger'?n.larger:n.unknownRole==='smaller'?n.smaller:n.diff;
+  render(
+    `<div class="canvas">${renderComparison(S.currentModel)}</div>
+     <div class="key-point neutral" style="font-weight:500">What color is the unknown?</div>`,
+    hInput('cIn','Type or speak the color...','submitColorScaffold')
+  );
+  speak('What color is the unknown?',()=>focus('cIn'));
+  if(!ttsEnabled)focus('cIn');
+}
+function submitColorScaffold(){
+  const el=document.getElementById('cIn');if(!el)return;
+  const r=el.value.toLowerCase().trim();if(!r)return;
+  const n=S.currentNaming;
+  const unknownName=n.unknownRole==='larger'?n.larger:n.unknownRole==='smaller'?n.smaller:n.diff;
+  const correct=colorMatches(r,unknownName)||cmatch(r,unknownName);
+  recordResp('scaffold_color',correct);
+  updateColorScaffold(correct);
+  if(correct){
+    if(!S.scaffoldRoleLocked&&S.scaffoldRoleActive) showRoleScaffold();
+    else showFullNaming();
+  } else {
+    const audio=`Look for the shape with the question mark. What color is it?`;
+    render(
+      `<div class="canvas">${renderComparison(S.currentModel)}</div>
+       <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,'Look for the shape with the ?')}</span></div>`,
+      hInput('cIn','Type or speak the color...','submitColorScaffold')
+    );
+    speak(audio,()=>focus('cIn'));
+    if(!ttsEnabled)focus('cIn');
+  }
+}
+
+function showRoleScaffold(){
+  const n=S.currentNaming;
+  const unknownName=n.unknownRole==='larger'?n.larger:n.unknownRole==='smaller'?n.smaller:n.diff;
+  render(
+    `<div class="canvas">${renderComparison(S.currentModel)}</div>
+     <div class="key-point neutral" style="font-weight:500">Is ${unknownName} the larger bar, the smaller bar, or the difference?</div>`,
+    `<div class="response-buttons" style="flex-wrap:wrap;gap:8px">
+       <button class="btn" onclick="submitRoleScaffold('larger')">Larger</button>
+       <button class="btn" onclick="submitRoleScaffold('smaller')">Smaller</button>
+       <button class="btn" onclick="submitRoleScaffold('diff')">Difference</button>
+     </div>`
+  );
+  speak(`Is ${unknownName} the larger bar, the smaller bar, or the difference?`);
+}
+function submitRoleScaffold(r){
+  const correct=r===S.currentNaming.unknownRole;
+  recordResp('scaffold_role',correct);
+  updateRoleScaffold(correct);
+  if(correct){showFullNaming();return;}
+  const n=S.currentNaming;
+  const unknownName=n.unknownRole==='larger'?n.larger:n.unknownRole==='smaller'?n.smaller:n.diff;
+  const msgs={
+    larger:`${n.larger} is the larger bar — it is taller or wider than the others.`,
+    smaller:`${n.smaller} is the smaller bar — it is shorter or narrower than the larger bar.`,
+    diff:`${n.diff} is the difference — it fills the gap between the smaller and larger bars.`,
+  };
+  const audio=msgs[n.unknownRole];
+  render(
+    `<div class="canvas">${renderComparison(S.currentModel)}</div>
+     <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,`${unknownName} is the ${n.unknownRole}.`)}</span></div>`,
+    `<div class="response-buttons" style="flex-wrap:wrap;gap:8px">
+       <button class="btn" onclick="submitRoleScaffold('larger')">Larger</button>
+       <button class="btn" onclick="submitRoleScaffold('smaller')">Smaller</button>
+       <button class="btn" onclick="submitRoleScaffold('diff')">Difference</button>
+     </div>`
+  );
+  speak(audio);
+}
+
+function showFullNaming(){
+  const n=S.currentNaming;
+  const hints={
+    larger:`Say: ${n.smaller} plus ${n.diff} equals...`,
+    smaller:`Say: ${n.larger} minus ${n.diff} equals...`,
+    diff:`Say: ${n.larger} minus ${n.smaller} equals...`,
+  };
+  render(
+    `<div class="canvas">${renderComparison(S.currentModel)}</div>
+     <div class="key-point neutral" style="font-weight:500">What equals the unknown?</div>`,
+    hInput('nIn',hints[n.unknownRole],'submitNaming')
+  );
+  speak('What equals the unknown? Name the full relation.',()=>focus('nIn'));
+  if(!ttsEnabled)focus('nIn');
+}
+
+function checkNaming(r,n){
+  const hasPlus=r.includes('plus')||r.includes('and')||r.includes('together');
+  const hasMinus=r.includes('minus')||r.includes('without')||r.includes('takeaway')||r.includes('take away');
+  if(n.unknownRole==='larger'){
+    if(cmatch(r,n.smaller)&&cmatch(r,n.diff)&&hasPlus) return 'correct';
+    if(hasMinus) return 'wrong_op';
+    return 'unclear';
+  }
+  if(n.unknownRole==='smaller'){
+    if(cmatch(r,n.larger)&&cmatch(r,n.diff)&&hasMinus) return 'correct';
+    if(hasPlus) return 'wrong_op';
+    return 'unclear';
+  }
+  if(n.unknownRole==='diff'){
+    if(cmatch(r,n.larger)&&cmatch(r,n.smaller)&&hasMinus) return 'correct';
+    if(hasPlus) return 'wrong_op';
+    return 'unclear';
+  }
+  return 'unclear';
+}
+
+function submitNaming(){
+  const el=document.getElementById('nIn');if(!el)return;
+  const r=el.value.trim();if(!r)return;
+  const res=checkNaming(r.toLowerCase(),S.currentNaming);
+  const n=S.currentNaming;
+  if(res==='correct'){
+    recordResp('naming',true);
+    updateRoleScaffold(true);
+    S.namingStep++;
+    if(S.namingStep>=S.totalNaming){showBridgeIntro();return;}
+    const roles=['larger','smaller','diff'];
+    const role=roles[S.namingStep%3];
+    const m=genComparison('bar',role);
+    S.currentModel=m;
+    S.currentNaming={larger:m.larger.color.name,smaller:m.smaller.color.name,diff:m.diff.color.name,unknownRole:role};
+    startTimer();showNamingItem();return;
+  }
+  recordResp('naming',false);
+  let audio='',short='';
+  if(res==='wrong_op'){
+    updateRoleScaffold(false);
+    if(n.unknownRole==='larger'){
+      audio=`The unknown is the larger bar. To find it, add the smaller bar and the difference. Say: ${n.smaller} plus ${n.diff} equals...`;
+      short=`Unknown is larger — use plus. ${n.smaller} plus ${n.diff} equals...`;
+    } else {
+      audio=`The unknown is the ${n.unknownRole==='smaller'?'smaller bar':'difference'}. To find it, subtract. Say: ${n.larger} minus ${n.unknownRole==='smaller'?n.diff:n.smaller} equals...`;
+      short=`Unknown is ${n.unknownRole} — use minus.`;
+    }
+  } else {
+    updateColorScaffold(false);
+    audio=`Look at the shape with the question mark. Name the relation that tells you what it equals.`;
+    short=`Name the relation for the shape with the ?`;
+  }
+  render(
+    `<div class="canvas">${renderComparison(S.currentModel)}</div>
+     <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    hInput('nIn','Name the relation...','submitNaming')
+  );
+  speak(audio,()=>focus('nIn'));
+  if(!ttsEnabled)focus('nIn');
+}
+
+// ── Bridge to Plus / Minus ────────────────────────────────────────────────────
+function showBridgeIntro(){
+  S.phase='bridge';S.bridgeStep=0;setPhase('Plus and Minus');setProgress(80);
+  const audio=`You know how to name comparison relations. Now let's practice using plus and minus.`;
+  const short=`Practice: plus and minus in comparison relations.`;
+  render(`<div class="key-point bridge">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="showBridge()">Show me</button>`);
+  speak(audio);
+}
+let bridgeM=null;
+function showBridge(){
+  if(S.bridgeStep>=BRIDGE.length){showFreeIntro();return;}
+  setProgress(82+(S.bridgeStep/BRIDGE.length)*8);
+  const def=BRIDGE[S.bridgeStep];bridgeM=def.build();
+  const audio=def.audio(bridgeM),short=def.keyPoint(bridgeM);
+  render(
+    `<div class="canvas">${renderComparison(bridgeM)}</div>
+     <div class="key-point bridge">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    hInput('bIn','Use plus or minus...','submitBridge')
+  );
+  speak(audio,()=>focus('bIn'));
+  if(!ttsEnabled)focus('bIn');
+}
+function submitBridge(){
+  const el=document.getElementById('bIn');if(!el)return;
+  const r=el.value.toLowerCase().trim();if(!r)return;
+  const def=BRIDGE[S.bridgeStep];
+  recordResp('bridge',def.check(r,bridgeM));
+  if(def.check(r,bridgeM)){S.bridgeStep++;showBridge();return;}
+  const audio=def.cor(bridgeM),short=def.corKey(bridgeM);
+  render(
+    `<div class="canvas">${renderComparison(bridgeM)}</div>
+     <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    hInput('bIn','Use plus or minus...','submitBridge')
+  );
+  speak(audio,()=>focus('bIn'));
+  if(!ttsEnabled)focus('bIn');
+}
+
+// ── Free Relation Practice ────────────────────────────────────────────────────
+function showFreeIntro(){
+  S.phase='free';S.freeStep=0;setPhase('Free Relations');setProgress(92);
+  const audio=`Now for a challenge. You will see three pictures. For each one, name as many true relations as you can. I will keep asking until you have found four distinct true relations.`;
+  const short=`Challenge: name four true relations per picture.`;
+  render(`<div class="key-point bridge">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
+    `<button class="btn-continue" onclick="nextFree()">Ready</button>`);
+  speak(audio);
+}
+function nextFree(){
+  if(S.freeStep>=S.totalFree){showComplete();return;}
+  setProgress(93+(S.freeStep/S.totalFree)*6);
+  S.freeModel=genComparison('bar',null);
+  S.freeRelationsFound=[];
+  showFreeItem();
+}
+function showFreeItem(){
+  const remaining=S.freeTarget-S.freeRelationsFound.length;
+  const tags=S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('');
+  const audio=remaining===S.freeTarget?`Name a true relation you can see in this picture.`:`Good. ${remaining} more to find.`;
+  render(
+    `<div class="canvas">${renderComparison(S.freeModel)}</div>
+     <div class="key-point neutral"><span>${dt(`Name a true relation. Find ${remaining} more.`,`Find ${remaining} more true relations.`)}</span></div>
+     ${S.freeRelationsFound.length>0?`<div class="relations-found">${tags}</div>`:''}`,
+    hInput('freeIn','Name any true relation...','submitFreeRelation')
+  );
+  speak(audio,()=>focus('freeIn'));
+  if(!ttsEnabled)focus('freeIn');
+}
+function rerenderFree(){
+  if(!S.freeModel)return;
+  const remaining=S.freeTarget-S.freeRelationsFound.length;
+  const tags=S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('');
+  render(
+    `<div class="canvas">${renderComparison(S.freeModel)}</div>
+     <div class="key-point neutral"><span>Find ${remaining} more true relations.</span></div>
+     ${S.freeRelationsFound.length>0?`<div class="relations-found">${tags}</div>`:''}`,
+    hInput('freeIn','Name any true relation...','submitFreeRelation')
+  );
+}
+function submitFreeRelation(){
+  const el=document.getElementById('freeIn');if(!el)return;
+  const r=el.value.trim();if(!r)return;
+  el.value='';
+  const result=checkTrueRelation(r.toLowerCase(),S.freeModel);
+  if(!result.valid){
+    const audio=`That doesn't match a relation I can confirm. Try naming which bar is more, which is less, or what the difference equals.`;
+    const short=`Try: which is more, which is less, or what equals the difference.`;
+    render(
+      `<div class="canvas">${renderComparison(S.freeModel)}</div>
+       <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>
+       ${S.freeRelationsFound.length>0?`<div class="relations-found">${S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('')}</div>`:''}`,
+      hInput('freeIn','Name any true relation...','submitFreeRelation')
+    );
+    speak(audio,()=>focus('freeIn'));
+    if(!ttsEnabled)focus('freeIn');
+    return;
+  }
+  if(isDuplicateRelation(result.relation,S.freeRelationsFound)){
+    const audio=`You already found that one. Try a different relation.`;
+    render(
+      `<div class="canvas">${renderComparison(S.freeModel)}</div>
+       <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,"Already found that one. Try another.")}</span></div>
+       <div class="relations-found">${S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('')}</div>`,
+      hInput('freeIn','Name any true relation...','submitFreeRelation')
+    );
+    speak(audio,()=>focus('freeIn'));
+    if(!ttsEnabled)focus('freeIn');
+    return;
+  }
+  S.freeRelationsFound.push(result.relation);
+  recordResp('free',true);
+  if(S.freeRelationsFound.length>=S.freeTarget){
+    S.freeStep++;
+    if(S.freeStep>=S.totalFree){showComplete();return;}
+    const audio=`You found all four. Here is the next picture.`;
+    render(
+      `<div class="canvas">${renderComparison(S.freeModel)}</div>
+       <div class="key-point">${ttsEnabled?aBtn():''}<span>${dt(audio,'All four found. Next picture.')}</span></div>
+       <div class="relations-found">${S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('')}</div>`,
+      `<button class="btn-continue" onclick="nextFree()">Next</button>`
+    );
+    speak(audio);
+  } else {
+    showFreeItem();
+  }
+}
+
+// ── Completion ────────────────────────────────────────────────────────────────
+function showComplete(){
+  setProgress(100);setPhase('Complete');
+  render(
+    `<div class="completion">
+       <div style="font-size:44px;margin-bottom:12px">◈</div>
+       <h2>Comparisons &amp; Differences</h2>
+       <p>You can identify comparison relations and name them precisely.<br><br>
+          A comparison is a part-whole relation in disguise.<br><br>
+          <em>smaller plus difference equals larger</em><br>
+          <em>larger minus smaller equals difference</em><br>
+          <em>larger minus difference equals smaller</em></p>
+     </div>`,``
+  );
+  speak('Well done. You can identify comparison relations and name them precisely.');
+}
+
+// ── Start ─────────────────────────────────────────────────────────────────────
+if(window.speechSynthesis){window.speechSynthesis.onvoiceschanged=()=>{};window.speechSynthesis.getVoices();}
+document.getElementById('ttsToggle').classList.add('on');
+showIntro();
+</script>
+</body>
+</html>
