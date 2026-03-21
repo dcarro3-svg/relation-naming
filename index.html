@@ -167,20 +167,39 @@
   <!-- ═══ UNIT TWO ════════════════════════════════════════════════════════════ -->
   <div class="unit">
     <button class="unit-btn" onclick="toggleUnit('u2')" id="u2-btn">
-      <div class="unit-icon empty">II</div>
+      <div class="unit-icon">II</div>
       <div class="unit-text">
         <strong>Unit Two: Compound Relations</strong>
-        <span>Coming soon</span>
+        <span>Two relations, two unknowns</span>
       </div>
       <span class="unit-chevron">▼</span>
     </button>
     <div class="unit-body" id="u2-body">
+
+      <!-- Compound Lessons sub-section -->
       <div class="sub-section">
-        <button class="sub-btn empty-sub">
-          <div class="sub-icon empty">⚡</div>
-          <div class="sub-text"><strong>Compound Relations Fluency</strong><span>Coming soon</span></div>
+        <button class="sub-btn" onclick="toggleSub('u2-lessons')" id="u2-lessons-btn">
+          <div class="sub-icon lesson">📖</div>
+          <div class="sub-text"><strong>Compound Relations Lessons</strong><span>One lesson</span></div>
+          <span class="sub-chevron">▼</span>
         </button>
+        <div class="sub-body" id="u2-lessons-body">
+          <a href="lesson-compound.html" class="leaf"><div class="leaf-icon lesson">⑥</div><div class="leaf-text"><strong>Compound Relations</strong><span>Lesson Six</span></div></a>
+        </div>
       </div>
+
+      <!-- Compound Fluency sub-section -->
+      <div class="sub-section">
+        <button class="sub-btn" onclick="toggleSub('u2-fluency')" id="u2-fluency-btn">
+          <div class="sub-icon fluency">⚡</div>
+          <div class="sub-text"><strong>Compound Relations Fluency</strong><span>One practice session</span></div>
+          <span class="sub-chevron">▼</span>
+        </button>
+        <div class="sub-body" id="u2-fluency-body">
+          <a href="fluency-compound.html" class="leaf"><div class="leaf-icon fluency">⚡</div><div class="leaf-text"><strong>Compound Relations</strong><span>Lesson Six Fluency</span></div></a>
+        </div>
+      </div>
+
     </div>
   </div>
 

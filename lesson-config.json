@@ -58,10 +58,23 @@
     "storageKey": "fluency_l5_sessions",
     "lessonNum": 5,
     "fluencyHref": "fluency-l5.html",
-    "nextLessonHref": "index.html",
-    "nextLessonLabel": "Home",
+    "nextLessonHref": "lesson-compound.html",
+    "nextLessonLabel": "Lesson Six →",
     "output": "lesson-five.html",
     "completionSummary": "Same picture, two directions — fractional and multiplicative.<br><br><em>the part is one fraction of the whole &nbsp;·&nbsp; the whole is N times the part</em>",
     "completionTitle": "Multiplicative Relations"
+  },
+  {
+    "id": 6,
+    "label": "Compound Relations",
+    "title": "Compound Relations — Lesson Six",
+    "storageKey": "fluency_compound_sessions",
+    "lessonNum": 6,
+    "fluencyHref": "fluency-compound.html",
+    "nextLessonHref": "index.html",
+    "nextLessonLabel": "Home",
+    "output": "lesson-compound.html",
+    "completionSummary": "Two unknowns, two relations, solved one at a time.<br><br><em>find the solvable relation first — its solution unlocks the second</em>",
+    "completionTitle": "Compound Relations"
   }
 ]

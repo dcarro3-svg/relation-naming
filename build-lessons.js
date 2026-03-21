@@ -13,7 +13,7 @@ const fs = require('fs');
 const template = fs.readFileSync('lesson-template.html', 'utf8');
 const config = JSON.parse(fs.readFileSync('lesson-config.json', 'utf8'));
 
-const lessonNames = ['one','two','three','four','five'];
+const lessonNames = ['one','two','three','four','five','compound'];
 
 config.forEach((lesson, idx) => {
   const specificPath = `lesson-${lessonNames[idx]}-specific.js`;
