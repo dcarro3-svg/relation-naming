@@ -6,66 +6,255 @@
 <title>Relation Naming</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
-  :root{--bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;--text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;--accent:#2D6A4F;--accent-light:#EAF4EF;--radius:12px;--radius-lg:20px;}
+  :root{
+    --bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;
+    --text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;
+    --accent:#2D6A4F;--accent-light:#EAF4EF;
+    --radius:12px;--radius-lg:20px;
+  }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px 24px;}
-  .app{width:100%;max-width:520px;display:flex;flex-direction:column;gap:24px;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);
+    min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px 24px;}
+  .app{width:100%;max-width:520px;display:flex;flex-direction:column;gap:20px;}
   h1{font-family:'DM Serif Display',serif;font-size:32px;letter-spacing:-0.5px;}
-  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px;}
-  .link-group{display:flex;flex-direction:column;gap:8px;}
-  a.item{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);text-decoration:none;color:var(--text-primary);transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-  a.item:hover{border-color:var(--accent);background:var(--accent-light);transform:translateY(-1px);}
-  .item-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-  .il{background:#EAF4EF;}.if{background:#FBF0E4;}.ic{background:#F0EAF8;}
-  .item-text strong{display:block;font-size:14px;font-weight:600;}
-  .item-text span{font-size:12px;color:var(--text-muted);}
-  .row{display:flex;gap:8px;}
-  .row a.item{flex:1;}
+  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
+    color:var(--text-muted);margin-bottom:8px;}
   .divider{height:1px;background:var(--border);}
+
+  /* ── Unit accordion button ─────────────────────────────────────────────── */
+  .unit{display:flex;flex-direction:column;gap:0;}
+
+  .unit-btn{display:flex;align-items:center;gap:14px;padding:16px 18px;
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    cursor:pointer;transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04);
+    text-align:left;width:100%;font-family:'DM Sans',sans-serif;}
+  .unit-btn:hover{border-color:var(--accent);background:var(--accent-light);}
+  .unit-btn.open{border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+    border-bottom-color:transparent;background:var(--accent-light);border-color:var(--accent);}
+
+  .unit-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;
+    justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;
+    background:#EAF4EF;color:var(--accent);}
+  .unit-icon.empty{background:#F5F2EE;color:var(--text-muted);}
+
+  .unit-text{flex:1;}
+  .unit-text strong{display:block;font-size:15px;font-weight:700;color:var(--text-primary);}
+  .unit-text span{font-size:12px;color:var(--text-muted);}
+  .unit-btn.open .unit-text strong{color:var(--accent);}
+
+  .unit-chevron{font-size:12px;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+  .unit-btn.open .unit-chevron{transform:rotate(180deg);color:var(--accent);}
+
+  .unit-btn.empty-unit{opacity:0.6;cursor:default;}
+  .unit-btn.empty-unit:hover{border-color:var(--border);background:var(--surface);}
+
+  /* ── Unit body — nested content ───────────────────────────────────────── */
+  .unit-body{display:none;flex-direction:column;gap:0;
+    border:1px solid var(--accent);border-top:none;
+    border-radius:0 0 var(--radius-lg) var(--radius-lg);
+    background:var(--surface);overflow:hidden;}
+  .unit-body.open{display:flex;}
+
+  /* ── Nested accordion (sub-section within a unit) ─────────────────────── */
+  .sub-section{display:flex;flex-direction:column;gap:0;}
+
+  .sub-btn{display:flex;align-items:center;gap:12px;padding:13px 18px 13px 24px;
+    background:var(--surface);border:none;border-top:1px solid var(--border);
+    cursor:pointer;transition:all 0.15s;text-align:left;width:100%;
+    font-family:'DM Sans',sans-serif;}
+  .sub-btn:hover{background:var(--accent-light);}
+  .sub-btn.open{background:#F0F7F3;}
+
+  .sub-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;
+    justify-content:center;font-size:13px;flex-shrink:0;}
+  .sub-icon.lesson{background:#EAF4EF;}
+  .sub-icon.fluency{background:#FBF0E4;}
+  .sub-icon.chart{background:#F0EAF8;}
+  .sub-icon.empty{background:#F5F2EE;}
+
+  .sub-text{flex:1;}
+  .sub-text strong{display:block;font-size:14px;font-weight:600;color:var(--text-primary);}
+  .sub-text span{font-size:11px;color:var(--text-muted);}
+  .sub-btn.open .sub-text strong{color:var(--accent);}
+
+  .sub-chevron{font-size:11px;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+  .sub-btn.open .sub-chevron{transform:rotate(180deg);color:var(--accent);}
+
+  .sub-body{display:none;flex-direction:column;gap:0;background:#FAFAF8;}
+  .sub-body.open{display:flex;}
+
+  /* ── Leaf items (lessons, fluency links) ──────────────────────────────── */
+  a.leaf{display:flex;align-items:center;gap:12px;padding:11px 18px 11px 40px;
+    border-top:1px solid var(--border);text-decoration:none;color:var(--text-primary);
+    transition:all 0.12s;font-size:14px;}
+  a.leaf:hover{background:var(--accent-light);color:var(--accent);}
+
+  .leaf-icon{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;
+    justify-content:center;font-size:12px;flex-shrink:0;}
+  .leaf-icon.lesson{background:#EAF4EF;}
+  .leaf-icon.fluency{background:#FBF0E4;}
+
+  .leaf-text strong{display:block;font-size:13px;font-weight:600;}
+  .leaf-text span{font-size:11px;color:var(--text-muted);}
+
+  /* ── Direct leaf (no sub-section, sits in unit-body) ─────────────────── */
+  a.direct-leaf{display:flex;align-items:center;gap:14px;padding:14px 18px;
+    border-top:1px solid var(--border);text-decoration:none;color:var(--text-primary);
+    transition:all 0.15s;}
+  a.direct-leaf:hover{background:var(--accent-light);color:var(--accent);}
+  .direct-leaf .item-icon{width:32px;height:32px;border-radius:7px;display:flex;
+    align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .ic{background:#F0EAF8;}
+  .direct-leaf .item-text strong{display:block;font-size:14px;font-weight:600;}
+  .direct-leaf .item-text span{font-size:12px;color:var(--text-muted);}
+
+  /* ── Empty placeholder sub-button (coming soon) ───────────────────────── */
+  .sub-btn.empty-sub{opacity:0.55;cursor:default;}
+  .sub-btn.empty-sub:hover{background:var(--surface);}
 </style>
 </head>
 <body>
 <div class="app">
   <h1>Relation Naming</h1>
 
-  <div>
-    <div class="section-label">Lessons</div>
-    <div class="link-group">
-      <a href="lesson-one.html" class="item"><div class="item-icon il">①</div><div class="item-text"><strong>Equal Relations</strong><span>Lesson One</span></div></a>
-      <a href="lesson-two.html" class="item"><div class="item-icon il">②</div><div class="item-text"><strong>Part-Whole Relations</strong><span>Lesson Two</span></div></a>
-      <a href="lesson-three.html" class="item"><div class="item-icon il">③</div><div class="item-text"><strong>Comparisons &amp; Differences</strong><span>Lesson Three</span></div></a>
-      <a href="lesson-four.html" class="item"><div class="item-icon il">④</div><div class="item-text"><strong>Fractional Relations</strong><span>Lesson Four</span></div></a>
-      <a href="lesson-five.html" class="item"><div class="item-icon il">⑤</div><div class="item-text"><strong>Multiplicative Relations</strong><span>Lesson Five</span></div></a>
+  <!-- ═══ UNIT ONE ═══════════════════════════════════════════════════════════ -->
+  <div class="unit">
+    <button class="unit-btn" onclick="toggleUnit('u1')" id="u1-btn">
+      <div class="unit-icon">I</div>
+      <div class="unit-text">
+        <strong>Unit One: Simple Relations</strong>
+        <span>Equal · Part-Whole · Comparison · Fractional · Multiplicative</span>
+      </div>
+      <span class="unit-chevron">▼</span>
+    </button>
+    <div class="unit-body" id="u1-body">
+
+      <!-- Lessons sub-section -->
+      <div class="sub-section">
+        <button class="sub-btn" onclick="toggleSub('u1-lessons')" id="u1-lessons-btn">
+          <div class="sub-icon lesson">📖</div>
+          <div class="sub-text"><strong>Simple Relations Lessons</strong><span>Five lessons</span></div>
+          <span class="sub-chevron">▼</span>
+        </button>
+        <div class="sub-body" id="u1-lessons-body">
+          <a href="lesson-one.html" class="leaf"><div class="leaf-icon lesson">①</div><div class="leaf-text"><strong>Equal Relations</strong><span>Lesson One</span></div></a>
+          <a href="lesson-two.html" class="leaf"><div class="leaf-icon lesson">②</div><div class="leaf-text"><strong>Part-Whole Relations</strong><span>Lesson Two</span></div></a>
+          <a href="lesson-three.html" class="leaf"><div class="leaf-icon lesson">③</div><div class="leaf-text"><strong>Comparisons &amp; Differences</strong><span>Lesson Three</span></div></a>
+          <a href="lesson-four.html" class="leaf"><div class="leaf-icon lesson">④</div><div class="leaf-text"><strong>Fractional Relations</strong><span>Lesson Four</span></div></a>
+          <a href="lesson-five.html" class="leaf"><div class="leaf-icon lesson">⑤</div><div class="leaf-text"><strong>Multiplicative Relations</strong><span>Lesson Five</span></div></a>
+        </div>
+      </div>
+
+      <!-- Simple Fluency sub-section -->
+      <div class="sub-section">
+        <button class="sub-btn" onclick="toggleSub('u1-fluency')" id="u1-fluency-btn">
+          <div class="sub-icon fluency">⚡</div>
+          <div class="sub-text"><strong>Simple Relations Fluency</strong><span>Five drills</span></div>
+          <span class="sub-chevron">▼</span>
+        </button>
+        <div class="sub-body" id="u1-fluency-body">
+          <a href="fluency-l1.html" class="leaf"><div class="leaf-icon fluency">⚡</div><div class="leaf-text"><strong>Equal</strong><span>Lesson One Fluency</span></div></a>
+          <a href="fluency-l2.html" class="leaf"><div class="leaf-icon fluency">⚡</div><div class="leaf-text"><strong>Part-Whole</strong><span>Lesson Two Fluency</span></div></a>
+          <a href="fluency-l3.html" class="leaf"><div class="leaf-icon fluency">⚡</div><div class="leaf-text"><strong>Comparison</strong><span>Lesson Three Fluency</span></div></a>
+          <a href="fluency-l4.html" class="leaf"><div class="leaf-icon fluency">⚡</div><div class="leaf-text"><strong>Fractional</strong><span>Lesson Four Fluency</span></div></a>
+          <a href="fluency-l5.html" class="leaf"><div class="leaf-icon fluency">⚡</div><div class="leaf-text"><strong>Multiplicative</strong><span>Lesson Five Fluency</span></div></a>
+        </div>
+      </div>
+
+      <!-- Compound Fluency placeholder -->
+      <div class="sub-section">
+        <button class="sub-btn empty-sub">
+          <div class="sub-icon empty">⚡</div>
+          <div class="sub-text"><strong>Compound Relations Fluency</strong><span>Coming soon</span></div>
+        </button>
+      </div>
+
+      <!-- Complex Fluency placeholder -->
+      <div class="sub-section">
+        <button class="sub-btn empty-sub">
+          <div class="sub-icon empty">⚡</div>
+          <div class="sub-text"><strong>Complex Relations Fluency</strong><span>Coming soon</span></div>
+        </button>
+      </div>
+
     </div>
+  </div>
+
+  <!-- ═══ UNIT TWO ════════════════════════════════════════════════════════════ -->
+  <div class="unit">
+    <button class="unit-btn empty-unit">
+      <div class="unit-icon empty">II</div>
+      <div class="unit-text">
+        <strong>Unit Two: Compound Relations</strong>
+        <span>Coming soon</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- ═══ UNIT THREE ══════════════════════════════════════════════════════════ -->
+  <div class="unit">
+    <button class="unit-btn empty-unit">
+      <div class="unit-icon empty">III</div>
+      <div class="unit-text">
+        <strong>Unit Three: Complex Relations</strong>
+        <span>Coming soon</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- ═══ UNIT FOUR ═══════════════════════════════════════════════════════════ -->
+  <div class="unit">
+    <button class="unit-btn empty-unit">
+      <div class="unit-icon empty">IV</div>
+      <div class="unit-text">
+        <strong>Unit Four: Word Problems</strong>
+        <span>Coming soon</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- ═══ UNIT FIVE ═══════════════════════════════════════════════════════════ -->
+  <div class="unit">
+    <button class="unit-btn empty-unit">
+      <div class="unit-icon empty">V</div>
+      <div class="unit-text">
+        <strong>Unit Five: Solving Complex Word Problems</strong>
+        <span>Coming soon</span>
+      </div>
+    </button>
   </div>
 
   <div class="divider"></div>
 
+  <!-- ═══ PROGRESS ════════════════════════════════════════════════════════════ -->
   <div>
-    <div class="section-label">Fluency Practice</div>
-    <div class="link-group">
-      <div class="row">
-        <a href="fluency-l1.html" class="item"><div class="item-icon if">⚡</div><div class="item-text"><strong>Equal</strong><span>L1</span></div></a>
-        <a href="fluency-l2.html" class="item"><div class="item-icon if">⚡</div><div class="item-text"><strong>Part-Whole</strong><span>L2</span></div></a>
-      </div>
-      <div class="row">
-        <a href="fluency-l3.html" class="item"><div class="item-icon if">⚡</div><div class="item-text"><strong>Comparison</strong><span>L3</span></div></a>
-        <a href="fluency-l4.html" class="item"><div class="item-icon if">⚡</div><div class="item-text"><strong>Fractional</strong><span>L4</span></div></a>
-      </div>
-      <div class="row">
-        <a href="fluency-l5.html" class="item"><div class="item-icon if">⚡</div><div class="item-text"><strong>Multiplicative</strong><span>L5</span></div></a>
-      </div>
+    <div class="section-label">Progress</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <a href="chart.html" class="direct-leaf" style="border:1px solid var(--border);border-radius:var(--radius-lg);border-top:1px solid var(--border);">
+        <div class="item-icon ic">◈</div>
+        <div class="item-text"><strong>Progress Chart</strong><span>All lessons</span></div>
+      </a>
     </div>
   </div>
 
-  <div class="divider"></div>
-
-  <div>
-    <div class="section-label">Progress Charts</div>
-    <div class="link-group">
-      <a href="chart.html" class="item"><div class="item-icon ic">◈</div><div class="item-text"><strong>Progress Chart</strong><span>All lessons</span></div></a>
-    </div>
-  </div>
 </div>
+
+<script>
+function toggleUnit(id) {
+  const btn = document.getElementById(`${id}-btn`);
+  const body = document.getElementById(`${id}-body`);
+  const isOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+function toggleSub(id) {
+  const btn = document.getElementById(`${id}-btn`);
+  const body = document.getElementById(`${id}-body`);
+  const isOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+</script>
 </body>
 </html>
