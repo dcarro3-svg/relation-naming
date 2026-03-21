@@ -6,7 +6,7 @@
 <title>Multiplicative Relations — Lesson Five</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
-  :root {
+  :root{
     --bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;
     --text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;
     --accent:#2D6A4F;--accent-light:#EAF4EF;
@@ -26,17 +26,29 @@
   .tts-toggle svg{width:16px;height:16px;fill:var(--text-muted);transition:fill 0.15s;}
   .tts-toggle.on{border-color:var(--accent);background:var(--accent-light);}
   .tts-toggle.on svg{fill:var(--accent);}
+  .tts-toggle:hover{border-color:var(--accent);}
+  .tts-toggle:hover svg{fill:var(--accent);}
   .progress-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
   .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.5s ease;}
+
+  /* Canvas */
   .canvas{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
     padding:44px 40px;display:flex;align-items:center;justify-content:center;
     min-height:200px;box-shadow:0 2px 12px rgba(0,0,0,0.04);animation:fadeUp 0.35s ease;overflow:visible;}
-  .key-point{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius-lg);
-    padding:18px 24px;font-size:16px;font-weight:500;color:var(--text-primary);
-    line-height:1.6;animation:fadeUp 0.35s ease;display:flex;align-items:flex-start;gap:12px;}
-  .key-point.correction{background:var(--accent-warm-light);border-color:#E8C99A;}
-  .key-point.neutral{background:var(--surface);border-color:var(--border);font-weight:400;}
-  .key-point.bridge{background:#F0EAF8;border-color:#C9B8E8;}
+
+  /* Instruction text — always visible, letter-by-letter animation */
+  .instruct-text{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius-lg);
+    padding:18px 24px;font-size:16px;font-weight:400;color:var(--text-primary);
+    line-height:1.7;animation:fadeUp 0.35s ease;display:flex;align-items:flex-start;gap:12px;}
+  .instruct-text.correction{background:var(--accent-warm-light);border-color:#E8C99A;}
+  .instruct-text.neutral{background:var(--surface);border-color:var(--border);}
+  .instruct-text.bridge{background:#F0EAF8;border-color:#C9B8E8;}
+
+  /* Letter-by-letter animation */
+  .typed-text .char{opacity:0;animation:charFade 0.04s forwards;}
+  @keyframes charFade{to{opacity:1;}}
+
+  /* Audio replay button */
   .audio-indicator{width:32px;height:32px;border-radius:50%;background:var(--accent);
     display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
     transition:all 0.15s;border:none;margin-top:2px;}
@@ -44,40 +56,73 @@
   .audio-indicator.speaking{background:var(--accent-warm);animation:pulse 1s infinite;}
   .audio-indicator svg{width:16px;height:16px;fill:white;}
   @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+  /* Question prompt */
+  .question-prompt{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:14px 18px;font-size:15px;font-weight:500;color:var(--text-primary);animation:fadeUp 0.2s ease;}
+
+  /* Word bank — same design as fluency */
+  .instruct-layout{display:flex;gap:12px;align-items:flex-start;}
+  .instruct-model{flex:1;}
+  .instruct-word-bank{width:136px;flex-shrink:0;border:2px solid var(--text-primary);
+    border-radius:var(--radius);padding:8px 7px;display:flex;flex-direction:column;
+    gap:5px;background:var(--surface);}
+  .wb-group{display:flex;flex-direction:column;gap:3px;}
+  .wb-row{display:flex;gap:3px;}
+  .wb-div{height:1px;background:var(--border);margin:3px 0;}
+  .wb-btn{width:100%;padding:7px 4px;border-radius:7px;border:1px solid var(--border);
+    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
+    color:var(--text-primary);cursor:pointer;transition:all 0.1s;text-align:center;}
+  .wb-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+  .wb-btn:active{transform:scale(0.96);}
+  .wb-btn.selected{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+  .wb-btn.correct{border-color:var(--accent);background:var(--accent);color:white;}
+  .wb-btn.incorrect{border-color:#C0392B;background:#FDF0F0;color:#C0392B;}
+
+  /* Assembled relation strip */
+  .relation-strip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:10px 14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:44px;}
+  .r-token{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:5px;
+    padding:3px 9px;font-size:13px;font-weight:600;color:var(--accent);}
+  .r-token.unk{background:#F0EAF8;border-color:#C9B8E8;color:#6C3483;}
+  .strip-ph{font-size:13px;color:var(--text-muted);font-style:italic;}
+  .strip-row{display:flex;gap:8px;align-items:center;margin-top:6px;}
+  .btn-back{padding:7px 12px;border-radius:var(--radius);border:1px solid var(--border);
+    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
+    color:var(--text-secondary);cursor:pointer;}
+  .btn-back:hover{border-color:var(--accent-warm);color:var(--accent-warm);}
+  .btn-submit{padding:7px 16px;border-radius:var(--radius);border:none;background:var(--accent);
+    color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+  .btn-submit:hover{background:#255C43;}
+  .btn-submit:disabled{opacity:0.35;pointer-events:none;}
+
+  /* Response buttons (for review/ident phases) */
   .response-buttons{display:flex;gap:12px;flex-wrap:wrap;}
   .btn{flex:1;padding:15px 20px;border-radius:var(--radius);border:2px solid var(--border);
     background:var(--surface);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;
     color:var(--text-primary);cursor:pointer;transition:all 0.15s;}
   .btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);transform:translateY(-1px);}
   .btn:active{transform:translateY(0);}
-  .hybrid-row{display:flex;gap:8px;align-items:stretch;}
-  .mic-btn{width:48px;height:48px;border-radius:var(--radius);border:2px solid var(--border);
-    background:var(--surface);display:flex;align-items:center;justify-content:center;
-    cursor:pointer;transition:all 0.15s;flex-shrink:0;}
-  .mic-btn:hover{border-color:var(--accent);background:var(--accent-light);}
-  .mic-btn.listening{border-color:#C0392B;background:#FDF0F0;animation:pulse 0.8s infinite;}
-  .mic-btn svg{width:20px;height:20px;}
-  .text-input{flex:1;padding:12px 16px;border-radius:var(--radius);border:2px solid var(--border);
-    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:16px;
-    color:var(--text-primary);outline:none;transition:border-color 0.15s;min-width:0;}
-  .text-input:focus{border-color:var(--accent);}
-  .text-input::placeholder{color:var(--text-muted);}
-  .btn-submit{padding:12px 20px;border-radius:var(--radius);border:none;background:var(--accent);
-    color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
-    cursor:pointer;transition:all 0.15s;flex-shrink:0;}
-  .btn-submit:hover{background:#255C43;}
   .btn-continue{width:100%;padding:15px;border-radius:var(--radius);border:none;
     background:var(--accent);color:white;font-family:'DM Sans',sans-serif;
     font-size:16px;font-weight:600;cursor:pointer;transition:all 0.15s;}
   .btn-continue:hover{background:#255C43;transform:translateY(-1px);}
-  .completion{text-align:center;padding:44px 32px;background:var(--surface);
-    border:1px solid var(--border);border-radius:var(--radius-lg);
-    box-shadow:0 2px 12px rgba(0,0,0,0.04);animation:fadeUp 0.5s ease;}
-  .completion h2{font-family:'DM Serif Display',serif;font-size:26px;margin:12px 0 10px;color:var(--accent);}
-  .completion p{color:var(--text-secondary);font-size:15px;line-height:1.6;max-width:400px;margin:0 auto;}
+
+  /* Relations found tags */
   .relations-found{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
   .relation-tag{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:20px;
     padding:4px 12px;font-size:13px;font-weight:500;color:var(--accent);}
+
+  /* Bar styles */
+  .bar-h{height:62px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .bar-label{font-size:12px;font-weight:600;text-transform:capitalize;letter-spacing:0.3px;}
+
+  /* Completion */
+  .completion{text-align:center;padding:44px 32px;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);box-shadow:0 2px 12px rgba(0,0,0,0.04);animation:fadeUp 0.5s ease;}
+  .completion h2{font-family:'DM Serif Display',serif;font-size:26px;margin:12px 0 10px;color:var(--accent);}
+  .completion p{color:var(--text-secondary);font-size:15px;line-height:1.6;max-width:380px;margin:0 auto;}
+
   @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
@@ -96,66 +141,92 @@
 </div>
 <script>
 // ═══════════════════════════════════════════════════════════════════════════════
+// CONFIG — injected per lesson
+// ═══════════════════════════════════════════════════════════════════════════════
+const CFG = {
+  id: 5,
+  storageKey: 'fluency_l5_sessions',
+  fluencyHref: 'fluency-l5.html',
+  nextLessonHref: 'index.html',
+  nextLessonLabel: 'Home',
+  completionTitle: 'Multiplicative Relations',
+  completionSummary: 'Same picture, two directions — fractional and multiplicative.<br><br><em>the part is one fraction of the whole &nbsp;·&nbsp; the whole is N times the part</em>',
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // TTS
 // ═══════════════════════════════════════════════════════════════════════════════
-let ttsEnabled=true;
-function toggleTTS(){
-  ttsEnabled=!ttsEnabled;
-  const b=document.getElementById('ttsToggle');
-  if(b)b.classList.toggle('on',ttsEnabled);
-  if(!ttsEnabled)window.speechSynthesis.cancel();
-  rerenderCurrent();
+let ttsEnabled = true;
+let currentUtterance = null;
+let isSpeaking = false;
+
+function toggleTTS() {
+  ttsEnabled = !ttsEnabled;
+  const btn = document.getElementById('ttsToggle');
+  if (btn) btn.classList.toggle('on', ttsEnabled);
+  if (!ttsEnabled) window.speechSynthesis.cancel();
 }
-function rerenderCurrent(){
-  switch(S.phase){
-    case 'intro': showIntro(); break;
-    case 'review': rerenderReview(); break;
-    case 'instruction': showInstruct(S.instructStep); break;
-    case 'naming': showNamingItem(); break;
-    case 'free': rerenderFree(); break;
-  }
-}
-let currentUtterance=null;
-function speak(text,onEnd){
-  if(!ttsEnabled){if(onEnd)onEnd();return;}
-  const clean=text.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+
+function speak(text, onEnd) {
+  if (!ttsEnabled) { if (onEnd) onEnd(); return; }
+  const clean = text.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
   window.speechSynthesis.cancel();
-  const utt=new SpeechSynthesisUtterance(clean);
-  utt.rate=0.92;utt.pitch=1.0;utt.volume=1.0;
-  const voices=window.speechSynthesis.getVoices();
-  const pref=voices.find(v=>v.name.includes('Samantha')||v.name.includes('Karen')||v.name.includes('Daniel')||v.name.includes('Google')||v.lang==='en-US');
-  if(pref)utt.voice=pref;
-  utt.onstart=()=>{const b=document.getElementById('audioBtn');if(b)b.classList.add('speaking');};
-  utt.onend=()=>{const b=document.getElementById('audioBtn');if(b)b.classList.remove('speaking');if(onEnd)onEnd();};
-  utt.onerror=()=>{if(onEnd)onEnd();};
-  currentUtterance=utt;
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.rate = 0.92; utt.pitch = 1.0; utt.volume = 1.0;
+  const voices = window.speechSynthesis.getVoices();
+  const pref = voices.find(v => v.name.includes('Samantha')||v.name.includes('Karen')||v.name.includes('Daniel')||v.name.includes('Google')||v.lang==='en-US');
+  if (pref) utt.voice = pref;
+  utt.onstart = () => { isSpeaking=true; const b=document.getElementById('audioBtn'); if(b)b.classList.add('speaking'); };
+  utt.onend = () => { isSpeaking=false; const b=document.getElementById('audioBtn'); if(b)b.classList.remove('speaking'); if(onEnd)onEnd(); };
+  utt.onerror = () => { isSpeaking=false; if(onEnd)onEnd(); };
+  currentUtterance = utt;
   window.speechSynthesis.speak(utt);
 }
-function replayAudio(){if(currentUtterance&&ttsEnabled)speak(currentUtterance.text);}
-function aBtn(){return`<button class="audio-indicator" id="audioBtn" onclick="replayAudio()"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></button>`;}
-function dt(full,short){return ttsEnabled?short:full;}
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// SPEECH INPUT
-// ═══════════════════════════════════════════════════════════════════════════════
-let recognition=null,isListening=false;
-function toggleMic(id,fn){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){alert('Speech recognition not supported. Please type.');return;}
-  if(isListening){if(recognition)recognition.stop();isListening=false;updateMicBtn(false);return;}
-  recognition=new SR();recognition.continuous=false;recognition.interimResults=false;recognition.lang='en-US';
-  recognition.onstart=()=>{isListening=true;updateMicBtn(true);};
-  recognition.onresult=(e)=>{const t=e.results[0][0].transcript;const inp=document.getElementById(id);if(inp){inp.value=t;setTimeout(()=>fn(),400);}};
-  recognition.onerror=()=>{isListening=false;updateMicBtn(false);};
-  recognition.onend=()=>{isListening=false;updateMicBtn(false);};
-  recognition.start();
+function replayAudio() { if (currentUtterance && ttsEnabled) speak(currentUtterance.text); }
+function audioBtn() {
+  return `<button class="audio-indicator" id="audioBtn" onclick="replayAudio()">
+    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+  </button>`;
 }
-function updateMicBtn(l){const b=document.getElementById('micBtn');if(b){b.classList.toggle('listening',l);b.title=l?'Listening...':'Speak your answer';}}
-function mBtn(id,fn){return`<button class="mic-btn" id="micBtn" onclick="toggleMic('${id}',${fn})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg></button>`;}
-function hInput(id,ph,fn){return`<div class="hybrid-row">${mBtn(id,fn)}<input class="text-input" id="${id}" type="text" placeholder="${ph}" onkeydown="if(event.key==='Enter')${fn}()"><button class="btn-submit" onclick="${fn}()">Submit</button></div>`;}
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// COLORS
+// LETTER-BY-LETTER TEXT ANIMATION
+// ~20 chars/sec — fast enough to feel responsive, slow enough to feel intentional
+// ═══════════════════════════════════════════════════════════════════════════════
+const CHAR_DELAY_MS = 50; // 20 chars/sec
+
+function animateText(text, containerId, onDone) {
+  const el = document.getElementById(containerId);
+  if (!el) { if (onDone) onDone(); return; }
+  el.innerHTML = '';
+  // Strip any HTML tags for animation, then show plain text char by char
+  const plain = text.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '');
+  const chars = plain.split('');
+  chars.forEach((ch, i) => {
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = ch === '\n' ? '' : ch;
+    if (ch === '\n') span.appendChild(document.createElement('br'));
+    span.style.animationDelay = `${i * CHAR_DELAY_MS}ms`;
+    el.appendChild(span);
+  });
+  if (onDone) setTimeout(onDone, chars.length * CHAR_DELAY_MS + 80);
+}
+
+// Wrap text content for animation — always shown regardless of TTS state
+function typedText(text) {
+  const safe = text.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
+  return `<span class="typed-text" id="animText_${Date.now()}" data-text="${safe}"></span>`;
+}
+
+// Show text with animation
+function showAnimText(text, containerId, onDone) {
+  animateText(text, containerId, onDone);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COLORS & UTILITIES
 // ═══════════════════════════════════════════════════════════════════════════════
 const COLORS=[{name:'blue',hex:'#1B6CA8'},{name:'orange',hex:'#D4600A'},{name:'green',hex:'#2D6A4F'},
   {name:'red',hex:'#C0392B'},{name:'purple',hex:'#6C3483'},{name:'teal',hex:'#0E7E7E'},
@@ -164,88 +235,114 @@ const CF={blue:['blue','navy','teal'],navy:['navy','blue'],teal:['teal','blue','
   green:['green','teal'],red:['red','pink'],pink:['pink','red'],orange:['orange'],purple:['purple']};
 function fam(n){const f=CF[n]||[n];return COLORS.filter(c=>f.includes(c.name)||(CF[c.name]||[c.name]).includes(n)).map(c=>c.name);}
 function randColor(ex=[]){const ef=ex.flatMap(n=>fam(n));const pool=COLORS.filter(c=>!ef.includes(c.name));return pool.length?pool[Math.floor(Math.random()*pool.length)]:COLORS.filter(c=>!ex.includes(c.name))[0];}
-function cmatch(r,name){return[...(CF[name]||[name]),name].some(f=>r.includes(f));}
-function colorMatches(s,a){return(CF[a]||[a]).includes(s)||s===a;}
+function cmatch(r,n){return[...(CF[n]||[n]),n].some(f=>r.toLowerCase().includes(f));}
 function tc(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(0.299*r+0.587*g+0.114*b)/255>0.55?'#1A1714':'#FFFFFF';}
 function shuffle(a){const arr=[...a];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+const FRAC_NAMES=['half','third','fourth','fifth'];
+const FRAC_DENOMS=[2,3,4,5];
+function fracName(n){return FRAC_NAMES[n-2]||`${n}th`;}
 
-const FRACTION_NAMES=['half','third','fourth','fifth'];
-const FRACTION_DENOMS=[2,3,4,5];
-function fracName(n){return FRACTION_NAMES[n-2]||`${n}th`;}
+// ═══════════════════════════════════════════════════════════════════════════════
+// BAR RENDERERS — shared across all lessons
+// ═══════════════════════════════════════════════════════════════════════════════
+const BH=62, BASE=320;
 
-const BH=62,BASE=360;
-
-function sbar(hex,name,w,isUnknown=false){
+function sbar(hex,name,w,isUnk=false){
   const col=tc(hex);
-  const content=isUnknown
-    ?`<span style="font-family:'DM Serif Display',serif;font-size:24px;font-style:italic;color:${col}">?</span>`
-    :`<span style="font-size:12px;font-weight:600;text-transform:capitalize;color:${col}">${name}</span>`;
-  return`<div style="width:${w}px;height:${BH}px;background:${hex};border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${content}</div>`;
+  const c=isUnk?`<span style="font-family:'DM Serif Display',serif;font-size:24px;font-style:italic;color:${col}">?</span>`
+    :`<span class="bar-label" style="color:${col}">${name}</span>`;
+  return `<div class="bar-h" style="width:${w}px;background:${hex}">${c}</div>`;
 }
 
-// ── Fractional bar model ───────────────────────────────────────────────────────
+function renderEqual(m){
+  if(m.layout==='dotted'){const w=m.w1;return`<div style="position:relative;display:inline-block;padding:0 20px"><div style="position:absolute;left:16px;top:0;bottom:0;border-left:2px dashed #9B9591"></div><div style="position:absolute;right:16px;top:0;bottom:0;border-right:2px dashed #9B9591"></div><div style="margin-bottom:8px">${sbar(m.c1.hex,m.c1.name,w,m.unk===m.c1.name)}</div>${sbar(m.c2.hex,m.c2.name,w,m.unk===m.c2.name)}</div>`;}
+  return`<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">${sbar(m.c1.hex,m.c1.name,m.w1,m.unk===m.c1.name)}${sbar(m.c2.hex,m.c2.name,m.w2,m.unk===m.c2.name)}</div>`;
+}
+
+function renderPW(m){
+  const{whole,p1,p2}=m;
+  const wB=sbar(whole.color.hex,whole.color.name,whole.w,m.unknownRole==='whole');
+  const p1B=sbar(p1.color.hex,p1.color.name,p1.w,m.unknownRole==='p1');
+  const p2B=sbar(p2.color.hex,p2.color.name,p2.w,m.unknownRole==='p2');
+  const lines=`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591"></div><div style="position:absolute;right:0;top:0;bottom:0;border-right:2px dashed #9B9591"></div>`;
+  return`<div style="position:relative;display:inline-block">${lines}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">${wB}<div style="display:flex">${p1B}${p2B}</div></div></div>`;
+}
+
+function renderComparison(m){
+  const{larger,smaller,diff}=m;
+  const lB=sbar(larger.color.hex,larger.color.name,larger.w,m.unknownRole==='larger');
+  const sB=sbar(smaller.color.hex,smaller.color.name,smaller.w,m.unknownRole==='smaller');
+  const dPale=diff?`<div style="width:${diff.w}px;height:${BH}px;background:${diff.color.hex}44;border:2px dashed #9B9591;border-radius:0 6px 6px 0;display:flex;align-items:center;justify-content:center;flex-shrink:0">${m.unknownRole==='diff'?`<span style="font-family:'DM Serif Display',serif;font-size:22px;font-style:italic;color:#777">?</span>`:`<span style="font-size:11px;font-weight:600;color:#777;text-transform:capitalize">${diff.color.name}</span>`}</div>`:'';
+  const lines=diff?`<div style="position:absolute;left:${smaller.w}px;top:0;bottom:0;border-left:2px dashed #6B6560"></div><div style="position:absolute;left:${larger.w}px;top:0;bottom:0;border-left:2px dashed #6B6560"></div>`:'';
+  return`<div style="position:relative;display:inline-block">${lines}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">${lB}<div style="display:flex">${sB}${dPale}</div></div></div>`;
+}
+
 function renderFractional(m){
   const{wholeColor,partColor,denominator,filledIndex,unknownRole,wholeW}=m;
   const boxW=wholeW/denominator;
-  const wholeBar=sbar(wholeColor.hex,wholeColor.name,wholeW,unknownRole==='whole');
+  const wBar=sbar(wholeColor.hex,wholeColor.name,wholeW,unknownRole==='whole');
   let boxes='';
   for(let i=0;i<denominator;i++){
-    const isFilled=i===filledIndex;
-    const isUnk=isFilled&&unknownRole==='part';
-    const bg=isFilled?partColor.hex:(partColor.hex+'33');
-    const bdr=isFilled?'none':'2px dashed #9B9591';
-    const col=isFilled?tc(partColor.hex):'#9B9591';
-    const content=isUnk
-      ?`<span style="font-family:'DM Serif Display',serif;font-size:22px;font-style:italic;color:${col}">?</span>`
-      :isFilled?`<span style="font-size:11px;font-weight:600;text-transform:capitalize;color:${col}">${partColor.name}</span>`:` `;
-    boxes+=`<div style="width:${boxW}px;height:${BH}px;background:${bg};border:${bdr};
-      ${i===0?'border-radius:6px 0 0 6px':''}${i===denominator-1?'border-radius:0 6px 6px 0':''}
-      display:flex;align-items:center;justify-content:center;flex-shrink:0">${content}</div>`;
+    const iF=i===filledIndex,isUnk=iF&&unknownRole==='part';
+    const bg=iF?partColor.hex:partColor.hex+'33',bdr=iF?'none':'2px dashed #9B9591',col=iF?tc(partColor.hex):'#9B9591';
+    const c=isUnk?`<span style="font-family:'DM Serif Display',serif;font-size:22px;font-style:italic;color:${col}">?</span>`:iF?`<span style="font-size:11px;font-weight:600;text-transform:capitalize;color:${col}">${partColor.name}</span>`:' ';
+    boxes+=`<div style="width:${boxW}px;height:${BH}px;background:${bg};border:${bdr};${i===0?'border-radius:6px 0 0 6px':''}${i===denominator-1?'border-radius:0 6px 6px 0':''}display:flex;align-items:center;justify-content:center;flex-shrink:0">${c}</div>`;
   }
   let lines='';
-  for(let i=1;i<denominator;i++){
-    lines+=`<div style="position:absolute;left:${i*boxW}px;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div>`;
-  }
+  for(let i=1;i<denominator;i++) lines+=`<div style="position:absolute;left:${i*boxW}px;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div>`;
   lines+=`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div>`;
   lines+=`<div style="position:absolute;left:${wholeW}px;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div>`;
-  return`<div style="position:relative;display:inline-block">${lines}
-    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
-      ${wholeBar}
-      <div style="display:flex;flex-direction:row;gap:0">${boxes}</div>
-    </div>
-  </div>`;
+  return`<div style="position:relative;display:inline-block">${lines}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">${wBar}<div style="display:flex">${boxes}</div></div></div>`;
 }
 
-// No unknown version — for free relation practice
-function renderFractionalFull(m){
-  return renderFractional({...m,unknownRole:null});
+// ═══════════════════════════════════════════════════════════════════════════════
+// WORD BANK BUILDER — for instruction phase button responses
+// Generates correct + distractor buttons from accepted answers and color pool
+// Always at least 2 options, max 4, shuffled
+// ═══════════════════════════════════════════════════════════════════════════════
+function buildInstructWB(acc, distractors, onSelect) {
+  // acc: array of accepted answer strings (first one is canonical)
+  // distractors: array of plausible wrong answers
+  const correct = acc[0];
+  const opts = shuffle([correct, ...distractors.filter(d=>d!==correct)]).slice(0, 4);
+  // Ensure correct is always present
+  if (!opts.includes(correct)) { opts[opts.length-1] = correct; shuffle(opts); }
+  const btns = opts.map(o =>
+    `<button class="wb-btn" onclick="${onSelect}('${o.replace(/'/g,"\\'")}')">${o}</button>`
+  ).join('');
+  return `<div class="instruct-word-bank"><div class="wb-group">${btns}</div></div>`;
 }
 
-// ── Generators ────────────────────────────────────────────────────────────────
-function genFractional(unknownRole=null){
-  const wholeColor=randColor();
-  const partColor=randColor([wholeColor.name]);
-  const denominator=FRACTION_DENOMS[Math.floor(Math.random()*FRACTION_DENOMS.length)];
-  const filledIndex=Math.floor(Math.random()*denominator);
-  const wholeW=BASE*(0.7+Math.random()*0.25);
-  return{wholeColor,partColor,denominator,filledIndex,unknownRole,wholeW,isFractional:true};
+// ═══════════════════════════════════════════════════════════════════════════════
+// RELATION STRIP — for naming phases
+// ═══════════════════════════════════════════════════════════════════════════════
+function strip(asm, subFn, backFn) {
+  const toks = asm.length
+    ? asm.map(t=>`<span class="r-token${t==='unknown'?' unk':''}">${t}</span>`).join('')
+    : `<span class="strip-ph">Tap buttons to build the relation...</span>`;
+  return `<div class="relation-strip">${toks}</div>
+    <div class="strip-row">
+      <button class="btn-back" onclick="${backFn}()">← Back</button>
+      <button class="btn-submit" onclick="${subFn}()" ${asm.length<2?'disabled':''}>Submit</button>
+    </div>`;
 }
-
-// Review model
-function genFracReview(){return genFractional(null);}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════════════════════
-const S={
-  phase:'intro',reviewStep:0,instructStep:0,namingStep:0,freeStep:0,
-  currentModel:null,currentNaming:null,instructFU:false,instructM:null,
-  totalReview:4,totalNaming:9,totalFree:3,
-  scaffoldColorActive:true,scaffoldColorStreak:0,scaffoldColorLocked:false,
-  scaffoldRoleActive:true,scaffoldRoleStreak:0,scaffoldRoleLocked:false,
-  freeModel:null,freeRelationsFound:[],freeTarget:4,
-  sessionData:[],itemStartTime:null,
+const S = {
+  phase:'intro',
+  reviewStep:0, instructStep:0, identStep:0, namingStep:0, freeStep:0,
+  instructFU:false, instructM:null,
+  currentModel:null, currentAnswer:null, currentNaming:null,
+  scaffoldColorActive:true, scaffoldColorStreak:0, scaffoldColorLocked:false,
+  scaffoldRoleActive:true, scaffoldRoleStreak:0, scaffoldRoleLocked:false,
+  freeModel:null, freeRelationsFound:[], freeTarget:4,
+  totalReview:4, totalIdent:12, totalNaming:8, totalFree:3,
+  sessionData:[], itemStartTime:null,
+  assembled:[], correctionAsm:[],
 };
+
 function startTimer(){S.itemStartTime=Date.now();}
 function recordResp(phase,correct){S.sessionData.push({phase,correct,responseTimeMs:S.itemStartTime?Date.now()-S.itemStartTime:null,timestamp:new Date().toISOString()});}
 function updateColorScaffold(ok){if(S.scaffoldColorLocked)return;if(ok){S.scaffoldColorStreak++;if(S.scaffoldColorStreak>=3){S.scaffoldColorActive=false;S.scaffoldColorLocked=true;}}else{S.scaffoldColorActive=true;S.scaffoldColorStreak=0;}}
@@ -253,472 +350,482 @@ function updateRoleScaffold(ok){if(S.scaffoldRoleLocked)return;if(ok){S.scaffold
 function setProgress(p){document.getElementById('progressFill').style.width=p+'%';}
 function setPhase(l){document.getElementById('phaseLabel').textContent=l;}
 function render(m,r){document.getElementById('mainContent').innerHTML=m;document.getElementById('responseArea').innerHTML=r;}
-function focus(id){setTimeout(()=>{const e=document.getElementById(id);if(e)e.focus();},150);}
 
-function rerenderReview(){
-  if(!S.currentModel)return;
-  render(`<div class="canvas">${renderFractionalFull(S.currentModel)}</div>
-    <div class="key-point neutral" style="font-weight:500">What is the fractional relation? Name the part and the whole.</div>`,
-    hInput('rIn','e.g. orange is one third of green','submitReview'));
+// ═══════════════════════════════════════════════════════════════════════════════
+// INSTRUCTION PHASE ENGINE
+// Shared across all lessons. Per-lesson INSTRUCT array and renderModel injected below.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Show instruction step — text animates, then question appears, then buttons appear
+function showInstruct(step) {
+  S.instructStep = step; S.instructFU = false;
+  if (step >= INSTRUCT.length) { afterInstruct(); return; }
+  setProgress(22 + (step / INSTRUCT.length) * 20);
+
+  const def = INSTRUCT[step];
+  S.instructM = def.build ? def.build() : null;
+  const m = S.instructM;
+
+  const audio = def.audio(m);
+  const question = typeof def.question === 'function' ? def.question(m) : def.question;
+  const acc = typeof def.acc === 'function' ? def.acc(m) : def.acc;
+  const distractors = buildDistractors(acc, m, def);
+
+  const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
+
+  render(
+    `${modelHtml}
+     <div class="instruct-text" id="instructBox">
+       ${audioBtn()}
+       <span id="instructAnim" class="typed-text"></span>
+     </div>
+     <div class="question-prompt" id="questionBox" style="display:none">${question}</div>`,
+    `<div id="instructBtns" style="display:none"></div>`
+  );
+
+  speak(audio);
+
+  // Animate text, then show question and buttons
+  animateText(audio, 'instructAnim', () => {
+    const qBox = document.getElementById('questionBox');
+    const bBox = document.getElementById('instructBtns');
+    if (qBox) qBox.style.display = 'block';
+    if (bBox) {
+      bBox.style.display = 'block';
+      bBox.innerHTML = buildInstructWB(acc, distractors, 'submitInstruct');
+    }
+  });
 }
-function rerenderFree(){
-  if(!S.freeModel)return;
-  const tags=S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('');
-  const remaining=S.freeTarget-S.freeRelationsFound.length;
-  render(`<div class="canvas">${renderFractionalFull(S.freeModel)}</div>
-    <div class="key-point neutral"><span>Name a true relation. Find ${remaining} more.</span></div>
-    ${S.freeRelationsFound.length>0?`<div class="relations-found">${tags}</div>`:''}`,
-    hInput('freeIn','Name any true relation...','submitFreeRelation'));
+
+function submitInstruct(chosen) {
+  const def = INSTRUCT[S.instructStep];
+  const m = S.instructM;
+  const question = typeof def.question === 'function' ? def.question(m) : def.question;
+  const acc = typeof def.acc === 'function' ? def.acc(m) : def.acc;
+
+  if (!S.instructFU) {
+    const ok = acc.some(a => chosen.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(chosen.toLowerCase()));
+    if (ok) {
+      S.instructFU = true;
+      // Show follow-up
+      const fuAudio = def.fu(m);
+      const fuQ = typeof def.fuQ === 'function' ? def.fuQ(m) : def.fuQ;
+      const fuAcc = typeof def.fuAcc === 'function' ? def.fuAcc(m) : def.fuAcc;
+      const fuDistractors = buildDistractors(fuAcc, m, def, true);
+      const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
+      render(
+        `${modelHtml}
+         <div class="instruct-text bridge" id="instructBox">
+           ${audioBtn()}
+           <span id="instructAnim" class="typed-text"></span>
+         </div>
+         <div class="question-prompt" id="questionBox" style="display:none">${fuQ}</div>`,
+        `<div id="instructBtns" style="display:none"></div>`
+      );
+      speak(fuAudio);
+      animateText(fuAudio, 'instructAnim', () => {
+        const qBox = document.getElementById('questionBox');
+        const bBox = document.getElementById('instructBtns');
+        if (qBox) qBox.style.display = 'block';
+        if (bBox) {
+          bBox.style.display = 'block';
+          bBox.innerHTML = buildInstructWB(fuAcc, fuDistractors, 'submitInstruct');
+        }
+      });
+    } else {
+      // Error correction — show corrective text, re-ask
+      const cor = typeof def.cor === 'function' ? def.cor(m) : def.cor;
+      const distractors = buildDistractors(acc, m, def);
+      const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
+      render(
+        `${modelHtml}
+         <div class="instruct-text correction" id="instructBox">
+           ${audioBtn()}
+           <span id="instructAnim" class="typed-text"></span>
+         </div>
+         <div class="question-prompt" id="questionBox" style="display:none">${question}</div>`,
+        `<div id="instructBtns" style="display:none"></div>`
+      );
+      speak(cor);
+      animateText(cor, 'instructAnim', () => {
+        const qBox = document.getElementById('questionBox');
+        const bBox = document.getElementById('instructBtns');
+        if (qBox) qBox.style.display = 'block';
+        if (bBox) {
+          bBox.style.display = 'block';
+          bBox.innerHTML = buildInstructWB(acc, distractors, 'submitInstruct');
+        }
+      });
+    }
+  } else {
+    // Follow-up response
+    const fuAcc = typeof def.fuAcc === 'function' ? def.fuAcc(m) : def.fuAcc;
+    const fuQ = typeof def.fuQ === 'function' ? def.fuQ(m) : def.fuQ;
+    const ok = fuAcc.some(a => chosen.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(chosen.toLowerCase()));
+    if (ok) {
+      showInstruct(S.instructStep + 1);
+    } else {
+      const fuCor = typeof def.fuCor === 'function' ? def.fuCor(m) : def.fuCor;
+      const fuDistractors = buildDistractors(fuAcc, m, def, true);
+      const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
+      render(
+        `${modelHtml}
+         <div class="instruct-text correction" id="instructBox">
+           ${audioBtn()}
+           <span id="instructAnim" class="typed-text"></span>
+         </div>
+         <div class="question-prompt" id="questionBox" style="display:none">${fuQ}</div>`,
+        `<div id="instructBtns" style="display:none"></div>`
+      );
+      speak(fuCor);
+      animateText(fuCor, 'instructAnim', () => {
+        const qBox = document.getElementById('questionBox');
+        const bBox = document.getElementById('instructBtns');
+        if (qBox) qBox.style.display = 'block';
+        if (bBox) {
+          bBox.style.display = 'block';
+          bBox.innerHTML = buildInstructWB(fuAcc, fuDistractors, 'submitInstruct');
+        }
+      });
+    }
+  }
+}
+
+// Build plausible distractors from the same conceptual pool
+function buildDistractors(acc, m, def, isFU=false) {
+  const correct = acc[0];
+  const pool = [];
+
+  // Color distractors — pick wrong colors from COLORS
+  const colorNames = COLORS.map(c=>c.name);
+  if (colorNames.some(c => acc.some(a => a.includes(c)))) {
+    const usedColors = colorNames.filter(c => acc.some(a => a.includes(c)));
+    const otherColors = colorNames.filter(c => !usedColors.includes(c));
+    shuffle(otherColors).slice(0,2).forEach(c => pool.push(c));
+  }
+
+  // Relation word distractors
+  const relWords = ['equal','not equal','plus','minus','part-whole','comparison','difference','halves','thirds','fourths','fifths','times','fraction'];
+  relWords.filter(w => !acc.some(a=>a.includes(w))).slice(0,3).forEach(w=>pool.push(w));
+
+  // Yes/no if acc includes yes/no
+  if (acc.some(a=>a==='yes')) pool.push('no');
+  if (acc.some(a=>a==='no')) pool.push('yes');
+
+  // Fraction distractors
+  if (acc.some(a=>FRAC_NAMES.includes(a))) {
+    FRAC_NAMES.filter(f=>!acc.includes(f)).forEach(f=>pool.push(f));
+  }
+
+  // Number distractors
+  ['two','three','four','five'].filter(n=>!acc.some(a=>a.includes(n))).slice(0,2).forEach(n=>pool.push(n));
+
+  return shuffle(pool.filter(d=>d&&d!==correct)).slice(0,3);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// INSTRUCTION DATA
+// STORAGE
 // ═══════════════════════════════════════════════════════════════════════════════
+function saveSession() {
+  try {
+    const corrects = S.sessionData.filter(d=>d.correct).length;
+    const errors   = S.sessionData.filter(d=>!d.correct).length;
+    const record = { date:new Date().toISOString(), lesson:CFG.id, phase:'instruction', corrects, errors, cpm:0, epm:0, duration:null };
+    const raw = localStorage.getItem(CFG.storageKey);
+    const existing = raw ? JSON.parse(raw) : [];
+    existing.push(record);
+    localStorage.setItem(CFG.storageKey, JSON.stringify(existing));
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPLETION
+// ═══════════════════════════════════════════════════════════════════════════════
+function showComplete() {
+  setProgress(100); setPhase('Complete');
+  saveSession();
+  render(`<div class="completion">
+    <div style="font-size:44px;margin-bottom:12px">◈</div>
+    <h2>${CFG.completionTitle}</h2>
+    <p>${CFG.completionSummary}</p>
+    <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px">
+      <a href="${CFG.fluencyHref}" style="display:block;padding:14px 24px;background:#2D6A4F;color:white;border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">Practice for Fluency →</a>
+      <a href="${CFG.nextLessonHref}" style="display:block;padding:14px 24px;background:white;color:#2D6A4F;border:2px solid #2D6A4F;border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">${CFG.nextLessonLabel}</a>
+      <a href="chart.html" style="display:block;padding:14px 24px;background:white;color:#6B6560;border:2px solid #E2DDD6;border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">View Progress Chart</a>
+    </div>
+  </div>`,``);
+  speak(`Well done. ${CFG.completionTitle} complete.`);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LESSON-SPECIFIC CODE
+// Injected by build script:
+//   - INSTRUCT array
+//   - renderModel(m) function
+//   - Generator functions
+//   - Review phase block (showIntro, startReview, nextReview, submitReview, showInstructIntro)
+//   - afterInstruct() — what happens after instruction phase completes
+//   - Identification phase
+//   - Naming phase
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LESSON FIVE — MULTIPLICATIVE RELATIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const NUM_WORDS=['two','three','four','five'];
+function numWord(n){return NUM_WORDS[n-2]||String(n);}
+
+function genFrac(unknownRole=null){
+  const wC=randColor(),pC=randColor([wC.name]);
+  const d=FRAC_DENOMS[Math.floor(Math.random()*FRAC_DENOMS.length)];
+  const fi=Math.floor(Math.random()*d);
+  const wW=BASE*(0.7+Math.random()*0.2);
+  return{wholeColor:wC,partColor:pC,denominator:d,filledIndex:fi,unknownRole:unknownRole||'part',wholeW:wW,isFractional:true};
+}
+
+function renderModel(m){
+  if(m.isFractional) return renderFractional(m);
+  if(m.whole&&m.p1) return renderPW(m);
+  return renderEqual(m);
+}
+
 const INSTRUCT=[
-  // 0: Same picture, two ways to describe — introduce multiplicative
   {
     build(){return{wholeColor:COLORS[2],partColor:COLORS[0],denominator:2,filledIndex:0,unknownRole:null,wholeW:360,isFractional:true};},
-    audio(m){return`Look at this picture. You already know how to name the fractional relation — blue is one half of green. But this picture also shows a multiplicative relation. Instead of talking about the part, we can talk about the whole. The green whole is two times the blue part. Green is what?`;},
-    keyPoint(m){return`Same picture, two relations. Blue is one half of green. Green is two times blue.`;},
-    question:`Green is what — in terms of blue?`,
-    acc:['two times','two times blue','twice','twice blue','2 times'],
-    cor:`The whole contains two equal parts. So the whole is two times the part. Green is two times blue. Try again — green is what?`,
-    corKey:`The whole is two times the part. Green is two times blue.`,
-    fu(m){return`Right — green is two times blue. The fractional relation says one half. The multiplicative relation says two times. They describe the same picture from different directions. If the part is one third, the whole is three times the part. If the part is one fourth, the whole is four times the part. What would the multiplicative relation be if the part were one fifth?`;},
-    fuKey(m){return`Fractional: one half. Multiplicative: two times. Two directions, same picture.`;},
-    fuQ:`If the part is one fifth, the whole is...?`,
-    fuAcc:['five times','5 times','five times the part'],
-    fuCor:`One fifth means five equal parts. So the whole must be five times the part.`,
-    fuCorKey:`One fifth → five times.`,
+    audio(m){return`You know the fractional relation — blue is one half of green. But this picture also shows a multiplicative relation. Instead of talking about the part, we talk about the whole. The green whole contains two equal blue parts. So green is two times blue. What is green equal to in terms of blue?`;},
+    question:`Green is how many times blue?`,
+    acc:['two times','two times blue','twice','twice blue','2 times','two'],
+    cor:`Count the equal parts — there are two. So the whole is two times the part. Green is how many times blue?`,
+    fu(m){return`Right — green is two times blue. The fractional says one half. The multiplicative says two times. Same picture, two directions. If the part were one fifth, the whole would be five times the part. What would the whole be if the part were one third?`;},
+    fuQ:`If the part is one third, the whole is...?`,
+    fuAcc:['three times','three times the part','three','3 times'],
+    fuCor:`One third means three equal parts. So the whole is three times the part. The whole is how many times?`,
   },
-  // 1: Unknown is the whole — multiplicative
   {
-    build(){const m=genFractional('whole');return m;},
-    audio(m){return`Look at this picture. The ${m.wholeColor.name} whole has a question mark. You know the fractional relation — ${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}. Now name the multiplicative relation to find the whole. The whole is how many times the part?`;},
-    keyPoint(m){return`Unknown is the whole. Name the multiplicative relation.`;},
-    question:`The whole is how many times the part?`,
-    acc(m){return[`${m.denominator} times`,`${m.denominator} times the part`,`${m.denominator} times ${m.partColor.name}`];},
+    build(){return genFrac('whole');},
+    audio(m){return`The ${m.wholeColor.name} whole is unknown. The ${m.partColor.name} part is one ${fracName(m.denominator)} of the whole. That means the whole is ${m.denominator} times the part. Name the multiplicative relation: ${m.wholeColor.name} is how many times ${m.partColor.name}?`;},
+    question(m){return`${m.wholeColor.name} is how many times ${m.partColor.name}?`;},
+    acc(m){return[`${numWord(m.denominator)} times`,`${numWord(m.denominator)} times ${m.partColor.name}`,String(m.denominator)];},
     cor(m){return`Count the equal parts — there are ${m.denominator}. So the whole is ${m.denominator} times the part.`;},
-    corKey(m){return`Count the parts — the whole is that many times the part.`;},
-    fu(m){return`Right — ${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}. Name the full multiplicative relation.`;},
-    fuKey(m){return`${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}.`;},
-    fuQ(m){return`Say the full relation: ${m.wholeColor.name} is...?`;},
-    fuAcc(m){return[`${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}`,`${m.denominator} times ${m.partColor.name}`];},
-    fuCor(m){return`Say: ${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}.`;},
-    fuCorKey(m){return`${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}.`;},
+    fu(m){return`Right — ${m.wholeColor.name} is ${numWord(m.denominator)} times ${m.partColor.name}. Now you can also name the fractional relation for free: ${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}. Both are true.`;},
+    fuQ(m){return`Name the fractional relation — ${m.partColor.name} is...?`;},
+    fuAcc(m){return[`one ${fracName(m.denominator)} of ${m.wholeColor.name}`,`one ${fracName(m.denominator)}`,fracName(m.denominator)];},
+    fuCor(m){return`The fractional relation says the part is one fraction of the whole. Say: ${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}.`;},
   },
-  // 2: Unknown is the part — use fractional or multiplicative to find it
   {
-    build(){const m=genFractional('part');return m;},
-    audio(m){return`Now the ${m.partColor.name} part is unknown. You can name either relation to find it. The fractional: ${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}. Or the multiplicative: ${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}. Either tells you what the unknown equals. Name any true relation.`;},
-    keyPoint(m){return`Unknown is the part. Name either fractional or multiplicative.`;},
-    question:`Name any true relation between the bars.`,
-    acc(m){return[
-      `one ${fracName(m.denominator)} of ${m.wholeColor.name}`,
-      `${m.partColor.name} is one ${fracName(m.denominator)}`,
-      `${m.denominator} times ${m.partColor.name}`,
-      `${m.wholeColor.name} is ${m.denominator} times`,
-      fracName(m.denominator),'times',
-    ];},
-    cor(m){return`Name the fractional relation — ${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}. Or the multiplicative — ${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}.`;},
-    corKey(m){return`Name any true relation — fractional or multiplicative.`;},
-    fu(m){return`Right. Both relations describe the same picture. The fractional says one ${fracName(m.denominator)}. The multiplicative says ${m.denominator} times. You can use whichever is more useful for solving a problem.`;},
-    fuKey(m){return`Fractional and multiplicative are two sides of the same relation.`;},
-    fuQ(m){return`Name the other relation — if you gave the fractional, give the multiplicative, and vice versa.`;},
-    fuAcc(m){return[
-      `one ${fracName(m.denominator)} of ${m.wholeColor.name}`,
-      `${m.partColor.name} is one ${fracName(m.denominator)}`,
-      `${m.denominator} times ${m.partColor.name}`,
-      `${m.wholeColor.name} is ${m.denominator} times`,
-      fracName(m.denominator),'times',
-    ];},
-    fuCor(m){return`Try the other direction. If you said fractional: ${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}. If you said multiplicative: ${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}.`;},
-    fuCorKey(m){return`Name the other direction — the one you haven't said yet.`;},
+    build(){return genFrac('part');},
+    audio(m){return`The ${m.partColor.name} part is unknown. You can use either relation to find it. Fractional: ${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}. Multiplicative: ${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}. Both describe the same picture. Name any true relation.`;},
+    question(m){return`Name any true relation between the bars.`;},
+    acc(m){return[`one ${fracName(m.denominator)} of ${m.wholeColor.name}`,`${numWord(m.denominator)} times ${m.partColor.name}`,fracName(m.denominator),numWord(m.denominator),'times','fraction'];},
+    cor(m){return`Try the fractional relation: ${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}. Or the multiplicative: ${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}.`;},
+    fu(m){return`Right. Both relations describe the same picture. Now try the other direction — name the one you have not said yet.`;},
+    fuQ(m){return`Name the other relation — the one you have not said.`;},
+    fuAcc(m){return[`one ${fracName(m.denominator)} of ${m.wholeColor.name}`,`${numWord(m.denominator)} times ${m.partColor.name}`,fracName(m.denominator),numWord(m.denominator),'times','fraction'];},
+    fuCor(m){return`Try: ${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}. Or: ${m.wholeColor.name} is ${m.denominator} times ${m.partColor.name}.`;},
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// PHASES
-// ═══════════════════════════════════════════════════════════════════════════════
-
 function showIntro(){
   S.phase='intro';setPhase('Introduction');setProgress(2);
-  const audio=`Last time you learned fractional relations — a part is one fraction of a whole. Today you will learn multiplicative relations. A multiplicative relation is the inverse of a fractional relation. Instead of saying the part is one half of the whole, you say the whole is two times the part. Same picture, different direction. First, a review of fractional relations.`;
-  const short=`Today: Multiplicative Relations — the inverse of fractional. First, a review.`;
-  render(`<div class="key-point neutral">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
-    `<button class="btn-continue" onclick="startReview()">Let's review</button>`);
+  const audio=`Last time you learned fractional relations. Today you will learn multiplicative relations — the inverse of fractional. Same picture, different direction. First, a quick review of fractional relations.`;
+  render(`<div class="instruct-text neutral" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+    `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="startReview()">Let's review</button></div>`);
   speak(audio);
+  animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
 }
-
-// ── Review: fractional relation naming ───────────────────────────────────────
 function startReview(){S.phase='review';setPhase('Review — Fractional');S.reviewStep=0;nextReview();}
 function nextReview(){
   if(S.reviewStep>=S.totalReview){showInstructIntro();return;}
   setProgress(4+(S.reviewStep/S.totalReview)*14);
-  S.currentModel=genFracReview();startTimer();
-  render(`<div class="canvas">${renderFractionalFull(S.currentModel)}</div>
-    <div class="key-point neutral" style="font-weight:500">Name the fractional relation — part is one fraction of whole.</div>`,
-    hInput('rIn','e.g. blue is one third of green','submitReview'));
-  speak('Name the fractional relation.',()=>focus('rIn'));
-  if(!ttsEnabled)focus('rIn');
+  S.currentModel=genFrac(null);startTimer();
+  render(`<div class="canvas">${renderFractional({...S.currentModel,unknownRole:null})}</div><div class="question-prompt">Name the fractional relation — part is one fraction of whole.</div>`,
+    `<div class="response-buttons">${shuffle([`one ${fracName(S.currentModel.denominator)} of ${S.currentModel.wholeColor.name}`,`one ${fracName(S.currentModel.denominator===2?3:2)} of ${S.currentModel.wholeColor.name}`,`one ${fracName(S.currentModel.denominator)} of ${S.currentModel.partColor.name}`]).slice(0,3).map(o=>`<button class="btn" onclick="submitReview('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
+  speak('Name the fractional relation.');
 }
 function submitReview(r){
   const m=S.currentModel;
-  const n=r.toLowerCase().trim();
-  const hasPart=cmatch(n,m.partColor.name);
-  const hasWhole=cmatch(n,m.wholeColor.name);
-  const fNames=['half','third','fourth','fifth'];
-  const hasFrac=fNames.some(f=>n.includes(f));
-  const correct=hasPart&&hasWhole&&hasFrac;
-  recordResp('review',correct);
-  if(correct){S.reviewStep++;nextReview();return;}
-  const audio=`Name the relation. The filled box is one ${fracName(m.denominator)} of the whole. Say: ${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}.`;
-  const short=`${m.partColor.name} is one ${fracName(m.denominator)} of ${m.wholeColor.name}.`;
-  render(`<div class="canvas">${renderFractionalFull(m)}</div>
-    <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
-    hInput('rIn','e.g. blue is one third of green','submitReview'));
-  speak(audio,()=>focus('rIn'));if(!ttsEnabled)focus('rIn');
+  const ok=cmatch(r,m.wholeColor.name)&&r.includes(fracName(m.denominator));
+  recordResp('review',ok);
+  if(ok){S.reviewStep++;nextReview();return;}
+  const audio=`Name the fraction — the filled box is one ${fracName(m.denominator)} of the ${m.wholeColor.name} whole.`;
+  render(`<div class="canvas">${renderFractional({...m,unknownRole:null})}</div>
+    <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+    `<div class="response-buttons">${shuffle([`one ${fracName(m.denominator)} of ${m.wholeColor.name}`,`one ${fracName(m.denominator===2?3:2)} of ${m.wholeColor.name}`,`one ${fracName(m.denominator)} of ${m.partColor.name}`]).slice(0,3).map(o=>`<button class="btn" onclick="submitReview('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
+  speak(audio);animateText(audio,'instructAnim');
 }
-
-// ── Instruction ───────────────────────────────────────────────────────────────
 function showInstructIntro(){
-  S.phase='instruction';S.instructStep=0;setPhase('Instruction');setProgress(20);
-  const audio=`You know fractional relations. Now let's look at the same pictures from a different direction — multiplicative relations.`;
-  const short=`Same picture, new direction — multiplicative relations.`;
-  render(`<div class="key-point">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
-    `<button class="btn-continue" onclick="showInstruct(0)">Show me</button>`);
+  S.phase='instruction';setPhase('Instruction');setProgress(20);
+  const audio=`You know fractional relations. Now look at the same pictures from a different direction — multiplicative relations.`;
+  render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+    `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="showInstruct(0)">Show me</button></div>`);
   speak(audio);
+  animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
 }
+function afterInstruct(){showNamingIntro();}
 
-function showInstruct(step){
-  S.instructStep=step;S.instructFU=false;
-  if(step>=INSTRUCT.length){showNamingIntro();return;}
-  setProgress(22+(step/INSTRUCT.length)*20);
-  const def=INSTRUCT[step];S.instructM=def.build();const m=S.instructM;
-  const audio=def.audio(m),short=def.keyPoint(m);
-  render(`<div class="canvas">${renderFractional(m)}</div>
-    <div class="key-point">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>
-    <div class="key-point neutral" style="font-weight:500">${typeof def.question==='function'?def.question(m):def.question}</div>`,
-    hInput('iIn','Type or speak your answer...','submitInstruct'));
-  speak(audio+' '+(typeof def.question==='function'?def.question(m):def.question),()=>focus('iIn'));
-  if(!ttsEnabled)focus('iIn');
-}
-
-function submitInstruct(){
-  const el=document.getElementById('iIn');if(!el)return;
-  const r=el.value.toLowerCase().trim();if(!r)return;
-  const def=INSTRUCT[S.instructStep],m=S.instructM;
-  if(!S.instructFU){
-    const acc=typeof def.acc==='function'?def.acc(m):def.acc;
-    const ok=acc.some(a=>r.includes(a.toLowerCase()));
-    if(ok){
-      S.instructFU=true;
-      const fuAudio=def.fu(m),fuShort=def.fuKey(m);
-      const fuQ=typeof def.fuQ==='function'?def.fuQ(m):def.fuQ;
-      render(`<div class="canvas">${renderFractional(m)}</div>
-        <div class="key-point bridge">${ttsEnabled?aBtn():''}<span>${dt(fuAudio,fuShort)}</span></div>
-        <div class="key-point neutral" style="font-weight:500">${fuQ}</div>`,
-        hInput('iIn','Type or speak your answer...','submitInstruct'));
-      speak(fuAudio+' '+fuQ,()=>focus('iIn'));if(!ttsEnabled)focus('iIn');
-    } else {
-      const cor=typeof def.cor==='function'?def.cor(m):def.cor;
-      const corKey=typeof def.corKey==='function'?def.corKey(m):def.corKey;
-      const q=typeof def.question==='function'?def.question(m):def.question;
-      render(`<div class="canvas">${renderFractional(m)}</div>
-        <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(cor,corKey)}</span></div>
-        <div class="key-point neutral" style="font-weight:500">${q}</div>`,
-        hInput('iIn','Type or speak your answer...','submitInstruct'));
-      speak(cor+' '+q,()=>focus('iIn'));if(!ttsEnabled)focus('iIn');
-    }
-  } else {
-    const fuAcc=typeof def.fuAcc==='function'?def.fuAcc(m):def.fuAcc;
-    const ok=fuAcc.some(a=>r.includes(a.toLowerCase()));
-    if(ok){showInstruct(S.instructStep+1);}
-    else{
-      const fuCor=typeof def.fuCor==='function'?def.fuCor(m):def.fuCor;
-      const fuCorKey=typeof def.fuCorKey==='function'?def.fuCorKey(m):def.fuCorKey;
-      const fuQ=typeof def.fuQ==='function'?def.fuQ(m):def.fuQ;
-      render(`<div class="canvas">${renderFractional(m)}</div>
-        <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(fuCor,fuCorKey)}</span></div>
-        <div class="key-point neutral" style="font-weight:500">${fuQ}</div>`,
-        hInput('iIn','Type or speak your answer...','submitInstruct'));
-      speak(fuCor+' '+fuQ,()=>focus('iIn'));if(!ttsEnabled)focus('iIn');
-    }
-  }
-}
-
-// ── Relation Naming ───────────────────────────────────────────────────────────
 function showNamingIntro(){
   S.phase='naming';S.namingStep=0;setPhase('Relation Naming');setProgress(44);
-  const audio=`Now you will name relations to find the unknown. The unknown could be the whole or the part. You can use either the fractional or multiplicative relation — both are correct. Use whichever you find most useful.`;
-  const short=`Find the unknown — name either fractional or multiplicative.`;
-  render(`<div class="key-point">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
-    `<button class="btn-continue" onclick="nextNaming()">Ready</button>`);
+  const audio=`Name the relation to find the unknown. The unknown could be the whole or the part. Use either fractional or multiplicative — both are correct.`;
+  render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+    `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="nextNaming()">Ready</button></div>`);
   speak(audio);
+  animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
 }
-
 function nextNaming(){
   if(S.namingStep>=S.totalNaming){showFreeIntro();return;}
   setProgress(46+(S.namingStep/S.totalNaming)*24);
-  // Alternate unknown: whole, part, whole, part...
-  const unknownRole=S.namingStep%2===0?'whole':'part';
-  const m=genFractional(unknownRole);
-  S.currentModel=m;
-  S.currentNaming={
-    wholeColor:m.wholeColor.name,partColor:m.partColor.name,
-    denominator:m.denominator,fracN:fracName(m.denominator),
-    unknownRole,
-  };
+  const unkRole=S.namingStep%2===0?'whole':'part';
+  S.currentModel=genFrac(unkRole);
+  const m=S.currentModel;
+  S.currentNaming={whole:m.wholeColor.name,part:m.partColor.name,d:m.denominator,fracN:fracName(m.denominator),numW:numWord(m.denominator),unkRole};
   startTimer();
-  showNamingItem();
+  if(!S.scaffoldColorLocked&&S.scaffoldColorActive) showColorScaffold();
+  else if(!S.scaffoldRoleLocked&&S.scaffoldRoleActive) showRoleScaffold();
+  else showNamingItem();
 }
-
-function showNamingItem(){
-  const showColor=!S.scaffoldColorLocked&&S.scaffoldColorActive;
-  const showRole=!S.scaffoldRoleLocked&&S.scaffoldRoleActive;
-  if(showColor) showColorScaffold();
-  else if(showRole) showRoleScaffold();
-  else showFullNaming();
-}
-
 function showColorScaffold(){
-  const n=S.currentNaming;
-  const unknownName=n.unknownRole==='whole'?n.wholeColor:n.partColor;
-  render(`<div class="canvas">${renderFractional(S.currentModel)}</div>
-    <div class="key-point neutral" style="font-weight:500">What color is the unknown?</div>`,
-    hInput('cIn','Type or speak the color...','submitColorScaffold'));
-  speak('What color is the unknown?',()=>focus('cIn'));if(!ttsEnabled)focus('cIn');
+  const n=S.currentNaming;const unk=n.unkRole==='whole'?n.whole:n.part;
+  const opts=shuffle([...COLORS.map(c=>c.name).filter(c=>c!==unk).slice(0,3),unk]);
+  render(`<div class="canvas">${renderModel(S.currentModel)}</div><div class="question-prompt">What color is the unknown?</div>`,
+    `<div class="response-buttons">${opts.map(o=>`<button class="btn" onclick="submitColorScaffold('${o}')">${o}</button>`).join('')}</div>`);
+  speak('What color is the unknown?');
 }
-function submitColorScaffold(){
-  const el=document.getElementById('cIn');if(!el)return;
-  const r=el.value.toLowerCase().trim();if(!r)return;
-  const n=S.currentNaming;
-  const unknownName=n.unknownRole==='whole'?n.wholeColor:n.partColor;
-  const correct=colorMatches(r,unknownName)||cmatch(r,unknownName);
-  recordResp('scaffold_color',correct);
-  updateColorScaffold(correct);
-  if(correct){if(!S.scaffoldRoleLocked&&S.scaffoldRoleActive)showRoleScaffold();else showFullNaming();}
+function submitColorScaffold(r){
+  const n=S.currentNaming;const unk=n.unkRole==='whole'?n.whole:n.part;
+  const ok=cmatch(r,unk);updateColorScaffold(ok);recordResp('scaffold_color',ok);
+  if(ok){if(!S.scaffoldRoleLocked&&S.scaffoldRoleActive)showRoleScaffold();else showNamingItem();}
   else{
     const audio=`Look for the bar with the question mark. What color is it?`;
-    render(`<div class="canvas">${renderFractional(S.currentModel)}</div>
-      <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,'Look for the ? bar.')}</span></div>`,
-      hInput('cIn','Type or speak the color...','submitColorScaffold'));
-    speak(audio,()=>focus('cIn'));if(!ttsEnabled)focus('cIn');
+    render(`<div class="canvas">${renderModel(S.currentModel)}</div>
+      <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+      `<div class="response-buttons">${shuffle([...COLORS.map(c=>c.name).filter(c=>c!==unk).slice(0,3),unk]).map(o=>`<button class="btn" onclick="submitColorScaffold('${o}')">${o}</button>`).join('')}</div>`);
+    speak(audio);animateText(audio,'instructAnim');
   }
 }
-
 function showRoleScaffold(){
-  const n=S.currentNaming;
-  const unknownName=n.unknownRole==='whole'?n.wholeColor:n.partColor;
-  render(`<div class="canvas">${renderFractional(S.currentModel)}</div>
-    <div class="key-point neutral" style="font-weight:500">Is ${unknownName} the whole bar or the part?</div>`,
-    `<div class="response-buttons">
-      <button class="btn" onclick="submitRoleScaffold('whole')">The Whole</button>
-      <button class="btn" onclick="submitRoleScaffold('part')">The Part</button>
-    </div>`);
-  speak(`Is ${unknownName} the whole bar or the part?`);
+  const n=S.currentNaming;const unk=n.unkRole==='whole'?n.whole:n.part;
+  render(`<div class="canvas">${renderModel(S.currentModel)}</div><div class="question-prompt">Is ${unk} the whole bar or the part?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitRoleScaffold('whole')">The Whole</button><button class="btn" onclick="submitRoleScaffold('part')">The Part</button></div>`);
+  speak(`Is ${unk} the whole bar or the part?`);
 }
 function submitRoleScaffold(r){
-  const n=S.currentNaming;
-  const correct=r===n.unknownRole;
-  recordResp('scaffold_role',correct);
-  updateRoleScaffold(correct);
-  if(correct){showFullNaming();return;}
-  const unknownName=n.unknownRole==='whole'?n.wholeColor:n.partColor;
-  const audio=n.unknownRole==='whole'
-    ?`The ${n.wholeColor} bar spans the full width — that makes it the whole.`
-    :`The ${n.partColor} bar is the filled box — that makes it the part.`;
-  render(`<div class="canvas">${renderFractional(S.currentModel)}</div>
-    <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,`${unknownName} is the ${n.unknownRole}.`)}</span></div>`,
-    `<div class="response-buttons">
-      <button class="btn" onclick="submitRoleScaffold('whole')">The Whole</button>
-      <button class="btn" onclick="submitRoleScaffold('part')">The Part</button>
-    </div>`);
-  speak(audio);
+  const n=S.currentNaming;const ok=r===n.unkRole;
+  updateRoleScaffold(ok);recordResp('scaffold_role',ok);
+  if(ok){showNamingItem();return;}
+  const unk=n.unkRole==='whole'?n.whole:n.part;
+  const audio=n.unkRole==='whole'?`The ${unk} bar spans the full width — it is the whole.`:`The ${unk} bar is the filled box — it is the part.`;
+  render(`<div class="canvas">${renderModel(S.currentModel)}</div>
+    <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitRoleScaffold('whole')">The Whole</button><button class="btn" onclick="submitRoleScaffold('part')">The Part</button></div>`);
+  speak(audio);animateText(audio,'instructAnim');
 }
-
-function showFullNaming(){
+function showNamingItem(){
   const n=S.currentNaming;
-  const hint=n.unknownRole==='whole'
-    ?`e.g. ${n.wholeColor} is ${n.denominator} times ${n.partColor}`
-    :`e.g. ${n.partColor} is one ${n.fracN} of ${n.wholeColor}`;
-  render(`<div class="canvas">${renderFractional(S.currentModel)}</div>
-    <div class="key-point neutral" style="font-weight:500">What equals the unknown? Name any true relation.</div>`,
-    hInput('nIn',hint,'submitNaming'));
-  speak('What equals the unknown? Name any true relation.',()=>focus('nIn'));
-  if(!ttsEnabled)focus('nIn');
-}
-
-function checkNaming(r,n){
-  const hasPart=cmatch(r,n.partColor);
-  const hasWhole=cmatch(r,n.wholeColor);
-  const fNames=['half','third','fourth','fifth'];
-  const hasFrac=fNames.some(f=>r.includes(f));
-  const hasMult=r.includes('times')||r.includes('×');
-  const hasNum=r.includes(String(n.denominator));
-  // Accept fractional or multiplicative
-  const fractionalOk=hasPart&&hasWhole&&hasFrac;
-  const multiplicativeOk=hasPart&&hasWhole&&(hasMult||hasNum);
-  if(fractionalOk||multiplicativeOk) return 'correct';
-  if((hasPart||hasWhole)&&!hasFrac&&!hasMult&&!hasNum) return 'missing_rel';
-  if(hasFrac||hasMult) return 'missing_color';
-  return 'unclear';
-}
-
-function submitNaming(){
-  const el=document.getElementById('nIn');if(!el)return;
-  const r=el.value.trim();if(!r)return;
-  const n=S.currentNaming;
-  const res=checkNaming(r.toLowerCase(),n);
-  if(res==='correct'){
-    recordResp('naming',true);
-    updateColorScaffold(true);updateRoleScaffold(true);
-    S.namingStep++;nextNaming();return;
-  }
-  recordResp('naming',false);
-  let audio='',short='';
-  if(res==='missing_rel'){
-    if(n.unknownRole==='whole'){
-      audio=`Name how the whole relates to the part. The whole is ${n.denominator} times the part. Say: ${n.wholeColor} is ${n.denominator} times ${n.partColor}.`;
-      short=`Name the relation — ${n.wholeColor} is ${n.denominator} times ${n.partColor}.`;
-    } else {
-      audio=`Name how the part relates to the whole. The part is one ${n.fracN} of the whole. Say: ${n.partColor} is one ${n.fracN} of ${n.wholeColor}.`;
-      short=`Name the relation — ${n.partColor} is one ${n.fracN} of ${n.wholeColor}.`;
-    }
-    updateRoleScaffold(false);
-  } else if(res==='missing_color'){
-    audio=`Name both colors in the relation. Say: ${n.unknownRole==='whole'?`${n.wholeColor} is ${n.denominator} times ${n.partColor}`:`${n.partColor} is one ${n.fracN} of ${n.wholeColor}`}.`;
-    short=`Name both colors.`;
-    updateColorScaffold(false);
+  let correctMult,correctFrac,opts;
+  if(n.unkRole==='whole'){
+    correctMult=`${n.numW} times ${n.part} equals unknown`;
+    correctFrac=`one ${n.fracN} of unknown equals ${n.part}`;
+    opts=shuffle([correctMult,correctFrac,`one ${n.fracN} of ${n.part} equals unknown`]).slice(0,3);
   } else {
-    audio=`Look at the picture. Count the equal parts and name the relation.`;
-    short=`Count the parts and name the relation.`;
-    updateColorScaffold(false);updateRoleScaffold(false);
+    correctFrac=`one ${n.fracN} of ${n.whole} equals unknown`;
+    correctMult=`${n.numW} times unknown equals ${n.whole}`;
+    opts=shuffle([correctFrac,correctMult,`${n.numW} times ${n.whole} equals unknown`]).slice(0,3);
   }
-  render(`<div class="canvas">${renderFractional(S.currentModel)}</div>
-    <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
-    hInput('nIn',n.unknownRole==='whole'?`e.g. ${n.wholeColor} is ${n.denominator} times ${n.partColor}`:`e.g. ${n.partColor} is one ${n.fracN} of ${n.wholeColor}`,'submitNaming'));
-  speak(audio,()=>focus('nIn'));if(!ttsEnabled)focus('nIn');
+  const correct=n.unkRole==='whole'?correctMult:correctFrac;
+  if(!opts.includes(correct))opts[opts.length-1]=correct;
+  render(`<div class="canvas">${renderModel(S.currentModel)}</div><div class="question-prompt">What equals the unknown?</div>`,
+    `<div class="response-buttons">${shuffle(opts).map(o=>`<button class="btn" onclick="submitNaming('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
+  speak('What equals the unknown?');
+}
+function submitNaming(r){
+  const n=S.currentNaming;
+  const hasTimes=r.includes('times');const hasFrac=FRAC_NAMES.some(f=>r.includes(f));
+  const ok=n.unkRole==='whole'
+    ?(hasTimes&&cmatch(r,n.part))||(cmatch(r,n.whole)&&cmatch(r,n.part)&&(hasTimes||hasFrac))
+    :(hasFrac&&cmatch(r,n.whole))||(cmatch(r,n.whole)&&cmatch(r,n.part)&&(hasTimes||hasFrac));
+  recordResp('naming',ok);updateColorScaffold(ok);updateRoleScaffold(ok);
+  if(ok){S.namingStep++;nextNaming();return;}
+  let audio=n.unkRole==='whole'
+    ?`The unknown is the whole. Use times — ${n.whole} is ${n.numW} times ${n.part}.`
+    :`The unknown is the part. Use the fraction — ${n.part} is one ${n.fracN} of ${n.whole}.`;
+  const correct=n.unkRole==='whole'?`${n.numW} times ${n.part} equals unknown`:`one ${n.fracN} of ${n.whole} equals unknown`;
+  render(`<div class="canvas">${renderModel(S.currentModel)}</div>
+    <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+    `<div class="response-buttons">${shuffle([correct,n.unkRole==='whole'?`one ${n.fracN} of ${n.part} equals unknown`:`${n.numW} times ${n.whole} equals unknown`,`one ${fracName(n.d===2?3:2)} of ${n.whole} equals unknown`]).slice(0,3).map(o=>`<button class="btn" onclick="submitNaming('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
+  speak(audio);animateText(audio,'instructAnim');
 }
 
 // ── Free Relation Practice ────────────────────────────────────────────────────
 function showFreeIntro(){
   S.phase='free';S.freeStep=0;setPhase('Free Relations');setProgress(72);
-  const audio=`Now for a challenge. You will see three pictures with no unknowns. For each one, name four distinct true relations — fractional, multiplicative, or both directions. The more you find, the better.`;
-  const short=`Challenge: name four true relations per picture — fractional or multiplicative.`;
-  render(`<div class="key-point bridge">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>`,
-    `<button class="btn-continue" onclick="nextFree()">Ready</button>`);
+  const audio=`Challenge: for each picture, name four true relations — fractional, multiplicative, or both directions.`;
+  render(`<div class="instruct-text bridge" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+    `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="nextFree()">Ready</button></div>`);
   speak(audio);
+  animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
 }
-
 function nextFree(){
   if(S.freeStep>=S.totalFree){showComplete();return;}
   setProgress(74+(S.freeStep/S.totalFree)*22);
-  S.freeModel=genFractional(null);
-  S.freeRelationsFound=[];
+  S.freeModel=genFrac(null);S.freeRelationsFound=[];
   showFreeItem();
 }
-
 function showFreeItem(){
-  const remaining=S.freeTarget-S.freeRelationsFound.length;
+  const m=S.freeModel;const remaining=S.freeTarget-S.freeRelationsFound.length;
   const tags=S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('');
-  render(`<div class="canvas">${renderFractionalFull(S.freeModel)}</div>
-    <div class="key-point neutral"><span>Name a true relation. Find ${remaining} more.</span></div>
-    ${S.freeRelationsFound.length>0?`<div class="relations-found">${tags}</div>`:''}`,
-    hInput('freeIn','Name any true relation...','submitFreeRelation'));
-  speak(remaining===S.freeTarget?'Name a true relation you can see.':`Good. ${remaining} more to find.`,()=>focus('freeIn'));
-  if(!ttsEnabled)focus('freeIn');
+  const opts=shuffle([
+    `one ${fracName(m.denominator)} of ${m.wholeColor.name}`,
+    `${numWord(m.denominator)} times ${m.partColor.name}`,
+    `one ${fracName(m.denominator===2?3:2)} of ${m.wholeColor.name}`,
+    `${numWord(m.denominator===2?3:2)} times ${m.partColor.name}`,
+  ]).slice(0,3);
+  render(`<div class="canvas">${renderFractional({...m,unknownRole:null})}</div>
+    <div class="question-prompt">Name a true relation. ${remaining} more to find.</div>
+    ${tags?`<div class="relations-found">${tags}</div>`:''}`,
+    `<div class="response-buttons">${opts.map(o=>`<button class="btn" onclick="submitFree('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
+  speak(`Name a true relation. ${remaining} more to find.`);
 }
-
-function checkTrueRelation(r,m){
-  const wN=m.wholeColor.name,pN=m.partColor.name,d=m.denominator,fN=fracName(d);
-  const hasWhole=cmatch(r,wN),hasPart=cmatch(r,pN);
-  const fNames=['half','third','fourth','fifth'];
-  const hasFrac=fNames.some(f=>r.includes(f));
-  const hasMult=r.includes('times')||r.includes('×');
-  const hasNum=r.includes(String(d));
-
-  // Fractional: part is one frac of whole
-  if(hasPart&&hasWhole&&hasFrac) return{valid:true,relation:`${pN} is one ${fN} of ${wN}`};
-  // Multiplicative: whole is N times part
-  if(hasWhole&&hasPart&&(hasMult||hasNum)) return{valid:true,relation:`${wN} is ${d} times ${pN}`};
-  // Partial — just frac word with colors
-  if(hasPart&&hasFrac&&!hasWhole) return{valid:true,relation:`${pN} is one ${fN} of ${wN}`};
-  if(hasWhole&&(hasMult||hasNum)&&!hasPart) return{valid:true,relation:`${wN} is ${d} times ${pN}`};
-  // Just relation type words with one color
-  if(hasPart&&hasFrac) return{valid:true,relation:`${pN} is one ${fN} of ${wN}`};
-  if(hasWhole&&hasMult) return{valid:true,relation:`${wN} is ${d} times ${pN}`};
-  return{valid:false,relation:null};
-}
-
-function isDuplicate(newR,found){
-  const n=newR.toLowerCase();
-  return found.some(f=>f.toLowerCase()===n||(f.toLowerCase().includes(n.slice(0,10))&&n.length>6));
-}
-
-function submitFreeRelation(){
-  const el=document.getElementById('freeIn');if(!el)return;
-  const r=el.value.trim();if(!r)return;
-  el.value='';
-  const result=checkTrueRelation(r.toLowerCase(),S.freeModel);
+function submitFree(r){
   const m=S.freeModel;
-  const wN=m.wholeColor.name,pN=m.partColor.name,d=m.denominator,fN=fracName(d);
-
-  if(!result.valid){
-    const audio=`I can't confirm that relation. Try naming the fractional relation — ${pN} is one ${fN} of ${wN}. Or the multiplicative — ${wN} is ${d} times ${pN}.`;
-    const short=`Try: ${pN} is one ${fN} of ${wN}, or ${wN} is ${d} times ${pN}.`;
-    render(`<div class="canvas">${renderFractionalFull(S.freeModel)}</div>
-      <div class="key-point correction">${ttsEnabled?aBtn():''}<span>${dt(audio,short)}</span></div>
-      ${S.freeRelationsFound.length>0?`<div class="relations-found">${S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('')}</div>`:''}`,
-      hInput('freeIn','Name any true relation...','submitFreeRelation'));
-    speak(audio,()=>focus('freeIn'));if(!ttsEnabled)focus('freeIn');
-    return;
+  const wN=m.wholeColor.name,pN=m.partColor.name,d=m.denominator,fN=fracName(d),nW=numWord(d);
+  const isFracRel=cmatch(r,wN)&&r.includes(fN);
+  const isMultRel=(cmatch(r,pN)||cmatch(r,wN))&&r.includes(nW);
+  const isTrue=isFracRel||isMultRel;
+  if(!isTrue){
+    const audio=`Try: one ${fN} of ${wN}, or ${nW} times ${pN}.`;
+    render(`<div class="canvas">${renderFractional({...m,unknownRole:null})}</div>
+      <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
+      ${S.freeRelationsFound.length?`<div class="relations-found">${S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('')}</div>`:''}`,
+      `<div class="response-buttons">${shuffle([`one ${fN} of ${wN}`,`${nW} times ${pN}`,`one ${fracName(d===2?3:2)} of ${wN}`]).slice(0,3).map(o=>`<button class="btn" onclick="submitFree('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
+    speak(audio);animateText(audio,'instructAnim');return;
   }
-
-  if(isDuplicate(result.relation,S.freeRelationsFound)){
-    render(`<div class="canvas">${renderFractionalFull(S.freeModel)}</div>
-      <div class="key-point correction">${ttsEnabled?aBtn():''}<span>You already found that one. Try a different relation.</span></div>
+  const canon=isFracRel?`one ${fN} of ${wN}`:`${nW} times ${pN}`;
+  if(S.freeRelationsFound.includes(canon)){
+    render(`<div class="canvas">${renderFractional({...m,unknownRole:null})}</div>
+      <div class="question-prompt">Already found that one. Try a different relation.</div>
       <div class="relations-found">${S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('')}</div>`,
-      hInput('freeIn','Name any true relation...','submitFreeRelation'));
-    speak('Already found that one. Try another.',()=>focus('freeIn'));if(!ttsEnabled)focus('freeIn');
+      `<div class="response-buttons">${shuffle([`one ${fN} of ${wN}`,`${nW} times ${pN}`,`one ${fracName(d===2?3:2)} of ${wN}`,`${numWord(d===2?3:2)} times ${pN}`]).filter(o=>!S.freeRelationsFound.includes(o)).slice(0,3).map(o=>`<button class="btn" onclick="submitFree('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
     return;
   }
-
-  S.freeRelationsFound.push(result.relation);
-  recordResp('free',true);
-
+  S.freeRelationsFound.push(canon);recordResp('free',true);
   if(S.freeRelationsFound.length>=S.freeTarget){
     S.freeStep++;
     if(S.freeStep>=S.totalFree){showComplete();return;}
-    const audio=`You found all four. Here is the next picture.`;
-    render(`<div class="canvas">${renderFractionalFull(S.freeModel)}</div>
-      <div class="key-point">${ttsEnabled?aBtn():''}<span>${dt(audio,'All four found. Next picture.')}</span></div>
+    const audio=`You found all four. Next picture.`;
+    render(`<div class="canvas">${renderFractional({...m,unknownRole:null})}</div>
+      <div class="instruct-text">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
       <div class="relations-found">${S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('')}</div>`,
-      `<button class="btn-continue" onclick="nextFree()">Next</button>`);
-    speak(audio);
+      `<div id="instructBtns"><button class="btn-continue" onclick="nextFree()">Next</button></div>`);
+    speak(audio);animateText(audio,'instructAnim');
   } else {
     showFreeItem();
   }
 }
 
-// ── Completion ────────────────────────────────────────────────────────────────
-function showComplete(){
-  setProgress(100);setPhase('Complete');
-  render(`<div class="completion">
-    <div style="font-size:44px;margin-bottom:12px">◈</div>
-    <h2>Multiplicative Relations</h2>
-    <p>You can name fractional and multiplicative relations — and the inverse that comes for free.<br><br>
-      <em>the part is one fraction of the whole</em><br>
-      <em>the whole is N times the part</em><br><br>
-      Same picture. Two directions. Both true.</p>
-    <div style="display:flex;gap:12px;margin-top:20px">
-      <a href="index.html" style="flex:1;padding:14px;border-radius:12px;background:#2D6A4F;color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;text-align:center;text-decoration:none;display:block">Home</a>
-    </div>
-  </div>`,``);
-  speak('Outstanding. You have completed all five relation naming lessons.');
-}
 
-if(window.speechSynthesis){window.speechSynthesis.onvoiceschanged=()=>{};window.speechSynthesis.getVoices();}
+// ── Init ──────────────────────────────────────────────────────────────────────
+if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged=()=>{}; window.speechSynthesis.getVoices(); }
 document.getElementById('ttsToggle').classList.add('on');
 showIntro();
 </script>
