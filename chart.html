@@ -203,14 +203,22 @@ function calcEffectiveCeleration(firstRate) {
   return Math.max(steepened, CELERATION); // never less than standard
 }
 
-// Today's derived daily goal
+// Today's derived daily goal — anchored to best daily pinpoint so far
 function calcTodayGoal(L) {
   const sorted = [...L.sessions].sort((a,b) => new Date(a.date)-new Date(b.date));
   if (!sorted.length) return null;
-  const firstSession = sorted[0];
-  const firstRate = firstSession.cpm || 1;
-  const weeks = weeksElapsed(firstSession.date, new Date().toISOString());
-  return Math.min(aimRate(firstRate, weeks), PASSOFF_AIM);
+  // Best per day
+  const byDay = {};
+  sorted.forEach(s => {
+    const dk = dayKey(s.date);
+    if (!byDay[dk] || (s.cpm||0) > (byDay[dk].cpm||0)) byDay[dk] = s;
+  });
+  const daily = Object.values(byDay).sort((a,b) => new Date(a.date)-new Date(b.date));
+  const bestSession = daily.reduce((b,s) => (s.cpm||0) > (b.cpm||0) ? s : b, daily[0]);
+  const anchorRate = bestSession.cpm || 1;
+  const cel = calcEffectiveCeleration(anchorRate);
+  const weeks = weeksElapsed(bestSession.date, new Date().toISOString());
+  return Math.min(anchorRate * Math.pow(cel, weeks), PASSOFF_AIM);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -222,20 +230,30 @@ function buildAimLines(lessonData, xAt, H, PT, PB, W, PR, viewMode) {
   lessonData.forEach(L => {
     if (!L.sessions.length) return;
     const sorted = [...L.sessions].sort((a,b) => new Date(a.date)-new Date(b.date));
-    const firstSession = sorted[0];
-    const firstRate = firstSession.cpm || 1;
-    if (firstRate <= 0) return;
 
-    // Use effective celeration — steepened if standard won't hit 30 within a week
-    const cel = calcEffectiveCeleration(firstRate);
-    const wtp = weeksToPassoffWith(firstRate, cel);
+    // Reduce to best per day — same logic as the chart series
+    const byDay = {};
+    sorted.forEach(s => {
+      const dk = dayKey(s.date);
+      if (!byDay[dk] || (s.cpm||0) > (byDay[dk].cpm||0)) byDay[dk] = s;
+    });
+    const daily = Object.values(byDay).sort((a,b) => new Date(a.date)-new Date(b.date));
+
+    // Anchor aim line to the best daily pinpoint recorded so far
+    const bestSession = daily.reduce((b,s) => (s.cpm||0) > (b.cpm||0) ? s : b, daily[0]);
+    const anchorRate = bestSession.cpm || 1;
+    if (anchorRate <= 0) return;
+
+    // Use effective celeration from the anchor point
+    const cel = calcEffectiveCeleration(anchorRate);
+    const wtp = weeksToPassoffWith(anchorRate, cel);
     if (!isFinite(wtp)) return;
-    const firstDate = new Date(firstSession.date);
-    const passoffDate = new Date(firstDate.getTime() + wtp * 7 * DAY_MS);
+    const anchorDate = new Date(bestSession.date);
+    const passoffDate = new Date(anchorDate.getTime() + wtp * 7 * DAY_MS);
 
-    const x0 = xAt(firstSession.date);
+    const x0 = xAt(bestSession.date);
     const x1 = xAt(passoffDate.toISOString());
-    const y0 = toY(firstRate, H, PT, PB);
+    const y0 = toY(anchorRate, H, PT, PB);
     const y1 = toY(PASSOFF_AIM, H, PT, PB);
 
     // Draw aim line — solid neutral gray
@@ -541,12 +559,19 @@ function buildChart(lessonData, viewMode) {
   lessonData.forEach(L => {
     if (!L.sessions.length) return;
     const sorted = [...L.sessions].sort((a,b) => new Date(a.date)-new Date(b.date));
-    const firstRate = sorted[0].cpm || 1;
-    if (firstRate <= 0) return;
-    const cel = calcEffectiveCeleration(firstRate);
-    const wtp = weeksToPassoffWith(firstRate, cel);
+    const byDay = {};
+    sorted.forEach(s => {
+      const dk = dayKey(s.date);
+      if (!byDay[dk] || (s.cpm||0) > (byDay[dk].cpm||0)) byDay[dk] = s;
+    });
+    const daily = Object.values(byDay).sort((a,b) => new Date(a.date)-new Date(b.date));
+    const bestSession = daily.reduce((b,s) => (s.cpm||0) > (b.cpm||0) ? s : b, daily[0]);
+    const anchorRate = bestSession.cpm || 1;
+    if (anchorRate <= 0) return;
+    const cel = calcEffectiveCeleration(anchorRate);
+    const wtp = weeksToPassoffWith(anchorRate, cel);
     if (!isFinite(wtp)) return;
-    const projDate = new Date(new Date(sorted[0].date).getTime() + wtp * 7 * DAY_MS);
+    const projDate = new Date(new Date(bestSession.date).getTime() + wtp * 7 * DAY_MS);
     if (projDate > new Date(maxProjectedDate)) maxProjectedDate = projDate.toISOString();
   });
 
