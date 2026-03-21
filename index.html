@@ -6,64 +6,86 @@
 <title>Relation Naming</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
-  :root{
+  :root {
     --bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;
-    --text-primary:#1A1714;--text-muted:#9B9591;--accent:#2D6A4F;--accent-light:#EAF4EF;
+    --text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;
+    --accent:#2D6A4F;--accent-light:#EAF4EF;
     --radius:12px;--radius-lg:20px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);
     min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
-  .app{width:100%;max-width:480px;display:flex;flex-direction:column;gap:28px;}
+  .app{width:100%;max-width:480px;display:flex;flex-direction:column;gap:24px;}
   h1{font-family:'DM Serif Display',serif;font-size:32px;letter-spacing:-0.5px;}
-  p{font-size:15px;color:var(--text-muted);line-height:1.6;margin-top:6px;}
-  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px;}
-  .card-link{display:flex;align-items:center;justify-content:space-between;
-    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
-    padding:18px 22px;text-decoration:none;color:var(--text-primary);
-    transition:all 0.15s;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-  .card-link:hover{border-color:var(--accent);background:var(--accent-light);transform:translateY(-1px);}
-  .card-link:last-child{margin-bottom:0;}
-  .link-title{font-weight:600;font-size:16px;}
-  .link-sub{font-size:13px;color:var(--text-muted);margin-top:2px;}
-  .link-arrow{color:var(--text-muted);font-size:18px;}
-  .card-link.featured{border-color:var(--accent);background:var(--accent-light);}
-  .card-link.featured .link-arrow{color:var(--accent);}
-  .divider{border:none;border-top:1px solid var(--border);}
+  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
+    color:var(--text-muted);margin-bottom:8px;}
+  .link-group{display:flex;flex-direction:column;gap:8px;}
+  a.item{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius-lg);text-decoration:none;
+    color:var(--text-primary);transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+  a.item:hover{border-color:var(--accent);background:var(--accent-light);transform:translateY(-1px);}
+  .item-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;
+    justify-content:center;font-size:18px;flex-shrink:0;}
+  .item-icon.lesson{background:#EAF4EF;}
+  .item-icon.fluency{background:#FBF0E4;}
+  .item-icon.chart{background:#F0EAF8;}
+  .item-text strong{display:block;font-size:15px;font-weight:600;}
+  .item-text span{font-size:12px;color:var(--text-muted);}
+  .divider{height:1px;background:var(--border);}
 </style>
 </head>
 <body>
 <div class="app">
-  <div>
-    <h1>Relation Naming</h1>
-    <p>Build the relational perception that underlies all mathematical thinking.</p>
-  </div>
+  <h1>Relation Naming</h1>
+
   <div>
     <div class="section-label">Lessons</div>
-    <a class="card-link" href="lesson-one.html">
-      <div><div class="link-title">Lesson One</div><div class="link-sub">Equal Relations</div></div>
-      <span class="link-arrow">→</span>
-    </a>
-    <a class="card-link" href="lesson-two.html">
-      <div><div class="link-title">Lesson Two</div><div class="link-sub">Part-Whole Relations</div></div>
-      <span class="link-arrow">→</span>
-    </a>
-    <a class="card-link" href="lesson-three.html">
-      <div><div class="link-title">Lesson Three</div><div class="link-sub">Comparisons &amp; Differences</div></div>
-      <span class="link-arrow">→</span>
-    </a>
+    <div class="link-group">
+      <a href="lesson-one.html" class="item">
+        <div class="item-icon lesson">①</div>
+        <div class="item-text"><strong>Equal Relations</strong><span>Lesson One</span></div>
+      </a>
+      <a href="lesson-two.html" class="item">
+        <div class="item-icon lesson">②</div>
+        <div class="item-text"><strong>Part-Whole Relations</strong><span>Lesson Two</span></div>
+      </a>
+      <a href="lesson-three.html" class="item">
+        <div class="item-icon lesson">③</div>
+        <div class="item-text"><strong>Comparisons &amp; Differences</strong><span>Lesson Three</span></div>
+      </a>
+      <a href="lesson-four.html" class="item">
+        <div class="item-icon lesson">④</div>
+        <div class="item-text"><strong>Fractional Relations</strong><span>Lesson Four</span></div>
+      </a>
+      <a href="lesson-five.html" class="item">
+        <div class="item-icon lesson">⑤</div>
+        <div class="item-text"><strong>Multiplicative Relations</strong><span>Lesson Five</span></div>
+      </a>
+    </div>
   </div>
-  <hr class="divider">
+
+  <div class="divider"></div>
+
   <div>
-    <div class="section-label">Practice &amp; Progress</div>
-    <a class="card-link featured" href="fluency.html">
-      <div><div class="link-title">Fluency Practice</div><div class="link-sub">30-second timed drill — Equal Relations</div></div>
-      <span class="link-arrow">→</span>
-    </a>
-    <a class="card-link" href="chart.html">
-      <div><div class="link-title">Progress Chart</div><div class="link-sub">Semi-log rate chart across sessions</div></div>
-      <span class="link-arrow">→</span>
-    </a>
+    <div class="section-label">Fluency Practice</div>
+    <div class="link-group">
+      <a href="fluency-l1.html" class="item">
+        <div class="item-icon fluency">⚡</div>
+        <div class="item-text"><strong>Equal Relations</strong><span>30-second timed drill</span></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div>
+    <div class="section-label">Progress</div>
+    <div class="link-group">
+      <a href="chart.html" class="item">
+        <div class="item-icon chart">◈</div>
+        <div class="item-text"><strong>Progress Chart</strong><span>Correct and error rates over time</span></div>
+      </a>
+    </div>
   </div>
 </div>
 </body>
