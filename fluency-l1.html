@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluency Practice — Equal Relations</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;
+    --text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;
+    --accent:#2D6A4F;--accent-light:#EAF4EF;
+    --accent-warm:#C17D3C;--accent-warm-light:#FBF0E4;
+    --radius:12px;--radius-lg:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+  .app{width:100%;max-width:680px;display:flex;flex-direction:column;gap:20px;}
+  .header{display:flex;align-items:center;gap:12px;}
+  .lesson-label{font-family:'DM Serif Display',serif;font-size:26px;letter-spacing:-0.5px;}
+  .phase-label{font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;flex:1;}
+
+  .canvas{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:44px 40px;display:flex;align-items:center;justify-content:center;
+    min-height:200px;box-shadow:0 2px 12px rgba(0,0,0,0.04);overflow:visible;}
+
+  .key-point{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius-lg);
+    padding:18px 24px;font-size:16px;font-weight:500;line-height:1.5;
+    display:flex;align-items:center;gap:12px;}
+  .key-point.neutral{background:var(--surface);border-color:var(--border);font-weight:400;}
+
+  /* Timer display */
+  .timer-ring{position:relative;width:80px;height:80px;flex-shrink:0;}
+  .timer-ring svg{transform:rotate(-90deg);}
+  .timer-ring .bg{fill:none;stroke:var(--border);stroke-width:6;}
+  .timer-ring .fg{fill:none;stroke:var(--accent);stroke-width:6;stroke-linecap:round;
+    transition:stroke-dashoffset 1s linear,stroke 0.3s;}
+  .timer-ring .fg.urgent{stroke:#C0392B;}
+  .timer-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:'DM Serif Display',serif;font-size:22px;font-weight:600;}
+
+  /* Score display */
+  .score-row{display:flex;gap:12px;}
+  .score-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:16px;text-align:center;}
+  .score-num{font-family:'DM Serif Display',serif;font-size:36px;color:var(--accent);}
+  .score-num.errors{color:#C0392B;}
+  .score-label{font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+
+  .response-buttons{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn{flex:1;min-width:100px;padding:15px 20px;border-radius:var(--radius);border:2px solid var(--border);
+    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;
+    color:var(--text-primary);cursor:pointer;transition:all 0.15s;}
+  .btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn.skip{border-color:var(--text-muted);color:var(--text-muted);}
+  .btn.skip:hover{border-color:var(--accent-warm);color:var(--accent-warm);background:var(--accent-warm-light);}
+  .btn.start-btn{background:var(--accent);border-color:var(--accent);color:white;font-size:18px;padding:18px;}
+  .btn.start-btn:hover{background:#255C43;border-color:#255C43;color:white;}
+
+  .completion{text-align:center;padding:44px 32px;background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius-lg);
+    box-shadow:0 2px 12px rgba(0,0,0,0.04);}
+  .completion h2{font-family:'DM Serif Display',serif;font-size:26px;margin:12px 0 10px;color:var(--accent);}
+  .completion p{color:var(--text-secondary);font-size:15px;line-height:1.6;max-width:400px;margin:0 auto 20px;}
+
+  .result-grid{display:flex;gap:16px;justify-content:center;margin:20px 0;}
+  .result-stat{text-align:center;}
+  .result-num{font-family:'DM Serif Display',serif;font-size:44px;}
+  .result-num.c{color:var(--accent);}
+  .result-num.e{color:#C0392B;}
+  .result-sub{font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;}
+
+  .nav-links{display:flex;gap:12px;margin-top:8px;}
+  .nav-link{flex:1;padding:14px;border-radius:var(--radius);border:2px solid var(--border);
+    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+    color:var(--text-primary);cursor:pointer;transition:all 0.15s;text-align:center;text-decoration:none;display:block;}
+  .nav-link:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+  .nav-link.primary{background:var(--accent);border-color:var(--accent);color:white;}
+  .nav-link.primary:hover{background:#255C43;}
+
+  .bar-h{height:62px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .fade-up{animation:fadeUp 0.3s ease;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <span class="lesson-label">Equal Relations</span>
+    <span class="phase-label" id="phaseLabel">Fluency Practice</span>
+  </div>
+  <div id="main"></div>
+  <div id="resp"></div>
+</div>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════
+// STORAGE — localStorage (works on any static host including GitHub Pages)
+// To swap to Firebase or another backend later, replace just these two functions.
+// ═══════════════════════════════════════════════════════════════════════════════
+const STORAGE_KEY = 'fluency_l1_sessions';
+
+function loadSessions() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveSession(session) {
+  try {
+    const existing = loadSessions();
+    existing.push(session);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+  } catch(e) { console.warn('Storage unavailable', e); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COLORS
+// ═══════════════════════════════════════════════════════════════════════════════
+const COLORS=[
+  {name:'blue',hex:'#1B6CA8'},{name:'orange',hex:'#D4600A'},{name:'green',hex:'#2D6A4F'},
+  {name:'red',hex:'#C0392B'},{name:'purple',hex:'#6C3483'},{name:'teal',hex:'#0E7E7E'},
+  {name:'pink',hex:'#B03A6E'},{name:'navy',hex:'#1A3A5C'},
+];
+const CF={
+  blue:['blue','navy','teal'],navy:['navy','blue'],teal:['teal','blue','green'],
+  green:['green','teal'],red:['red','pink'],pink:['pink','red'],
+  orange:['orange'],purple:['purple'],
+};
+function fam(n){const f=CF[n]||[n];return COLORS.filter(c=>f.includes(c.name)||(CF[c.name]||[c.name]).includes(n)).map(c=>c.name);}
+function randColor(ex=[]){const ef=ex.flatMap(n=>fam(n));const pool=COLORS.filter(c=>!ef.includes(c.name));return pool.length?pool[Math.floor(Math.random()*pool.length)]:COLORS.filter(c=>!ex.includes(c.name))[0];}
+function tc(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(0.299*r+0.587*g+0.114*b)/255>0.55?'#1A1714':'#FFFFFF';}
+
+const BASE=320,BH=62;
+
+function sbar(hex,name,w,isUnknown=false){
+  const col=tc(hex);
+  const content=isUnknown
+    ?`<span style="font-family:'DM Serif Display',serif;font-size:24px;font-style:italic;color:${col}">?</span>`
+    :`<span style="font-size:12px;font-weight:600;text-transform:capitalize;color:${col}">${name}</span>`;
+  return`<div class="bar-h" style="width:${w}px;background:${hex}">${content}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ITEM TYPES
+// Two types: discrimination (equal/not equal) and naming (known equals unknown)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function genDiscrimItem() {
+  const isEqual = Math.random() > 0.4;
+  const c1 = randColor();
+  const c2 = randColor([c1.name]);
+  const w1 = BASE * (0.5 + Math.random() * 0.4);
+  let w2, layout;
+
+  if (isEqual) {
+    w2 = w1;
+    layout = Math.random() > 0.5 ? 'stacked' : 'dotted';
+  } else {
+    const diff = 0.15 + Math.random() * 0.35;
+    w2 = Math.random() > 0.5 ? w1 * (1 + diff) : w1 * (1 - diff);
+    layout = 'stacked';
+  }
+
+  return { type: 'discrim', c1, c2, w1, w2, layout, isEqual };
+}
+
+function genNamingItem() {
+  const c1 = randColor();
+  const c2 = randColor([c1.name]);
+  const w = BASE * (0.5 + Math.random() * 0.4);
+  const unknownIsC1 = Math.random() > 0.5;
+  return {
+    type: 'naming',
+    c1, c2, w1: w, w2: w,
+    unknownColor: unknownIsC1 ? c1.name : c2.name,
+    knownColor: unknownIsC1 ? c2.name : c1.name,
+  };
+}
+
+function genItem() {
+  return Math.random() > 0.45 ? genDiscrimItem() : genNamingItem();
+}
+
+function renderItem(item) {
+  if (item.type === 'discrim') {
+    if (item.layout === 'dotted') {
+      return `<div style="position:relative;display:inline-block;padding:0 20px">
+        <div style="position:absolute;left:16px;top:0;bottom:0;border-left:2px dashed #9B9591"></div>
+        <div style="position:absolute;right:16px;top:0;bottom:0;border-right:2px dashed #9B9591"></div>
+        <div style="margin-bottom:8px">${sbar(item.c1.hex,item.c1.name,item.w1)}</div>
+        ${sbar(item.c2.hex,item.c2.name,item.w2)}
+      </div>`;
+    }
+    return `<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+      ${sbar(item.c1.hex,item.c1.name,item.w1)}
+      ${sbar(item.c2.hex,item.c2.name,item.w2)}
+    </div>`;
+  }
+  // naming
+  return `<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+    ${sbar(item.c1.hex,item.c1.name,item.w1, item.c1.name===item.unknownColor)}
+    ${sbar(item.c2.hex,item.c2.name,item.w2, item.c2.name===item.unknownColor)}
+  </div>`;
+}
+
+// For naming items — generate button options
+// Correct: knownColor equals unknownColor
+// Distractors: wrong direction, wrong colors
+function getNamingButtons(item) {
+  const correct = `${item.knownColor} equals ${item.unknownColor}`;
+  // Distractor 1: reversed
+  const d1 = `${item.unknownColor} equals ${item.knownColor}`;
+  // Distractor 2: random other color pair
+  const rc = randColor([item.c1.name, item.c2.name]);
+  const d2 = `${item.knownColor} equals ${rc.name}`;
+  // Distractor 3: different relation word
+  const d3 = `${item.knownColor} is more than ${item.unknownColor}`;
+
+  const options = shuffle([correct, d1, d2, d3]);
+  return { options, correct };
+}
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════════
+const DURATION = 30; // seconds
+
+const S = {
+  phase: 'intro',
+  timeLeft: DURATION,
+  timer: null,
+  corrects: 0,
+  errors: 0,
+  currentItem: null,
+  currentButtons: null,
+  sessionStart: null,
+};
+
+function render(m,r){document.getElementById('main').innerHTML=m;document.getElementById('resp').innerHTML=r;}
+function setPhase(l){document.getElementById('phaseLabel').textContent=l;}
+
+const CIRC = 2 * Math.PI * 32; // circumference for r=32
+
+function timerRing(t) {
+  const frac = t / DURATION;
+  const offset = CIRC * (1 - frac);
+  const urgent = t <= 8;
+  return `<div class="timer-ring">
+    <svg width="80" height="80" viewBox="0 0 80 80">
+      <circle class="bg" cx="40" cy="40" r="32"/>
+      <circle class="fg ${urgent?'urgent':''}" cx="40" cy="40" r="32"
+        stroke-dasharray="${CIRC}" stroke-dashoffset="${offset}"/>
+    </svg>
+    <div class="timer-label">${t}</div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function showIntro() {
+  S.phase = 'intro';
+  setPhase('Fluency Practice');
+  render(
+    `<div class="key-point neutral" style="flex-direction:column;align-items:flex-start;gap:8px">
+       <strong style="font-size:18px">Equal Relations — Fluency Practice</strong>
+       <span>You will see bar models for <strong>30 seconds</strong>. Answer as many as you can.</span>
+       <span>Use the buttons to respond. Hit <strong>Skip</strong> if you're not sure — it counts as an error and moves on.</span>
+       <span style="color:var(--accent);font-weight:600">Go as fast as you accurately can.</span>
+     </div>`,
+    `<button class="btn start-btn" onclick="startDrill()">Start</button>`
+  );
+}
+
+function startDrill() {
+  S.phase = 'drill';
+  S.corrects = 0;
+  S.errors = 0;
+  S.timeLeft = DURATION;
+  S.sessionStart = new Date().toISOString();
+  setPhase('Fluency Practice');
+  nextItem();
+  S.timer = setInterval(() => {
+    S.timeLeft--;
+    updateTimerDisplay();
+    if (S.timeLeft <= 0) endDrill();
+  }, 1000);
+}
+
+function nextItem() {
+  S.currentItem = genItem();
+  const item = S.currentItem;
+
+  let buttons = '';
+  if (item.type === 'discrim') {
+    S.currentButtons = null;
+    buttons = `<div class="response-buttons">
+      <button class="btn" onclick="submitDiscrim(true)">Equal</button>
+      <button class="btn" onclick="submitDiscrim(false)">Not Equal</button>
+      <button class="btn skip" onclick="skipItem()">Skip</button>
+    </div>`;
+  } else {
+    const { options, correct } = getNamingButtons(item);
+    S.currentButtons = { options, correct };
+    buttons = `<div class="response-buttons" style="flex-direction:column;gap:8px">
+      ${options.map(o=>`<button class="btn" style="text-align:left;font-size:14px" onclick="submitNaming('${o.replace(/'/g,"\\'")}','${correct.replace(/'/g,"\\'")}')">
+        ${o}
+      </button>`).join('')}
+      <button class="btn skip" onclick="skipItem()">Skip</button>
+    </div>`;
+  }
+
+  render(
+    `<div style="display:flex;gap:16px;align-items:center">
+       ${timerRing(S.timeLeft)}
+       <div class="score-row" style="flex:1">
+         <div class="score-card">
+           <div class="score-num">${S.corrects}</div>
+           <div class="score-label">Correct</div>
+         </div>
+         <div class="score-card">
+           <div class="score-num errors">${S.errors}</div>
+           <div class="score-label">Errors</div>
+         </div>
+       </div>
+     </div>
+     <div class="canvas fade-up">${renderItem(item)}</div>`,
+    buttons
+  );
+}
+
+function updateTimerDisplay() {
+  const ring = document.querySelector('.timer-ring');
+  if (!ring) return;
+  const frac = S.timeLeft / DURATION;
+  const offset = CIRC * (1 - frac);
+  const fg = ring.querySelector('.fg');
+  const label = ring.querySelector('.timer-label');
+  if (fg) {
+    fg.setAttribute('stroke-dashoffset', offset);
+    if (S.timeLeft <= 8) fg.classList.add('urgent');
+  }
+  if (label) label.textContent = S.timeLeft;
+}
+
+function submitDiscrim(answerIsEqual) {
+  if (S.phase !== 'drill') return;
+  const correct = S.currentItem.isEqual === answerIsEqual;
+  if (correct) S.corrects++; else S.errors++;
+  nextItem();
+}
+
+function submitNaming(chosen, correct) {
+  if (S.phase !== 'drill') return;
+  if (chosen === correct) S.corrects++; else S.errors++;
+  nextItem();
+}
+
+function skipItem() {
+  if (S.phase !== 'drill') return;
+  S.errors++;
+  nextItem();
+}
+
+function endDrill() {
+  clearInterval(S.timer);
+  S.phase = 'results';
+  setPhase('Results');
+
+  const cpm = S.corrects * 2;
+  const epm = S.errors * 2;
+
+  const session = {
+    date: S.sessionStart,
+    lesson: 1,
+    phase: 'fluency',
+    corrects: S.corrects,
+    errors: S.errors,
+    cpm,
+    epm,
+    duration: DURATION,
+  };
+  saveSession(session);
+
+  render(
+    `<div class="completion fade-up">
+       <div style="font-size:44px;margin-bottom:12px">◈</div>
+       <h2>Session Complete</h2>
+       <div class="result-grid">
+         <div class="result-stat">
+           <div class="result-num c">${cpm}</div>
+           <div class="result-sub">Correct / min</div>
+         </div>
+         <div class="result-stat" style="font-size:32px;color:var(--text-muted);padding-top:8px">/</div>
+         <div class="result-stat">
+           <div class="result-num e">${epm}</div>
+           <div class="result-sub">Errors / min</div>
+         </div>
+       </div>
+       <p>${S.corrects} correct and ${S.errors} errors in 30 seconds.<br>Saved to your progress chart.</p>
+       <div class="nav-links">
+         <a class="nav-link" href="fluency-l1.html">Practice Again</a>
+         <a class="nav-link primary" href="chart.html">View Chart</a>
+       </div>
+     </div>`, ``
+  );
+}
+
+showIntro();
+</script>
+</body>
+</html>

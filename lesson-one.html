@@ -1031,6 +1031,9 @@ function showComplete() {
   setProgress(100);
   setPhaseLabel('Complete');
 
+  // Save lesson completion to storage for chart
+  saveSessionToStorage();
+
   render(
     `<div class="completion">
        <div style="font-size:44px;margin-bottom:12px">◈</div>
@@ -1038,10 +1041,36 @@ function showComplete() {
        <p>You can identify equal relations and name them precisely.<br><br>
           Two things are equal when the picture confirms it — stacking or dotted lines.<br><br>
           <em>known equals unknown</em></p>
+       <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px">
+         <a href="fluency-l1.html" style="display:block;padding:14px 24px;background:#2D6A4F;color:white;border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">Practice for Fluency →</a>
+         <a href="chart.html" style="display:block;padding:14px 24px;background:white;color:#2D6A4F;border:2px solid #2D6A4F;border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">View Progress Chart</a>
+       </div>
      </div>`, ``
   );
 
   speak('Well done. You can identify equal relations and name them precisely.');
+}
+
+function saveSessionToStorage() {
+  try {
+    const corrects = state.sessionData.filter(d => d.correct).length;
+    const errors   = state.sessionData.filter(d => !d.correct).length;
+    const record = {
+      date: new Date().toISOString(),
+      lesson: 1,
+      phase: 'instruction',
+      corrects,
+      errors,
+      cpm: 0,
+      epm: 0,
+      duration: null,
+    };
+    const key = 'fluency_l1_sessions';
+    const raw = localStorage.getItem(key);
+    const existing = raw ? JSON.parse(raw) : [];
+    existing.push(record);
+    localStorage.setItem(key, JSON.stringify(existing));
+  } catch(e) {}
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

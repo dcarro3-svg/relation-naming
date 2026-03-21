@@ -1,16 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Relation Naming</title>
-  <style>
-    body { font-family: sans-serif; max-width: 400px; margin: 80px auto; padding: 24px; }
-    a { display: block; margin: 16px 0; font-size: 18px; color: #2D6A4F; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relation Naming</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+  :root{
+    --bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;
+    --text-primary:#1A1714;--text-muted:#9B9591;--accent:#2D6A4F;--accent-light:#EAF4EF;
+    --radius:12px;--radius-lg:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .app{width:100%;max-width:480px;display:flex;flex-direction:column;gap:28px;}
+  h1{font-family:'DM Serif Display',serif;font-size:32px;letter-spacing:-0.5px;}
+  p{font-size:15px;color:var(--text-muted);line-height:1.6;margin-top:6px;}
+  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px;}
+  .card-link{display:flex;align-items:center;justify-content:space-between;
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:18px 22px;text-decoration:none;color:var(--text-primary);
+    transition:all 0.15s;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+  .card-link:hover{border-color:var(--accent);background:var(--accent-light);transform:translateY(-1px);}
+  .card-link:last-child{margin-bottom:0;}
+  .link-title{font-weight:600;font-size:16px;}
+  .link-sub{font-size:13px;color:var(--text-muted);margin-top:2px;}
+  .link-arrow{color:var(--text-muted);font-size:18px;}
+  .card-link.featured{border-color:var(--accent);background:var(--accent-light);}
+  .card-link.featured .link-arrow{color:var(--accent);}
+  .divider{border:none;border-top:1px solid var(--border);}
+</style>
 </head>
 <body>
-  <h2>Relation Naming</h2>
-  <a href="lesson-one.html">Lesson One — Equal Relations</a>
-  <a href="lesson-two.html">Lesson Two — Part-Whole Relations</a>
-  <a href="lesson-three.html">Lesson Three — Comparisons & Differences</a>
+<div class="app">
+  <div>
+    <h1>Relation Naming</h1>
+    <p>Build the relational perception that underlies all mathematical thinking.</p>
+  </div>
+  <div>
+    <div class="section-label">Lessons</div>
+    <a class="card-link" href="lesson-one.html">
+      <div><div class="link-title">Lesson One</div><div class="link-sub">Equal Relations</div></div>
+      <span class="link-arrow">→</span>
+    </a>
+    <a class="card-link" href="lesson-two.html">
+      <div><div class="link-title">Lesson Two</div><div class="link-sub">Part-Whole Relations</div></div>
+      <span class="link-arrow">→</span>
+    </a>
+    <a class="card-link" href="lesson-three.html">
+      <div><div class="link-title">Lesson Three</div><div class="link-sub">Comparisons &amp; Differences</div></div>
+      <span class="link-arrow">→</span>
+    </a>
+  </div>
+  <hr class="divider">
+  <div>
+    <div class="section-label">Practice &amp; Progress</div>
+    <a class="card-link featured" href="fluency.html">
+      <div><div class="link-title">Fluency Practice</div><div class="link-sub">30-second timed drill — Equal Relations</div></div>
+      <span class="link-arrow">→</span>
+    </a>
+    <a class="card-link" href="chart.html">
+      <div><div class="link-title">Progress Chart</div><div class="link-sub">Semi-log rate chart across sessions</div></div>
+      <span class="link-arrow">→</span>
+    </a>
+  </div>
+</div>
 </body>
 </html>
