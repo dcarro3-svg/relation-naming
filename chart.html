@@ -66,6 +66,39 @@
   .empty p{color:var(--text-muted);font-size:14px;}
 
   .nav-row{display:flex;gap:10px;flex-wrap:wrap;}
+
+  /* ── Today's sessions ─────────────────────────────────────────────────────── */
+  .today-section{display:flex;flex-direction:column;gap:16px;}
+  .today-grid{display:flex;gap:16px;flex-wrap:wrap;}
+  .today-mini{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:16px;flex:1;min-width:260px;position:relative;}
+  .today-mini-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;
+    margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .today-goal-label{font-size:11px;color:var(--text-muted);margin-left:auto;}
+
+  /* Token — shown when goal or pass-off reached */
+  .today-token{border-radius:var(--radius-lg);padding:20px 24px;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+    animation:fadeUp 0.3s ease;cursor:default;}
+  .today-token.goal{background:#FBF0E4;border:2px solid #E8C99A;}
+  .today-token.passoff{background:var(--accent-light);border:2px solid #B8DAC8;}
+  .today-token-title{font-family:'DM Serif Display',serif;font-size:20px;}
+  .today-token-sub{font-size:13px;color:var(--text-secondary);line-height:1.5;}
+  .today-token-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+  .token-btn{padding:8px 18px;border-radius:var(--radius);border:2px solid var(--border);
+    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
+    color:var(--text-primary);cursor:pointer;transition:all 0.15s;}
+  .token-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+  .token-btn.primary{background:var(--accent);border-color:var(--accent);color:white;}
+  .token-btn.primary:hover{background:#255C43;}
+
+  /* Dismissed token — compact badge */
+  .dismissed-token{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius);
+    padding:10px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all 0.2s;
+    font-size:13px;font-weight:600;color:var(--accent);}
+  .dismissed-token:hover{opacity:0.6;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -93,6 +126,13 @@
   </div>
 
   <div class="chart-card">
+    <div class="chart-controls"><span class="chart-title-text">Today's Progress</span></div>
+    <div id="todaySection">
+      <div class="empty"><h3>No sessions today yet</h3><p>Complete a fluency session to see today's progress.</p></div>
+    </div>
+  </div>
+
+  <div class="chart-card">
     <div class="chart-controls"><span class="chart-title-text">Session History</span></div>
     <div id="sessionTable"></div>
   </div>
@@ -103,6 +143,310 @@
 </div>
 
 <script>
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════════════════════════════
+const PASSOFF_AIM = 30;       // correct/min pass-off target
+const CELERATION  = 1.5;      // weekly celeration aim
+const TODAY_SLOTS = 10;       // number of session slots in today's chart
+const TODAY_STATE_KEY = 'chart_today_state'; // localStorage key for today's dismissed/passoff state
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TODAY STATE — track dismissed tokens per lesson per day
+// ═══════════════════════════════════════════════════════════════════════════════
+function todayDateStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+function loadTodayState() {
+  try {
+    const raw = localStorage.getItem(TODAY_STATE_KEY);
+    const state = raw ? JSON.parse(raw) : {};
+    // Clear if stale (not today)
+    if (state.date !== todayDateStr()) return { date: todayDateStr() };
+    return state;
+  } catch(e) { return { date: todayDateStr() }; }
+}
+
+function saveTodayState(state) {
+  try { localStorage.setItem(TODAY_STATE_KEY, JSON.stringify({ ...state, date: todayDateStr() })); } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AIM LINE CALCULATIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Weeks elapsed from firstDate to targetDate
+function weeksElapsed(firstDate, targetDate) {
+  return dayIndex(targetDate, firstDate) / 7;
+}
+
+// Rate at any point along the aim line
+function aimRate(firstRate, weeksElapsed) {
+  return firstRate * Math.pow(CELERATION, weeksElapsed);
+}
+
+// How many weeks from firstRate to reach PASSOFF_AIM
+function weeksToPassoff(firstRate) {
+  if (firstRate <= 0) return Infinity;
+  return Math.log(PASSOFF_AIM / firstRate) / Math.log(CELERATION);
+}
+
+// Today's derived daily goal
+function calcTodayGoal(L) {
+  const sorted = [...L.sessions].sort((a,b) => new Date(a.date)-new Date(b.date));
+  if (!sorted.length) return null;
+  const firstSession = sorted[0];
+  const firstRate = firstSession.cpm || 1;
+  const weeks = weeksElapsed(firstSession.date, new Date().toISOString());
+  return Math.min(aimRate(firstRate, weeks), PASSOFF_AIM);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AIM LINE + PASS-OFF — injected into buildChart
+// Returns SVG string to append to the main chart series
+// ═══════════════════════════════════════════════════════════════════════════════
+function buildAimLines(lessonData, xAt, H, PT, PB, W, PR, viewMode) {
+  let out = '';
+  lessonData.forEach(L => {
+    if (!L.sessions.length) return;
+    const sorted = [...L.sessions].sort((a,b) => new Date(a.date)-new Date(b.date));
+    const firstSession = sorted[0];
+    const firstRate = firstSession.cpm || 1;
+    if (firstRate <= 0) return;
+
+    // Aim line: from first session to projected pass-off date
+    const wtp = weeksToPassoff(firstRate);
+    if (!isFinite(wtp)) return;
+    const firstDate = new Date(firstSession.date);
+    const passoffDate = new Date(firstDate.getTime() + wtp * 7 * DAY_MS);
+
+    const x0 = xAt(firstSession.date);
+    const x1 = xAt(passoffDate.toISOString());
+    const y0 = toY(firstRate, H, PT, PB);
+    const y1 = toY(PASSOFF_AIM, H, PT, PB);
+
+    // Draw aim line — solid neutral gray
+    out += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}"
+      stroke="#9B9591" stroke-width="1.5" opacity="0.7"/>`;
+
+    // Star at projected pass-off point
+    const sx = x1, sy = y1;
+    out += `<text x="${sx.toFixed(1)}" y="${(sy+4).toFixed(1)}" text-anchor="middle"
+      font-size="14" fill="#9B9591" font-family="DM Sans,sans-serif" opacity="0.8">★</text>`;
+
+    // Pass-off phase change line — only if a session actually hit >= PASSOFF_AIM
+    const passoffSession = sorted.find(s => (s.cpm||0) >= PASSOFF_AIM);
+    if (passoffSession) {
+      const px = xAt(passoffSession.date);
+      out += `<line x1="${px.toFixed(1)}" y1="${PT}" x2="${px.toFixed(1)}" y2="${H-PB}"
+        stroke="#9B9591" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>`;
+      out += `<text x="${(px+4).toFixed(1)}" y="${(PT+12).toFixed(1)}"
+        font-size="10" fill="#9B9591" font-family="DM Sans,sans-serif" opacity="0.8">Pass-off: ${L.label}</text>`;
+    }
+  });
+  return out;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TODAY'S SESSIONS CHART — one mini SVG per lesson
+// ═══════════════════════════════════════════════════════════════════════════════
+function buildTodaySection(lessonData) {
+  const todayStr = todayDateStr();
+  const state = loadTodayState();
+
+  // Get today's sessions per lesson
+  const todayLessons = lessonData.map(L => {
+    const todaySessions = [...L.sessions]
+      .filter(s => {
+        const d = new Date(s.date);
+        return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}` === todayStr;
+      })
+      .sort((a,b) => new Date(a.date)-new Date(b.date));
+    return { ...L, todaySessions };
+  }).filter(L => L.todaySessions.length > 0);
+
+  if (!todayLessons.length) return `<div class="empty"><h3>No sessions today yet</h3><p>Complete a fluency session to see today's progress.</p></div>`;
+
+  return `<div class="today-grid">${todayLessons.map(L => buildTodayMini(L, state)).join('')}</div>`;
+}
+
+function buildTodayMini(L, state) {
+  const lessonStateKey = `lesson_${L.id}`;
+  const ls = state[lessonStateKey] || {};
+
+  // Dismissed — show compact token
+  if (ls.dismissed) {
+    return `<div class="dismissed-token" onclick="undismiss(${L.id})" title="Click to restore">
+      <span style="width:10px;height:10px;border-radius:50%;background:${L.color};display:inline-block;flex-shrink:0"></span>
+      ${L.label} — ${ls.passoff ? 'Passed off ✓' : `${ls.score}/min ✓`}
+      <span style="margin-left:auto;font-size:10px;color:var(--text-muted)">tap to restore</span>
+    </div>`;
+  }
+
+  const sessions = L.todaySessions;
+  const latestCpm = sessions[sessions.length-1].cpm || 0;
+  const todayGoal = calcTodayGoal(L);
+  const firstTodayCpm = sessions[0].cpm || 1;
+  const hasPassoff = latestCpm >= PASSOFF_AIM;
+  const hasGoal = todayGoal !== null && latestCpm >= todayGoal && !hasPassoff;
+
+  // Show token if goal or pass-off reached and not dismissed
+  if (hasPassoff) {
+    return `<div class="today-mini">
+      <div class="today-mini-title"><span style="width:10px;height:10px;border-radius:50%;background:${L.color};display:inline-block"></span>${L.label}</div>
+      <div class="today-token passoff">
+        <div class="today-token-title">★ Passed off!</div>
+        <div class="today-token-sub">${latestCpm} correct/min — you reached the goal of ${PASSOFF_AIM}.</div>
+        <div class="today-token-btns">
+          <button class="token-btn" onclick="dismissToken(${L.id}, true, ${latestCpm})">Done ✓</button>
+          <button class="token-btn primary" onclick="keepGoing(${L.id})">Keep going</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (hasGoal) {
+    return `<div class="today-mini">
+      <div class="today-mini-title"><span style="width:10px;height:10px;border-radius:50%;background:${L.color};display:inline-block"></span>${L.label}</div>
+      <div class="today-token goal">
+        <div class="today-token-title">Goal reached!</div>
+        <div class="today-token-sub">${latestCpm} correct/min — today's goal was ${Math.round(todayGoal)}.</div>
+        <div class="today-token-btns">
+          <button class="token-btn" onclick="dismissToken(${L.id}, false, ${latestCpm})">Done for today</button>
+          <button class="token-btn primary" onclick="keepGoing(${L.id})">Keep going</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // Normal mini-chart
+  const svg = buildTodayMiniSVG(L, sessions, todayGoal, firstTodayCpm);
+  const goalLabel = todayGoal !== null ? `Goal: ${Math.round(todayGoal)}/min` : '';
+  return `<div class="today-mini">
+    <div class="today-mini-title">
+      <span style="width:10px;height:10px;border-radius:50%;background:${L.color};display:inline-block"></span>
+      ${L.label}
+      <span class="today-goal-label">${goalLabel}</span>
+    </div>
+    ${svg}
+  </div>`;
+}
+
+function buildTodayMiniSVG(L, sessions, todayGoal, firstTodayCpm) {
+  const W = 320, H = 200;
+  const PT = 16, PB = 28, PL = 44, PR = 16;
+  const CW = W - PL - PR;
+  const CH = H - PT - PB;
+  const color = L.color;
+
+  // X axis: session slots 1–10
+  function xAt(slotIdx) {
+    return PL + (slotIdx / (TODAY_SLOTS - 1)) * CW;
+  }
+
+  // Y axis — same semi-log as main chart
+  function yAt(v) { return toY(v, H, PT, PB); }
+
+  // Grid
+  let grid = '';
+  Y_TICKS.forEach(v => {
+    const y = yAt(v);
+    if (y < PT || y > H - PB) return;
+    const isMajor = [1, 10, 100].includes(v);
+    grid += `<line x1="${PL}" x2="${W-PR}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}"
+      stroke="${isMajor?'#C5C0BB':'#E2DDD6'}" stroke-width="${isMajor?1.2:0.8}"/>`;
+    grid += `<text x="${(PL-4).toFixed(1)}" y="${(y+3.5).toFixed(1)}" text-anchor="end"
+      font-size="9" fill="#9B9591" font-family="DM Sans,sans-serif">${v<1?'.5':v}</text>`;
+  });
+
+  // X axis labels — session numbers
+  let xLabels = '';
+  for (let i = 0; i < TODAY_SLOTS; i++) {
+    const x = xAt(i);
+    xLabels += `<text x="${x.toFixed(1)}" y="${(H-PB+12).toFixed(1)}" text-anchor="middle"
+      font-size="9" fill="${i === TODAY_SLOTS-1 ? '#6B6560' : '#C5C0BB'}" font-family="DM Sans,sans-serif">${i+1}</text>`;
+  }
+
+  // Aim line — from session 1's rate to today's goal at session 10
+  // Sloped on log scale
+  let aimLine = '';
+  if (todayGoal !== null && firstTodayCpm > 0) {
+    const ax0 = xAt(0), ay0 = yAt(firstTodayCpm);
+    const ax1 = xAt(TODAY_SLOTS - 1), ay1 = yAt(Math.min(todayGoal, PASSOFF_AIM));
+    aimLine = `<line x1="${ax0.toFixed(1)}" y1="${ay0.toFixed(1)}" x2="${ax1.toFixed(1)}" y2="${ay1.toFixed(1)}"
+      stroke="#9B9591" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>`;
+    // Label at end
+    aimLine += `<text x="${(ax1+4).toFixed(1)}" y="${(ay1+3).toFixed(1)}"
+      font-size="9" fill="#9B9591" font-family="DM Sans,sans-serif">${Math.round(todayGoal)}</text>`;
+  }
+
+  // Data points — correct (dots) and errors (X markers)
+  let dataPoints = '';
+  let pathD = '';
+  sessions.forEach((s, i) => {
+    const x = xAt(i);
+    const cy = yAt(Math.max(s.cpm||0, 0.5));
+    const ey = yAt(Math.max(s.epm||0, 0.5));
+
+    // Solid line connecting corrects
+    pathD += i === 0 ? `M${x.toFixed(1)},${cy.toFixed(1)}` : ` L${x.toFixed(1)},${cy.toFixed(1)}`;
+
+    // Correct dot
+    dataPoints += `<circle cx="${x.toFixed(1)}" cy="${cy.toFixed(1)}" r="4" fill="${color}" stroke="white" stroke-width="1.5"/>`;
+    dataPoints += `<text x="${x.toFixed(1)}" y="${(cy-8).toFixed(1)}" text-anchor="middle" font-size="9" fill="${color}" font-family="DM Sans,sans-serif">${s.cpm||0}</text>`;
+
+    // Error X
+    if ((s.epm||0) > 0) {
+      const sz = 3.5;
+      dataPoints += `<line x1="${(x-sz).toFixed(1)}" y1="${(ey-sz).toFixed(1)}" x2="${(x+sz).toFixed(1)}" y2="${(ey+sz).toFixed(1)}" stroke="${color}" stroke-width="2" stroke-linecap="round" opacity="0.7"/>`;
+      dataPoints += `<line x1="${(x+sz).toFixed(1)}" y1="${(ey-sz).toFixed(1)}" x2="${(x-sz).toFixed(1)}" y2="${(ey+sz).toFixed(1)}" stroke="${color}" stroke-width="2" stroke-linecap="round" opacity="0.7"/>`;
+    }
+  });
+
+  const path = pathD ? `<path d="${pathD}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>` : '';
+
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="max-width:100%">
+    <rect width="${W}" height="${H}" fill="white" rx="6"/>
+    ${grid}
+    <line x1="${PL}" y1="${PT}" x2="${PL}" y2="${H-PB}" stroke="#9B9591" stroke-width="1.2"/>
+    <line x1="${PL}" y1="${H-PB}" x2="${W-PR}" y2="${H-PB}" stroke="#9B9591" stroke-width="1.2"/>
+    ${xLabels}
+    ${aimLine}
+    ${path}
+    ${dataPoints}
+  </svg>`;
+}
+
+// ── Token interaction handlers ────────────────────────────────────────────────
+function dismissToken(lessonId, isPassoff, score) {
+  const state = loadTodayState();
+  state[`lesson_${lessonId}`] = { dismissed: true, passoff: isPassoff, score };
+  saveTodayState(state);
+  renderToday();
+}
+
+function keepGoing(lessonId) {
+  const state = loadTodayState();
+  if (state[`lesson_${lessonId}`]) delete state[`lesson_${lessonId}`].dismissed;
+  // Mark that the token was seen but learner chose to keep going
+  state[`lesson_${lessonId}_keepgoing`] = true;
+  saveTodayState(state);
+  renderToday();
+}
+
+function undismiss(lessonId) {
+  const state = loadTodayState();
+  if (state[`lesson_${lessonId}`]) delete state[`lesson_${lessonId}`];
+  saveTodayState(state);
+  renderToday();
+}
+
+function renderToday() {
+  document.getElementById('todaySection').innerHTML = buildTodaySection(cachedLessonData);
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // LESSON CONFIG
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -284,6 +628,7 @@ function buildChart(lessonData, viewMode) {
     <text x="14" y="${(H/2).toFixed(1)}" text-anchor="middle" font-size="11" fill="#9B9591"
       font-family="DM Sans,sans-serif" transform="rotate(-90,14,${(H/2).toFixed(1)})">Responses / min</text>
     ${xLabels}
+    ${buildAimLines(lessonData, xAt, H, PT, PB, W, PR, viewMode)}
     ${series}
   </svg>`;
 }
@@ -371,6 +716,7 @@ function init() {
   cachedLessonData = loadAll();
   document.getElementById('statsRow').innerHTML = buildStats(cachedLessonData);
   renderChart();
+  renderToday();
   document.getElementById('legendSection').innerHTML = buildLegend(cachedLessonData);
   document.getElementById('sessionTable').innerHTML = buildTable(cachedLessonData);
 }
