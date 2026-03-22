@@ -1,11 +1,14 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // LESSON FOUR — FRACTIONAL RELATIONS
+// Comparison is mastered (L3) → review starts at T.
+// Fractional is new → INSTRUCT steps start at D.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function genPWReview(){
-  const wC=randColor(),p1C=randColor([wC.name]),p2C=randColor([wC.name,p1C.name]);
-  const tw=BASE*(0.6+Math.random()*0.3),sp=0.35+Math.random()*0.3;
-  return{whole:{color:wC,w:tw},p1:{color:p1C,w:tw*sp},p2:{color:p2C,w:tw*(1-sp)},confirmed:true};
+function genCompReview(){
+  const lC=randColor(),sC=randColor([lC.name]),dC=randColor([lC.name,sC.name]);
+  const lW=BASE*(0.55+Math.random()*0.3),dW=lW*(0.2+Math.random()*0.3),sW=lW-dW;
+  return{larger:{color:lC,w:lW},smaller:{color:sC,w:sW},diff:{color:dC,w:dW},
+    diffStyle:'bar',unknownRole:'diff'};
 }
 function genFrac(unknownRole=null){
   const wC=randColor(),pC=randColor([wC.name]);
@@ -46,81 +49,97 @@ function renderNEFrac(m){
 function renderModel(m){
   if(m.isFractional===true) return renderFractional(m);
   if(m.isFractional===false) return renderNEFrac(m);
+  if(m.larger) return renderComparison(m);
   if(m.whole&&m.p1) return renderPW(m);
   return renderEqual(m);
 }
 
+// ── INSTRUCT ──────────────────────────────────────────────────────────────────
 const INSTRUCT=[
   {
+    // New: halves — starts at D
+    initialMode:'D',
     build(){return{wholeColor:COLORS[2],partColor:COLORS[0],denominator:2,filledIndex:0,unknownRole:null,wholeW:360,isFractional:true};},
-    audio(m){return`This green rectangle is one whole. The boxes below show it split into two equal parts. When something is split into two equal parts, those parts are called halves. The blue box is one half of the green whole. How many halves are in one whole?`;},
+    audio(){return`The top bar is one whole. The boxes below show it split into two equal parts. Two equal parts are called halves. The filled box is one half of the whole.`;},
+    guide(){return`Count the equal boxes below the whole bar. How many are there?`;},
     question:`How many halves are in one whole?`,
-    acc:['two','2','two halves'],
     opts:['There are two halves in one whole.','There are three halves in one whole.','There are four halves in one whole.'],
-    cor:`Count the equal boxes below the whole bar. How many are there?`,
-    fu(m){return`Right — two halves. The blue part is one half of green. What is blue equal to?`;},
-    fuQ:`What is the blue part equal to?`,
-    fuAcc:['one half','one half of green','half of green','half'],
-    fuOpts:['Blue is equal to one half of green.','Blue is equal to one third of green.','Blue is equal to one fourth of green.'],
-    fuCor:`The blue box is one of two equal parts. It is one half of the whole. What is it equal to?`,
+    fu(){return`Two equal parts make two halves. Each part is one half of the whole.`;},
+    fuQ:`What do we call two equal parts of a whole?`,
+    fuOpts:['Two equal parts are called halves.','Two equal parts are called thirds.','Two equal parts are called fourths.'],
+    fuGuide(){return`Two equal parts — what word names two equal parts?`;},
   },
   {
+    // New: thirds — starts at D
+    initialMode:'D',
     build(){return{wholeColor:COLORS[2],partColor:COLORS[1],denominator:3,filledIndex:1,unknownRole:null,wholeW:360,isFractional:true};},
-    audio(m){return`Now the whole is split into three equal parts. Three equal parts are called thirds. The orange box is one of three equal parts. Orange is one third of green. What is orange equal to?`;},
-    question:`What is the orange part equal to?`,
-    acc:['one third','one third of green','third of green','third'],
-    opts:['The orange part is equal to one third of green.','The orange part is equal to one half of green.','The orange part is equal to one fourth of green.'],
-    cor:`Count the equal boxes. There are three. The filled one is one of three — one third. What is it equal to?`,
-    fu(m){return`Right — one third. And if the whole were split into four equal parts, each part would be called one fourth. What would five equal parts be called?`;},
-    fuQ:`What would five equal parts each be called?`,
-    fuAcc:['one fifth','fifth','fifths','a fifth'],
-    fuOpts:['Five equal parts would each be called one fifth.','Five equal parts would each be called one fourth.','Five equal parts would each be called one third.'],
-    fuCor:`Four equal parts are fourths. Five equal parts would each be called one fifth. What are five equal parts called?`,
+    audio(){return`Now the whole is split into three equal parts. Three equal parts are called thirds. The filled box is one third of the whole.`;},
+    guide(){return`Count the equal boxes below the whole bar. How many are there?`;},
+    question:`What do we call each part when a whole is split into three equal parts?`,
+    opts:['Each part is called a third.','Each part is called a half.','Each part is called a fourth.'],
+    fu(){return`Three equal parts make thirds. Each part is one third of the whole.`;},
+    fuQ:`What is the filled box equal to?`,
+    fuOpts:['The filled box is equal to one third of the whole.','The filled box is equal to one half of the whole.','The filled box is equal to one fourth of the whole.'],
+    fuGuide(){return`There are three equal parts. What fraction is one of those parts?`;},
   },
   {
+    // New: fourths — starts at D
+    initialMode:'D',
     build(){return{wholeColor:COLORS[2],partColor:COLORS[3],denominator:4,filledIndex:2,unknownRole:null,wholeW:360,isFractional:true};},
-    audio(m){return`Four equal parts are fourths. The red part is one fourth of the green whole. How many fourths are in one whole?`;},
-    question:`How many fourths are in one whole?`,
-    acc:['four','4','four fourths'],
-    opts:['There are four fourths in one whole.','There are three equal parts in one whole.','There are five equal parts in one whole.'],
-    cor:`Count the equal boxes — how many are there?`,
-    fu(m){return`Right — four fourths. What is the red part equal to?`;},
-    fuQ:`What is the red part equal to?`,
-    fuAcc:['one fourth','one fourth of green','fourth of green','fourth'],
-    fuOpts:['The red part is equal to one fourth of green.','The red part is equal to one third of green.','The red part is equal to one half of green.'],
-    fuCor:`The red box is one of four equal parts — one fourth of the whole. What is it equal to?`,
+    audio(){return`Four equal parts are called fourths. The filled box is one fourth of the whole. Count the boxes — there are four.`;},
+    guide(){return`Count the equal boxes. How many are there?`;},
+    question:`What is the filled box equal to?`,
+    opts:['The filled box is equal to one fourth of the whole.','The filled box is equal to one third of the whole.','The filled box is equal to one half of the whole.'],
+    fu(){return`Four equal parts make fourths. Each filled part is one fourth of the whole.`;},
+    fuQ:`How many fourths are in one whole?`,
+    fuOpts:['There are four fourths in one whole.','There are three fourths in one whole.','There are two fourths in one whole.'],
+    fuGuide(){return`Count all the boxes below the whole bar. That is your answer.`;},
   },
 ];
 
+// ── Phases ────────────────────────────────────────────────────────────────────
 function showIntro(){
   S.phase='intro';setPhase('Introduction');setProgress(2);
-  const audio=`Last time you learned comparison relations. Today you will learn fractional relations. A fractional relation shows equal parts of a whole. First, a quick review of part-whole.`;
+  const audio=`Last time you learned comparisons. Today you will learn fractional relations. A fractional relation shows equal parts of a whole. First, a quick review of comparisons.`;
   render(`<div class="instruct-text neutral" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="startReview()">Let's review</button></div>`);
   speak(audio);
   animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
 }
-function startReview(){S.phase='review';setPhase('Review — Part-Whole');S.reviewStep=0;nextReview();}
+function startReview(){S.phase='review';setPhase('Review — Comparisons');S.reviewStep=0;nextReview();}
 function nextReview(){
   if(S.reviewStep>=S.totalReview){showInstructIntro();return;}
   setProgress(4+(S.reviewStep/S.totalReview)*12);
-  S.currentModel=genPWReview();startTimer();
-  render(`<div class="canvas">${renderPW(S.currentModel)}</div><div class="question-prompt">Part-Whole or Not?</div>`,
-    `<div class="response-buttons"><button class="btn" onclick="submitReview('yes')">Part-Whole</button><button class="btn" onclick="submitReview('no')">Not</button></div>`);
-  speak('Part-Whole or Not?');
+  S.reviewItemErrors=0;
+  S.currentModel=genCompReview();startTimer();
+  render(`<div class="canvas">${renderComparison(S.currentModel)}</div><div class="question-prompt">Comparison or Not?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitReview('yes')">Comparison</button><button class="btn" onclick="submitReview('no')">Not</button></div>`);
+  speak('Comparison or Not?');
 }
 function submitReview(r){
+  // Review always shows valid comparison models — answer is always 'yes'
   recordResp('review',r==='yes');
-  if(r==='yes'){S.reviewStep++;nextReview();return;}
-  const audio=`Look for a whole bar that equals two parts together.`;
-  render(`<div class="canvas">${renderPW(S.currentModel)}</div>
+  if(r==='yes'){
+    document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;
+    setTimeout(()=>{S.reviewStep++;nextReview();},400);
+    return;
+  }
+  S.reviewItemErrors++;
+  let audio;
+  if(S.reviewItemErrors>=2){
+    audio=`This is a comparison. One bar is more than the other. There is a gap bar that shows the difference.`;
+  } else {
+    audio=`Look for two bars of different sizes and a gap bar between them.`;
+  }
+  render(`<div class="canvas">${renderComparison(S.currentModel)}</div>
     <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
-    `<div class="response-buttons"><button class="btn" onclick="submitReview('yes')">Part-Whole</button><button class="btn" onclick="submitReview('no')">Not</button></div>`);
+    `<div class="response-buttons"><button class="btn" onclick="submitReview('yes')">Comparison</button><button class="btn" onclick="submitReview('no')">Not</button></div>`);
   speak(audio);animateText(audio,'instructAnim');
 }
+
 function showInstructIntro(){
   S.phase='instruction';setPhase('Instruction');setProgress(18);
-  const audio=`You know part-whole. Now look at fractional relations — equal parts of a whole.`;
+  const audio=`You know comparisons. Now look at fractional relations — equal parts of a whole.`;
   render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="showInstruct(0)">Show me</button></div>`);
   speak(audio);
@@ -128,8 +147,9 @@ function showInstructIntro(){
 }
 function afterInstruct(){showIdentIntro();}
 
+// ── Identification ─────────────────────────────────────────────────────────────
 function showIdentIntro(){
-  S.phase='ident';S.identStep=0;setPhase('Identification');setProgress(42);
+  S.phase='ident';S.identStep=0;setPhase('Practice');setProgress(44);
   const audio=`Tell me if each picture shows a fractional relation or not.`;
   render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="nextIdent()">Ready</button></div>`);
@@ -138,7 +158,8 @@ function showIdentIntro(){
 }
 function nextIdent(){
   if(S.identStep>=S.totalIdent){showNamingIntro();return;}
-  setProgress(44+(S.identStep/S.totalIdent)*20);
+  setProgress(46+(S.identStep/S.totalIdent)*20);
+  S.identItemErrors=0;
   const isFrac=Math.random()>0.4;
   S.currentModel=isFrac?genFrac():genNEFrac();
   S.currentAnswer=isFrac?'yes':'no';startTimer();
@@ -147,18 +168,34 @@ function nextIdent(){
   speak('Fractional Relation or Not?');
 }
 function submitIdent(r){
-  recordResp('ident',r===S.currentAnswer);
-  if(r===S.currentAnswer){S.identStep++;nextIdent();return;}
-  let audio=r==='yes'?`Look — are the boxes equal? Does the separate bar match exactly one box? Does the picture show a whole bar on top?`:`Look for a whole bar on top with equal boxes below and one filled box.`;
+  const ok=r===S.currentAnswer;
+  recordResp('ident',ok);
+  if(ok){
+    document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;
+    setTimeout(()=>{S.identStep++;nextIdent();},400);
+    return;
+  }
+  S.identItemErrors++;
+  let audio;
+  if(S.identItemErrors>=2){
+    audio=S.currentAnswer==='yes'
+      ?`This is a fractional relation. There is a whole bar on top. Equal boxes below show parts of that whole.`
+      :`This is not a fractional relation. Look for a whole bar on top with equal boxes below it.`;
+  } else {
+    audio=r==='yes'
+      ?`Look — are the boxes equal? Does the picture show a whole bar on top?`
+      :`Look again. Is there a whole bar on top with equal boxes below?`;
+  }
   render(`<div class="canvas">${renderModel(S.currentModel)}</div>
     <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div class="response-buttons"><button class="btn" onclick="submitIdent('yes')">Fractional Relation</button><button class="btn" onclick="submitIdent('no')">Not</button></div>`);
   speak(audio);animateText(audio,'instructAnim');
 }
 
+// ── Naming ────────────────────────────────────────────────────────────────────
 function showNamingIntro(){
   S.phase='naming';S.namingStep=0;setPhase('Relation Naming');setProgress(66);
-  const audio=`Now name the fractional relation. The filled box is unknown. Name the relation: one fraction of whole equals unknown.`;
+  const audio=`The filled box is the unknown. Name the relation: one fraction of the whole equals unknown.`;
   render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="nextNaming()">Ready</button></div>`);
   speak(audio);
@@ -167,6 +204,7 @@ function showNamingIntro(){
 function nextNaming(){
   if(S.namingStep>=S.totalNaming){showComplete();return;}
   setProgress(68+(S.namingStep/S.totalNaming)*28);
+  S.namingItemErrors=0;
   S.currentModel=genFrac('part');
   const n=S.currentModel;
   S.currentNaming={whole:n.wholeColor.name,part:n.partColor.name,d:n.denominator,fracN:fracName(n.denominator)};
@@ -187,7 +225,7 @@ function submitColorScaffold(r){
   updateColorScaffold(ok);recordResp('scaffold_color',ok);
   if(ok){if(!S.scaffoldRoleLocked&&S.scaffoldRoleActive)showFracScaffold();else showNamingItem();}
   else{
-    const audio=`Look for the filled box with the question mark. What color is it?`;
+    const audio=`Find the filled box with the question mark. What color is it?`;
     render(`<div class="canvas">${renderModel(S.currentModel)}</div>
       <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
       `<div class="response-buttons">${shuffle([...COLORS.map(c=>c.name).filter(c=>c!==n.part).slice(0,3),n.part]).map(o=>`<button class="btn" onclick="submitColorScaffold('${o}')">${o}</button>`).join('')}</div>`);
@@ -204,7 +242,7 @@ function submitFracScaffold(d){
   const n=S.currentNaming;const ok=d===n.d;
   updateRoleScaffold(ok);recordResp('scaffold_frac',ok);
   if(ok){showNamingItem();return;}
-  const audio=`Count the equal boxes carefully. How many are there?`;
+  const audio=`Count the equal boxes below the whole bar. How many are there?`;
   render(`<div class="canvas">${renderModel(S.currentModel)}</div>
     <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div class="response-buttons">${FRAC_DENOMS.map(d=>`<button class="btn" onclick="submitFracScaffold(${d})">${d}</button>`).join('')}</div>`);
@@ -224,11 +262,21 @@ function submitNaming(r){
   const correct=`one ${n.fracN} of ${n.whole} equals unknown`;
   const ok=r===correct||(cmatch(r,n.whole)&&r.includes(n.fracN));
   recordResp('naming',ok);updateColorScaffold(ok);updateRoleScaffold(ok);
-  if(ok){S.namingStep++;nextNaming();return;}
-  const spokenFrac=FRAC_NAMES.find(f=>r.includes(f));
-  let audio=spokenFrac&&spokenFrac!==n.fracN
-    ?`Count the equal boxes — there are ${n.d}, so use ${n.fracN}.`
-    :`Name the whole too. Try: one ${n.fracN} of ${n.whole} equals unknown.`;
+  if(ok){
+    document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;
+    setTimeout(()=>{S.namingStep++;nextNaming();},500);
+    return;
+  }
+  S.namingItemErrors++;
+  let audio;
+  if(S.namingItemErrors>=2){
+    audio=`The relation is: ${correct}.`;
+  } else {
+    const spokenFrac=FRAC_NAMES&&FRAC_NAMES.find(f=>r.includes(f));
+    audio=spokenFrac&&spokenFrac!==n.fracN
+      ?`Count the equal boxes — there are ${n.d}, so use ${n.fracN}.`
+      :`Name the whole too. Start with one ${n.fracN} of the whole color.`;
+  }
   render(`<div class="canvas">${renderModel(S.currentModel)}</div>
     <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div class="response-buttons">${shuffle([correct,`one ${n.fracN} of ${n.part} equals unknown`,`one ${fracName(n.d===2?3:2)} of ${n.whole} equals unknown`]).slice(0,3).map(o=>`<button class="btn" onclick="submitNaming('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);

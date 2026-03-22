@@ -43,6 +43,7 @@
   .instruct-text.correction{background:var(--accent-warm-light);border-color:#E8C99A;}
   .instruct-text.neutral{background:var(--surface);border-color:var(--border);}
   .instruct-text.bridge{background:#F0EAF8;border-color:#C9B8E8;}
+  .instruct-text.positive{background:var(--accent-light);border-color:#B8DAC8;}
 
   /* Letter-by-letter animation */
   .typed-text .char{opacity:0;animation:charFade 0.04s forwards;}
@@ -342,6 +343,8 @@ const S = {
   reviewStep:0, instructStep:0, identStep:0, namingStep:0, freeStep:0,
   instructFU:false, instructM:null,
   currentOpts:null, currentFuOpts:null,
+  instructMastery:[], instructCurrentMode:'D', instructItemErrors:0,
+  reviewItemErrors:0, identItemErrors:0, namingItemErrors:0,
   currentModel:null, currentAnswer:null, currentNaming:null,
   scaffoldColorActive:true, scaffoldColorStreak:0, scaffoldColorLocked:false,
   scaffoldRoleActive:true, scaffoldRoleStreak:0, scaffoldRoleLocked:false,
@@ -364,146 +367,177 @@ function render(m,r){document.getElementById('mainContent').innerHTML=m;document
 // Shared across all lessons. Per-lesson INSTRUCT array and renderModel injected below.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Show instruction step — text animates, then question appears, then buttons appear
-function showInstruct(step) {
-  S.instructStep = step; S.instructFU = false;
-  if (step >= INSTRUCT.length) { afterInstruct(); return; }
-  setProgress(22 + (step / INSTRUCT.length) * 20);
+// ═══════════════════════════════════════════════════════════════════════════════
+// INSTRUCTION ENGINE — D / G / T mode
+// D = Demonstrate: full instruction text shown, learner picks the given answer
+// G = Guide: short hint shown, learner infers
+// T = Test: no text, learner works alone
+// Error correction goes backwards: T → G → D
+// initialMode per INSTRUCT step encodes cross-lesson prior knowledge
+// ═══════════════════════════════════════════════════════════════════════════════
 
+const POSITIVE_MSGS = ['Yes!','Right!','Good!','That\'s it!','Nice work.','Exactly.'];
+function randPos() { return POSITIVE_MSGS[Math.floor(Math.random()*POSITIVE_MSGS.length)]; }
+
+function showInstruct(step) {
+  if (step >= INSTRUCT.length) { afterInstruct(); return; }
+  S.instructStep = step;
+  S.instructFU = false;
+  S.instructItemErrors = 0;
+  // Lazy-init mastery array from each step's initialMode
+  if (!S.instructMastery.length) {
+    S.instructMastery = INSTRUCT.map(d => d.initialMode || 'D');
+  }
+  S.instructCurrentMode = S.instructMastery[step];
   const def = INSTRUCT[step];
   S.instructM = def.build ? def.build() : null;
+  S.currentOpts = typeof def.opts === 'function' ? def.opts(S.instructM) : def.opts;
+  setProgress(22 + (step / INSTRUCT.length) * 20);
+  showInstructItem();
+}
+
+function showInstructItem() {
+  const def = INSTRUCT[S.instructStep];
   const m = S.instructM;
-
-  const audio = def.audio(m);
+  const mode = S.instructCurrentMode;
   const question = typeof def.question === 'function' ? def.question(m) : def.question;
-  const acc = typeof def.acc === 'function' ? def.acc(m) : def.acc;
-  const distractors = buildDistractors(acc, m, def);
-  S.currentOpts = def.opts ? (typeof def.opts === 'function' ? def.opts(m) : def.opts) : null;
-
+  const opts = S.currentOpts;
   const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
+
+  if (mode === 'T') {
+    // Test: model + question + buttons immediately, no instruction text
+    render(
+      `${modelHtml}<div class="question-prompt">${question}</div>`,
+      `<div id="instructBtns">${buildInstructWB(opts, null, 'submitInstruct')}</div>`
+    );
+    speak(question);
+    return;
+  }
+
+  // D or G: show text, animate, then reveal question + buttons
+  const audioText = mode === 'D'
+    ? (typeof def.audio === 'function' ? def.audio(m) : def.audio)
+    : (typeof def.guide === 'function' ? def.guide(m) : def.guide);
+  const cls = mode === 'D' ? 'instruct-text' : 'instruct-text neutral';
 
   render(
     `${modelHtml}
-     <div class="instruct-text" id="instructBox">
-       ${audioBtn()}
-       <span id="instructAnim" class="typed-text"></span>
-     </div>
+     <div class="${cls}" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
      <div class="question-prompt" id="questionBox" style="display:none">${question}</div>`,
     `<div id="instructBtns" style="display:none"></div>`
   );
-
-  speak(audio);
-
-  // Animate text, then show question and buttons
-  animateText(audio, 'instructAnim', () => {
-    const qBox = document.getElementById('questionBox');
-    const bBox = document.getElementById('instructBtns');
-    if (qBox) qBox.style.display = 'block';
-    if (bBox) {
-      bBox.style.display = 'block';
-      bBox.innerHTML = buildInstructWB(S.currentOpts || acc, S.currentOpts ? null : distractors, 'submitInstruct');
-    }
+  speak(audioText);
+  animateText(audioText, 'instructAnim', () => {
+    const qb = document.getElementById('questionBox');
+    const bb = document.getElementById('instructBtns');
+    if (qb) qb.style.display = 'block';
+    if (bb) { bb.style.display = 'block'; bb.innerHTML = buildInstructWB(opts, null, 'submitInstruct'); }
   });
 }
 
 function submitInstruct(chosen) {
   const def = INSTRUCT[S.instructStep];
   const m = S.instructM;
-  const question = typeof def.question === 'function' ? def.question(m) : def.question;
-  const acc = typeof def.acc === 'function' ? def.acc(m) : def.acc;
 
   if (!S.instructFU) {
-    const ok = S.currentOpts
-      ? chosen === S.currentOpts[0]
-      : acc.some(a => chosen.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(chosen.toLowerCase()));
+    const ok = chosen === S.currentOpts[0];
     if (ok) {
-      S.instructFU = true;
-      // Show follow-up
-      const fuAudio = def.fu(m);
-      const fuQ = typeof def.fuQ === 'function' ? def.fuQ(m) : def.fuQ;
-      const fuAcc = typeof def.fuAcc === 'function' ? def.fuAcc(m) : def.fuAcc;
-      const fuDistractors = buildDistractors(fuAcc, m, def, true);
-      S.currentFuOpts = def.fuOpts ? (typeof def.fuOpts === 'function' ? def.fuOpts(m) : def.fuOpts) : null;
-      const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
-      render(
-        `${modelHtml}
-         <div class="instruct-text bridge" id="instructBox">
-           ${audioBtn()}
-           <span id="instructAnim" class="typed-text"></span>
-         </div>
-         <div class="question-prompt" id="questionBox" style="display:none">${fuQ}</div>`,
-        `<div id="instructBtns" style="display:none"></div>`
-      );
-      speak(fuAudio);
-      animateText(fuAudio, 'instructAnim', () => {
-        const qBox = document.getElementById('questionBox');
-        const bBox = document.getElementById('instructBtns');
-        if (qBox) qBox.style.display = 'block';
-        if (bBox) {
-          bBox.style.display = 'block';
-          bBox.innerHTML = buildInstructWB(S.currentFuOpts || fuAcc, S.currentFuOpts ? null : fuDistractors, 'submitInstruct');
-        }
-      });
+      recordResp('instruct', true);
+      // Upgrade mastery for this step
+      if (S.instructCurrentMode === 'D') S.instructMastery[S.instructStep] = 'G';
+      else if (S.instructCurrentMode === 'G') S.instructMastery[S.instructStep] = 'T';
+      showInstructFU();
     } else {
-      // Error correction — show corrective text, re-ask
-      const cor = typeof def.cor === 'function' ? def.cor(m) : def.cor;
-      const distractors = buildDistractors(acc, m, def);
-      const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
-      render(
-        `${modelHtml}
-         <div class="instruct-text correction" id="instructBox">
-           ${audioBtn()}
-           <span id="instructAnim" class="typed-text"></span>
-         </div>
-         <div class="question-prompt" id="questionBox" style="display:none">${question}</div>`,
-        `<div id="instructBtns" style="display:none"></div>`
-      );
-      speak(cor);
-      animateText(cor, 'instructAnim', () => {
-        const qBox = document.getElementById('questionBox');
-        const bBox = document.getElementById('instructBtns');
-        if (qBox) qBox.style.display = 'block';
-        if (bBox) {
-          bBox.style.display = 'block';
-          bBox.innerHTML = buildInstructWB(S.currentOpts || acc, S.currentOpts ? null : distractors, 'submitInstruct');
-        }
-      });
+      recordResp('instruct', false);
+      S.instructItemErrors++;
+      // Drop mode backwards
+      if (S.instructCurrentMode === 'T') S.instructCurrentMode = 'G';
+      else if (S.instructCurrentMode === 'G' && S.instructItemErrors >= 2) S.instructCurrentMode = 'D';
+      showInstructItem();
     }
   } else {
-    // Follow-up response
-    const fuAcc = typeof def.fuAcc === 'function' ? def.fuAcc(m) : def.fuAcc;
-    const fuQ = typeof def.fuQ === 'function' ? def.fuQ(m) : def.fuQ;
-    const ok = S.currentFuOpts
-      ? chosen === S.currentFuOpts[0]
-      : fuAcc.some(a => chosen.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(chosen.toLowerCase()));
+    const ok = chosen === S.currentFuOpts[0];
     if (ok) {
+      recordResp('instruct_fu', true);
       showInstruct(S.instructStep + 1);
     } else {
-      const fuCor = typeof def.fuCor === 'function' ? def.fuCor(m) : def.fuCor;
-      const fuDistractors = buildDistractors(fuAcc, m, def, true);
-      const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
-      render(
-        `${modelHtml}
-         <div class="instruct-text correction" id="instructBox">
-           ${audioBtn()}
-           <span id="instructAnim" class="typed-text"></span>
-         </div>
-         <div class="question-prompt" id="questionBox" style="display:none">${fuQ}</div>`,
-        `<div id="instructBtns" style="display:none"></div>`
-      );
-      speak(fuCor);
-      animateText(fuCor, 'instructAnim', () => {
-        const qBox = document.getElementById('questionBox');
-        const bBox = document.getElementById('instructBtns');
-        if (qBox) qBox.style.display = 'block';
-        if (bBox) {
-          bBox.style.display = 'block';
-          bBox.innerHTML = buildInstructWB(S.currentFuOpts || fuAcc, S.currentFuOpts ? null : fuDistractors, 'submitInstruct');
-        }
-      });
+      recordResp('instruct_fu', false);
+      S.instructItemErrors++;
+      showInstructFUError();
     }
   }
 }
+
+function showInstructFU() {
+  const def = INSTRUCT[S.instructStep];
+  const m = S.instructM;
+  const mode = S.instructCurrentMode;
+  S.instructFU = true;
+  const fuQ = typeof def.fuQ === 'function' ? def.fuQ(m) : def.fuQ;
+  S.currentFuOpts = typeof def.fuOpts === 'function' ? def.fuOpts(m) : def.fuOpts;
+  const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
+  const pos = randPos();
+
+  if (mode === 'T') {
+    // Test follow-up: brief positive then question + buttons immediately
+    render(
+      `${modelHtml}
+       <div class="instruct-text positive"><strong>${pos}</strong></div>
+       <div class="question-prompt">${fuQ}</div>`,
+      `<div id="instructBtns">${buildInstructWB(S.currentFuOpts, null, 'submitInstruct')}</div>`
+    );
+    speak(pos);
+    return;
+  }
+
+  // D or G follow-up: play fu() text then show fuQ + buttons
+  const fuText = typeof def.fu === 'function' ? def.fu(m) : def.fu;
+  const fullAudio = `${pos} ${fuText}`;
+  render(
+    `${modelHtml}
+     <div class="instruct-text bridge" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
+     <div class="question-prompt" id="questionBox" style="display:none">${fuQ}</div>`,
+    `<div id="instructBtns" style="display:none"></div>`
+  );
+  speak(fullAudio);
+  animateText(fullAudio, 'instructAnim', () => {
+    const qb = document.getElementById('questionBox');
+    const bb = document.getElementById('instructBtns');
+    if (qb) qb.style.display = 'block';
+    if (bb) { bb.style.display = 'block'; bb.innerHTML = buildInstructWB(S.currentFuOpts, null, 'submitInstruct'); }
+  });
+}
+
+function showInstructFUError() {
+  const def = INSTRUCT[S.instructStep];
+  const m = S.instructM;
+  const fuQ = typeof def.fuQ === 'function' ? def.fuQ(m) : def.fuQ;
+  const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
+
+  // Drop mode, pick guidance text
+  let guideText;
+  if (S.instructCurrentMode === 'T') {
+    S.instructCurrentMode = 'G';
+    guideText = typeof def.fuGuide === 'function' ? def.fuGuide(m) : def.fuGuide;
+  } else {
+    guideText = typeof def.fu === 'function' ? def.fu(m) : def.fu;
+  }
+
+  render(
+    `${modelHtml}
+     <div class="instruct-text correction" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
+     <div class="question-prompt" id="questionBox" style="display:none">${fuQ}</div>`,
+    `<div id="instructBtns" style="display:none"></div>`
+  );
+  speak(guideText);
+  animateText(guideText, 'instructAnim', () => {
+    const qb = document.getElementById('questionBox');
+    const bb = document.getElementById('instructBtns');
+    if (qb) qb.style.display = 'block';
+    if (bb) { bb.style.display = 'block'; bb.innerHTML = buildInstructWB(S.currentFuOpts, null, 'submitInstruct'); }
+  });
+}
+
 
 // Build plausible distractors from the same conceptual pool
 function buildDistractors(acc, m, def, isFU=false) {

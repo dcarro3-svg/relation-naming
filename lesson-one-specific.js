@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // LESSON ONE — EQUAL RELATIONS
-// Unique content: INSTRUCT, generators, review (none), ident, naming
+// All concepts new. All INSTRUCT steps start at 'D'.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // ── Generators ────────────────────────────────────────────────────────────────
@@ -12,104 +12,104 @@ function genEq(){
 }
 function genUneq(){
   const c1=randColor(),c2=randColor([c1.name]);
-  const diff=0.15+Math.random()*0.3;
+  const diff=0.18+Math.random()*0.3;
   const w1=BASE*(0.45+Math.random()*0.2);
   const w2=Math.random()>0.5?w1*(1+diff):w1*(1-diff);
   return{c1,c2,w1,w2:Math.max(w2,60),isEqual:false,layout:'stacked'};
 }
-
 function renderModel(m){return renderEqual(m);}
 
 // ── INSTRUCT ──────────────────────────────────────────────────────────────────
 const INSTRUCT=[
   {
+    // New concept: equal — starts at D
+    initialMode:'D',
     build(){const c1=COLORS[0],c2=COLORS[2],w=320;return{c1,c2,w1:w,w2:w,layout:'stacked',isEqual:true};},
-    audio(m){return`These two rectangles are equal. They are the same size, stacked on top of each other. The ${m.c1.name} rectangle is equal to the ${m.c2.name} rectangle.`;},
-    question:`What is the relation between these two rectangles?`,
-    acc:['equal','same','same size','the same'],
-    opts:['These rectangles are equal.','These rectangles are different sizes.','One rectangle is part of the other.'],
-    cor:`Look at the two rectangles. They are the same size. When two things are the same size, they are equal. What is the relation?`,
-    fu(m){return`Right — equal. When two things are the same size, they are equal.`;},
-    fuQ:`What do we call two things that are the same size?`,
-    fuAcc:['equal','same'],
-    fuOpts:['Two things that are the same size are called equal.','Two things of identical size are called congruent.','Two things of matching size form a comparison.'],
-    fuCor:`Two things of the same size are called equal. What is the word?`,
+    audio(){return`Look at these two bars. They are the same size. When two bars are the same size, we call them equal.`;},
+    guide(){return`Look at both bars. Are they the same size or different sizes?`;},
+    question:`What is the relation?`,
+    opts:['These bars are equal.','These bars are not equal.','One bar is part of the other.'],
+    fu(){return`Equal means the same size. When two bars are the same size, they are equal.`;},
+    fuQ:`What do we call two bars that are the same size?`,
+    fuOpts:['Two bars that are the same size are equal.','Two bars that are the same size are not equal.','Two bars that are the same size form a part-whole.'],
+    fuGuide(){return`The bars are the same size. What word means "same size"?`;},
   },
   {
+    // Not equal — starts at D
+    initialMode:'D',
     build(){const c1=COLORS[3],c2=COLORS[1];const w=BASE*(0.6+Math.random()*0.25);return{c1,c2,w1:w,w2:w*1.4,isEqual:false,layout:'stacked'};},
-    audio(m){return`These two rectangles are not equal. They are different sizes. Two things are only equal if they are the same size. Are these rectangles equal?`;},
-    question:`Are these rectangles equal or not equal?`,
-    acc:['not equal','not the same','different','no','unequal'],
-    opts:['These rectangles are not equal.','These rectangles are close in size.','These rectangles form a comparison.'],
-    cor:`Look at the sizes. Is one rectangle bigger than the other? Two things are only equal if they are the same size. Are they equal?`,
-    fu(m){return`Right — not equal. The picture shows they are different sizes.`;},
-    fuQ:`What do we call two things that are different sizes?`,
-    fuAcc:['not equal','unequal','different','not the same'],
-    fuOpts:['Two things of different sizes are called not equal.','Two things of varying sizes form a comparison.','Two things of varying sizes are called parts.'],
-    fuCor:`Two things of different sizes are not equal. What do we call them?`,
+    audio(){return`These two bars are different sizes. They are not equal. Two bars are only equal if they are the same size.`;},
+    guide(){return`Look at both bars. Are they the same size?`;},
+    question:`Are these bars equal or not equal?`,
+    opts:['These bars are not equal.','These bars are equal.','These bars form a part-whole.'],
+    fu(){return`Not equal means different sizes. If two bars are different sizes, they are not equal.`;},
+    fuQ:`What do we call two bars that are different sizes?`,
+    fuOpts:['Two bars that are different sizes are not equal.','Two bars that are different sizes are equal.','Two bars that are different sizes are a part-whole.'],
+    fuGuide(){return`They are different sizes. Does "equal" mean the same size or different sizes?`;},
   },
   {
+    // Picture must show equality — starts at D
+    initialMode:'D',
     build(){const c1=COLORS[2],c2=COLORS[3];const w=BASE*0.65;return{c1,c2,w1:w,w2:w*1.22,isEqual:false,layout:'stacked'};},
-    audio(m){return`These rectangles look like they might be equal — they are close in size. But the picture does not show me that they are exactly the same size. To call two things equal, the picture must confirm it. Can I call these equal?`;},
-    question:`Can I call these rectangles equal?`,
-    acc:['no','not equal','cannot','can\'t','no i cannot'],
-    opts:['No — the picture does not confirm it.','Yes — they look the same size.','Yes — any two rectangles of similar size are equal.'],
-    cor:`The picture must confirm equality — by stacking them directly, or by using dotted lines. Does this picture confirm they are exactly equal?`,
-    fu(m){return`Right — no. The picture does not confirm equality. They must be stacked directly or have dotted lines.`;},
-    fuQ:`What must the picture show to confirm equality?`,
-    fuAcc:['dotted','stacking','dotted lines','stacked','lines'],
-    fuOpts:['The picture must show stacking or dotted lines.','The picture must show the bars side by side.','The picture must show the bars are the same color.'],
-    fuCor:`The picture must show stacking or dotted lines to confirm equality. What does it need to show?`,
+    audio(){return`These bars look close in size — but the picture does not show they are equal. To say two bars are equal, the picture must show it. The bars must be stacked right on top, or have dotted lines at the ends.`;},
+    guide(){return`Look at how the bars are shown. Does the picture prove they are the same size?`;},
+    question:`Can I call these bars equal?`,
+    opts:['No — the picture does not show it.','Yes — they look the same size.','Yes — any two bars that are close are equal.'],
+    fu(){return`The picture must show that bars are equal. They need to be stacked or have dotted lines.`;},
+    fuQ:`What must the picture show to say two bars are equal?`,
+    fuOpts:['The bars must be stacked or have dotted lines.','The bars must be the same color.','The bars must be side by side.'],
+    fuGuide(){return`Think about how you have seen equal bars before. What did the picture have?`;},
   },
   {
+    // Dotted-line format — starts at D (new visual format)
+    initialMode:'D',
     build(){const c1=COLORS[3],c2=COLORS[1];const w=BASE*0.7;return{c1,c2,w1:w,w2:w,layout:'dotted',isEqual:true};},
-    audio(m){return`These rectangles are not stacked on top of each other, but the dotted lines on each end show they start and end at exactly the same point. The picture confirms they are equal. Are these rectangles equal?`;},
-    question:`Are these rectangles equal or not equal?`,
-    acc:['equal','yes','same','dotted lines show'],
-    opts:['Yes — these rectangles are equal.','The picture is inconclusive.','These rectangles are in a comparison.'],
-    cor:`Look at the dotted lines on the ends of the rectangles. They show that both rectangles end at the same point — the picture confirms equality. Are they equal?`,
-    fu(m){return`Right — equal. The dotted lines confirm it.`;},
-    fuQ:`How does the picture confirm equality here?`,
-    fuAcc:['dotted lines','dotted','lines','the lines'],
-    fuOpts:['The dotted lines confirm it — they share the same endpoints.','The bars are stacked on top of each other.','The bars are the same color.'],
-    fuCor:`The dotted lines on the ends confirm the rectangles are the same length. What confirms equality?`,
+    audio(){return`These bars are not stacked. But the dotted lines on each end show that both bars start and end at the same point. The picture shows they are equal.`;},
+    guide(){return`Look at the dotted lines on the ends. What do they show about where each bar ends?`;},
+    question:`Are these bars equal or not equal?`,
+    opts:['Yes — these bars are equal.','No — the picture does not show it.','These bars form a comparison.'],
+    fu(){return`The dotted lines show both bars end at the same point. That means the picture shows they are equal.`;},
+    fuQ:`How does the picture show equality here?`,
+    fuOpts:['The dotted lines show both bars end at the same point.','The bars are stacked on top of each other.','The bars are the same color.'],
+    fuGuide(){return`The dotted lines touch each end of both bars. What does that tell you about both bars?`;},
   },
 ];
 
 // ── Phases ────────────────────────────────────────────────────────────────────
 function showIntro(){
-  S.phase='intro'; setPhase('Introduction'); setProgress(4);
-  const audio=`You are going to learn to name relations. A relation tells how two things are similar or different. The first relation you will learn is Equal. When two things are the same size or number, they are equal.`;
+  S.phase='intro';setPhase('Introduction');setProgress(4);
+  const audio=`You are going to learn to name relations. A relation tells how two things connect. The first relation is equal. Equal means two things are the same size.`;
   render(`<div class="instruct-text neutral" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="startInstructIntro()">Ready</button></div>`);
   speak(audio);
-  animateText(audio,'instructAnim',()=>{ const b=document.getElementById('instructBtns');if(b)b.style.display='block'; });
+  animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
 }
 
 function startInstructIntro(){
-  S.phase='instruction'; setPhase('Instruction'); setProgress(16);
-  const audio=`Now let me show you some examples. For each one, tell me whether the shapes are equal or not.`;
+  S.phase='instruction';setPhase('Instruction');setProgress(16);
+  const audio=`Look at some examples. For each one, tell me what the relation is.`;
   render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="showInstruct(0)">Show me</button></div>`);
   speak(audio);
-  animateText(audio,'instructAnim',()=>{ const b=document.getElementById('instructBtns');if(b)b.style.display='block'; });
+  animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
 }
 
-function afterInstruct(){ showIdentIntro(); }
+function afterInstruct(){showIdentIntro();}
 
 // ── Identification ─────────────────────────────────────────────────────────────
 function showIdentIntro(){
-  S.phase='ident'; setPhase('Practice'); setProgress(44);
-  const audio=`Now you will tell me whether each picture shows an equal relation or not. Say Equal or Not Equal.`;
+  S.phase='ident';setPhase('Practice');setProgress(44);
+  const audio=`Look at each picture. Say if the bars are equal or not equal.`;
   render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="nextIdent()">Ready</button></div>`);
   speak(audio);
-  animateText(audio,'instructAnim',()=>{ const b=document.getElementById('instructBtns');if(b)b.style.display='block'; });
+  animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
 }
 
 function nextIdent(){
   if(S.identStep>=S.totalIdent){showNamingIntro();return;}
   setProgress(46+(S.identStep/S.totalIdent)*18);
+  S.identItemErrors=0;
   S.currentModel=Math.random()>0.45?genEq():genUneq();
   S.currentAnswer=S.currentModel.isEqual?'equal':'notequal';
   startTimer();
@@ -119,12 +119,24 @@ function nextIdent(){
 }
 
 function submitIdent(r){
-  recordResp('ident',r===S.currentAnswer);
-  if(r===S.currentAnswer){S.identStep++;nextIdent();return;}
-  const isAmbig=S.currentModel.w1&&Math.abs(S.currentModel.w1-S.currentModel.w2)<30;
-  let audio=r==='equal'&&!S.currentModel.isEqual
-    ? (isAmbig?`The picture does not confirm equality. To call two things equal, the picture must show stacking or dotted lines.`:`Look at the sizes — are they the same?`)
-    : `Look again. Does the picture show the shapes are equal? Look for stacking or dotted lines.`;
+  const ok=r===S.currentAnswer;
+  recordResp('ident',ok);
+  if(ok){
+    document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;
+    setTimeout(()=>{S.identStep++;nextIdent();},400);
+    return;
+  }
+  S.identItemErrors++;
+  let audio;
+  if(S.identItemErrors>=2){
+    // D level: tell them explicitly
+    audio=S.currentModel.isEqual
+      ?`These bars are the same size. That means they are equal.`
+      :`These bars are different sizes. That means they are not equal.`;
+  } else {
+    // G level: draw attention
+    audio=`Look at both bars. Are they the same size or different sizes?`;
+  }
   render(`<div class="canvas">${renderModel(S.currentModel)}</div>
     <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div class="response-buttons"><button class="btn" onclick="submitIdent('equal')">Equal</button><button class="btn" onclick="submitIdent('notequal')">Not Equal</button></div>`);
@@ -133,26 +145,25 @@ function submitIdent(r){
 
 // ── Naming ────────────────────────────────────────────────────────────────────
 function showNamingIntro(){
-  S.phase='naming'; setPhase('Relation Naming'); setProgress(66);
-  const audio=`Now one shape has a question mark — that is the unknown. Name the relation: known color equals unknown.`;
+  S.phase='naming';setPhase('Relation Naming');setProgress(66);
+  const audio=`One bar has a question mark. That is the unknown. Name the relation: known color equals unknown.`;
   render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="nextNaming()">Ready</button></div>`);
   speak(audio);
-  animateText(audio,'instructAnim',()=>{ const b=document.getElementById('instructBtns');if(b)b.style.display='block'; });
+  animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
 }
 
 function nextNaming(){
   if(S.namingStep>=S.totalNaming){showComplete();return;}
   setProgress(68+(S.namingStep/S.totalNaming)*28);
+  S.namingItemErrors=0;
   const c1=randColor(),c2=randColor([c1.name]);
   const w=260+Math.random()*80;
   const m={c1,c2,w1:w,w2:w,layout:'stacked',isEqual:true};
   const unk=Math.random()>0.5?c1.name:c2.name;
   const kn=unk===c1.name?c2.name:c1.name;
   m.unk=unk;
-  S.currentModel=m; S.currentNaming={kn,unk}; startTimer();
-
-  // Scaffold: color identification first if active
+  S.currentModel=m;S.currentNaming={kn,unk};startTimer();
   if(!S.scaffoldColorLocked&&S.scaffoldColorActive){
     showColorScaffold();
   } else {
@@ -162,8 +173,7 @@ function nextNaming(){
 
 function showColorScaffold(){
   const{unk}=S.currentNaming;
-  const colorOpts=shuffle(COLORS.map(c=>c.name)).filter(n=>n!==unk).slice(0,3);
-  colorOpts.push(unk); const opts=shuffle(colorOpts);
+  const opts=shuffle([...COLORS.map(c=>c.name).filter(n=>n!==unk).slice(0,3),unk]);
   render(`<div class="canvas">${renderModel(S.currentModel)}</div><div class="question-prompt">What color is the unknown?</div>`,
     `<div class="response-buttons">${opts.map(o=>`<button class="btn" onclick="submitColorScaffold('${o}')">${o}</button>`).join('')}</div>`);
   speak('What color is the unknown?');
@@ -171,9 +181,9 @@ function showColorScaffold(){
 function submitColorScaffold(r){
   const{unk}=S.currentNaming;
   const ok=cmatch(r,unk);
-  updateColorScaffold(ok); recordResp('scaffold_color',ok);
+  updateColorScaffold(ok);recordResp('scaffold_color',ok);
   if(ok){showNamingItem();}else{
-    const audio=`Look for the shape with the question mark. What color is it?`;
+    const audio=`Find the bar with the question mark. What color is it?`;
     render(`<div class="canvas">${renderModel(S.currentModel)}</div>
       <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
       `<div class="response-buttons">${shuffle([...COLORS.map(c=>c.name).filter(n=>n!==unk).slice(0,3),unk]).map(o=>`<button class="btn" onclick="submitColorScaffold('${o}')">${o}</button>`).join('')}</div>`);
@@ -183,21 +193,34 @@ function submitColorScaffold(r){
 
 function showNamingItem(){
   const{kn,unk}=S.currentNaming;
-  const opts=shuffle([`${kn} equals unknown`, `${unk} equals unknown`, `unknown equals ${kn}`, `${kn} equals ${unk}`]).slice(0,3);
-  if(!opts.some(o=>o===`${kn} equals unknown`)){opts[opts.length-1]=`${kn} equals unknown`;}
-  const finalOpts=shuffle(opts);
-  render(`<div class="canvas">${renderModel(S.currentModel)}</div><div class="question-prompt">What equals the unknown? Name the full relation.</div>`,
-    `<div class="response-buttons">${finalOpts.map(o=>`<button class="btn" onclick="submitNaming('${o}')">${o}</button>`).join('')}</div>`);
-  speak('What equals the unknown?');
+  const correct=`${kn} equals unknown`;
+  const opts=shuffle([correct,`${unk} equals unknown`,`unknown equals ${kn}`]).slice(0,3);
+  if(!opts.includes(correct))opts[opts.length-1]=correct;
+  render(`<div class="canvas">${renderModel(S.currentModel)}</div><div class="question-prompt">Name the relation.</div>`,
+    `<div class="response-buttons">${shuffle(opts).map(o=>`<button class="btn" onclick="submitNaming('${o}')">${o}</button>`).join('')}</div>`);
+  speak('Name the relation.');
 }
 function submitNaming(r){
   const{kn,unk}=S.currentNaming;
   const correct=`${kn} equals unknown`;
-  const ok=r===correct||r.includes(kn)&&r.includes('equal')&&(r.includes('unknown')||r.includes(unk));
-  recordResp('naming',ok); updateColorScaffold(ok);
-  if(ok){S.namingStep++;nextNaming();return;}
-  let audio=`Start with the known shape — ${kn}. Say: ${kn} equals unknown.`;
-  if(r.includes('unknown')&&!r.startsWith(kn)) audio=`Start with the known shape, not the unknown. Say: ${kn} equals unknown.`;
+  const ok=r===correct||(r.includes(kn)&&r.includes('equal')&&r.includes('unknown'));
+  recordResp('naming',ok);updateColorScaffold(ok);
+  if(ok){
+    document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;
+    setTimeout(()=>{S.namingStep++;nextNaming();},500);
+    return;
+  }
+  S.namingItemErrors++;
+  let audio;
+  if(S.namingItemErrors>=2){
+    // D level: give the answer
+    audio=`The relation is: ${kn} equals unknown. Try that one.`;
+  } else {
+    // G level: draw attention
+    audio=r.includes('unknown')&&!r.startsWith(kn)
+      ?`Start with the known bar — the one without the question mark. That is ${kn}.`
+      :`Find the bar without the question mark. Say its color first. Then say equals unknown.`;
+  }
   render(`<div class="canvas">${renderModel(S.currentModel)}</div>
     <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div class="response-buttons">${shuffle([correct,`${unk} equals unknown`,`unknown equals ${kn}`]).slice(0,3).map(o=>`<button class="btn" onclick="submitNaming('${o}')">${o}</button>`).join('')}</div>`);

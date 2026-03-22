@@ -1,5 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // LESSON THREE — COMPARISONS & DIFFERENCES
+// Part-whole is mastered (L2) → review starts at T.
+// Comparison is new → INSTRUCT steps start at D.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function genPWReview(){
@@ -23,49 +25,49 @@ function renderModel(m){
 
 const INSTRUCT=[
   {
+    // New: more and less — starts at D
+    initialMode:'D',
     build(){return genComparison(null,null);},
-    audio(m){return`Look at these two bars. They are different sizes — not equal. The ${m.larger.color.name} bar is more than the ${m.smaller.color.name} bar. That means the ${m.smaller.color.name} bar is less than the ${m.larger.color.name} bar. Which bar is less?`;},
+    audio(m){return`Look at these two bars. They are different sizes — not equal. The ${m.larger.color.name} bar is more than the ${m.smaller.color.name} bar. The ${m.smaller.color.name} bar is less than the ${m.larger.color.name} bar.`;},
+    guide(m){return`Look at both bars. Which one is smaller?`;},
     question(m){return`Which bar is less?`;},
-    acc(m){return[m.smaller.color.name,...fam(m.smaller.color.name)];},
-    opts(m){return[`The ${m.smaller.color.name} bar is less.`,`The ${m.larger.color.name} bar is less.`,`Neither bar is less — both are the same size.`];},
-    cor(m){return`The smaller bar is less. Which color is the smaller bar?`;},
-    fu(m){return`Right — ${m.smaller.color.name} is less. And that means ${m.larger.color.name} is more. Naming one relation gives you the other for free. That is useful for problem solving.`;},
+    opts(m){return[`The ${m.smaller.color.name} bar is less.`,`The ${m.larger.color.name} bar is less.`,`Neither — both bars are the same size.`];},
+    fu(m){return`${m.smaller.color.name} is less, so ${m.larger.color.name} is more. Naming one gives you the other for free.`;},
     fuQ(m){return`If ${m.smaller.color.name} is less — what is ${m.larger.color.name}?`;},
-    fuAcc:['more','greater','bigger','larger'],
-    fuOpts(m){return[`The ${m.larger.color.name} bar is more.`,`The ${m.larger.color.name} bar is equal.`,`The ${m.larger.color.name} bar is less.`];},
-    fuCor(m){return`If one bar is less, the other must be more. What is the ${m.larger.color.name} bar?`;},
+    fuOpts(m){return[`${m.larger.color.name} is more.`,`${m.larger.color.name} is equal.`,`${m.larger.color.name} is less.`];},
+    fuGuide(m){return`If one bar is less, the other must be more. What is the ${m.larger.color.name} bar?`;},
   },
   {
+    // New: the difference bar — starts at D
+    initialMode:'D',
     build(){return genComparison('pale',null);},
-    audio(m){return`The faded section between the bars shows the difference — how much more the ${m.larger.color.name} bar is than the ${m.smaller.color.name} bar. The difference shows how many more or how many fewer. What is the faded section called?`;},
-    question:`What is the faded section called?`,
-    acc:['difference','the difference'],
-    opts:['The faded section is called the difference.','The faded section is called the part.','The faded section is called the whole.'],
-    cor:`The faded gap shows how much more one bar is than the other. That is called the difference. What is it called?`,
-    fu(m){return`Right — the difference. Now look at this: the difference shown as its own bar. Together, smaller plus difference equals larger. That is a part-whole relation.`;},
+    audio(m){return`The faded gap between the bars shows the difference. It shows how much more the ${m.larger.color.name} bar is than the ${m.smaller.color.name} bar.`;},
+    guide(m){return`Look at the faded gap. What does it show?`;},
+    question:`What do we call the faded gap?`,
+    opts:['The faded gap is called the difference.','The faded gap is called the part.','The faded gap is called the whole.'],
+    fu(m){return`Right — the difference. Smaller plus difference equals larger. That is a part-whole relation inside the comparison.`;},
     fuQ:`What relation does smaller plus difference equals larger show?`,
-    fuAcc:['part-whole','part whole','part','whole'],
-    fuOpts:['Smaller plus difference equals larger — it shows a part-whole relation.','Smaller plus difference equals larger — it shows an equal relation.','Smaller plus difference equals larger — it shows a multiplicative relation.'],
-    fuCor:`When two parts add up to a whole, that is a part-whole relation. What is it called?`,
+    fuOpts:['It shows a part-whole relation.','It shows an equal relation.','It shows a comparison that has no parts.'],
+    fuGuide(){return`Smaller and difference add up to larger — just like parts add up to a whole. What kind of relation is that?`;},
   },
   {
+    // New: all three relations in one picture — starts at D
+    initialMode:'D',
     build(){return genComparison('bar',null);},
-    audio(m){return`The ${m.smaller.color.name} bar plus the ${m.diff.color.name} difference equals the ${m.larger.color.name} bar. Three bars, three embedded relations. To find the larger, add smaller plus difference. To find the smaller, subtract difference from larger. What equals the difference?`;},
+    audio(m){return`Here are three bars: ${m.smaller.color.name}, ${m.diff.color.name}, and ${m.larger.color.name}. They show three relations. To find the larger, add smaller plus difference. To find the difference, take the larger minus the smaller. To find the smaller, take the larger minus the difference.`;},
+    guide(m){return`Look at the three bars. How do you find the ${m.diff.color.name} difference?`;},
     question(m){return`What equals the ${m.diff.color.name} difference?`;},
-    acc(m){return[`${m.larger.color.name} minus ${m.smaller.color.name}`,`larger minus smaller`,`${m.larger.color.name} without ${m.smaller.color.name}`];},
     opts(m){return[`${m.larger.color.name} minus ${m.smaller.color.name} equals the difference.`,`${m.smaller.color.name} minus ${m.larger.color.name} equals the difference.`,`${m.larger.color.name} plus ${m.smaller.color.name} equals the difference.`];},
-    cor(m){return`The difference equals the larger bar minus the smaller bar. Say: ${m.larger.color.name} minus ${m.smaller.color.name}.`;},
-    fu(m){return`Right — ${m.larger.color.name} minus ${m.smaller.color.name} equals the difference. You know all three embedded relations now.`;},
+    fu(m){return`${m.larger.color.name} minus ${m.smaller.color.name} equals the difference. You can find any of the three bars if you know the other two.`;},
     fuQ(m){return`What equals the ${m.smaller.color.name} smaller bar?`;},
-    fuAcc(m){return[`${m.larger.color.name} minus ${m.diff.color.name}`,`larger minus difference`];},
     fuOpts(m){return[`${m.larger.color.name} minus ${m.diff.color.name} equals ${m.smaller.color.name}.`,`${m.larger.color.name} plus ${m.diff.color.name} equals ${m.smaller.color.name}.`,`${m.diff.color.name} minus ${m.larger.color.name} equals ${m.smaller.color.name}.`];},
-    fuCor(m){return`Larger minus difference equals smaller. Say: ${m.larger.color.name} minus ${m.diff.color.name} equals ${m.smaller.color.name}.`;},
+    fuGuide(m){return`Larger minus difference gives you the smaller. What is that relation?`;},
   },
 ];
 
 function showIntro(){
   S.phase='intro';setPhase('Introduction');setProgress(2);
-  const audio=`Last time you learned part-whole relations. Today you will learn about comparisons and differences. A comparison shows which bar is more and which is less. First, a quick review of part-whole.`;
+  const audio=`Last time you learned part-whole. Today you will learn about comparisons. A comparison shows which bar is more and which is less. First, a quick review of part-whole.`;
   render(`<div class="instruct-text neutral" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="startReview()">Let's review</button></div>`);
   speak(audio);
@@ -75,15 +77,27 @@ function startReview(){S.phase='review';setPhase('Review — Part-Whole');S.revi
 function nextReview(){
   if(S.reviewStep>=S.totalReview){showInstructIntro();return;}
   setProgress(4+(S.reviewStep/S.totalReview)*12);
+  S.reviewItemErrors=0;
   S.currentModel=genPWReview();startTimer();
   render(`<div class="canvas">${renderPW(S.currentModel)}</div><div class="question-prompt">Part-Whole or Not?</div>`,
     `<div class="response-buttons"><button class="btn" onclick="submitReview('yes')">Part-Whole</button><button class="btn" onclick="submitReview('no')">Not</button></div>`);
   speak('Part-Whole or Not?');
 }
 function submitReview(r){
+  // Review always shows valid PW models — answer is always 'yes'
   recordResp('review',r==='yes');
-  if(r==='yes'){S.reviewStep++;nextReview();return;}
-  const audio=`Look again — can you find a whole bar that equals two parts together?`;
+  if(r==='yes'){
+    document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;
+    setTimeout(()=>{S.reviewStep++;nextReview();},400);
+    return;
+  }
+  S.reviewItemErrors++;
+  let audio;
+  if(S.reviewItemErrors>=2){
+    audio=`This is a part-whole. The two small bars together equal the top bar.`;
+  } else {
+    audio=`Look for a top bar that equals the two smaller bars below it.`;
+  }
   render(`<div class="canvas">${renderPW(S.currentModel)}</div>
     <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div class="response-buttons"><button class="btn" onclick="submitReview('yes')">Part-Whole</button><button class="btn" onclick="submitReview('no')">Not</button></div>`);
@@ -92,7 +106,7 @@ function submitReview(r){
 
 function showInstructIntro(){
   S.phase='instruction';setPhase('Instruction');setProgress(18);
-  const audio=`You know part-whole. Now look at comparisons — two bars that are not equal. One is more, one is less.`;
+  const audio=`You know part-whole. Now look at comparisons — when one bar is more than another.`;
   render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="showInstruct(0)">Show me</button></div>`);
   speak(audio);
@@ -101,8 +115,8 @@ function showInstructIntro(){
 function afterInstruct(){showIdentIntro();}
 
 function showIdentIntro(){
-  S.phase='ident';S.identStep=0;setPhase('Identification');setProgress(42);
-  const audio=`Tell me if each picture shows a comparison relation or not.`;
+  S.phase='ident';S.identStep=0;setPhase('Identification');setProgress(44);
+  const audio=`Tell me if each picture shows a comparison or not.`;
   render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="nextIdent()">Ready</button></div>`);
   speak(audio);
@@ -110,28 +124,46 @@ function showIdentIntro(){
 }
 function nextIdent(){
   if(S.identStep>=S.totalIdent){showNamingIntro();return;}
-  setProgress(44+(S.identStep/S.totalIdent)*18);
+  setProgress(46+(S.identStep/S.totalIdent)*20);
+  S.identItemErrors=0;
   const isComp=Math.random()>0.4;
-  if(isComp){S.currentModel=genComparison('bar',null);S.currentAnswer='comp';}
-  else{S.currentModel=genPWReview();S.currentAnswer='not';}
+  S.currentModel=isComp?genComparison('bar',null):genPWReview();
+  S.currentAnswer=isComp?'comparison':'not';
   startTimer();
-  render(`<div class="canvas">${renderModel(S.currentModel)}</div><div class="question-prompt">Comparison or Not?</div>`,
-    `<div class="response-buttons"><button class="btn" onclick="submitIdent('comp')">Comparison</button><button class="btn" onclick="submitIdent('not')">Not</button></div>`);
+  const html=isComp?renderComparison(S.currentModel):renderPW(S.currentModel);
+  render(`<div class="canvas">${html}</div><div class="question-prompt">Comparison or Not?</div>`,
+    `<div class="response-buttons"><button class="btn" onclick="submitIdent('comparison')">Comparison</button><button class="btn" onclick="submitIdent('not')">Not</button></div>`);
   speak('Comparison or Not?');
 }
 function submitIdent(r){
-  recordResp('ident',r===S.currentAnswer);
-  if(r===S.currentAnswer){S.identStep++;nextIdent();return;}
-  const audio=r==='comp'?`Look — do you see a smaller bar, a larger bar, and a difference bar? That is a comparison.`:`That is a part-whole relation — two parts adding to one whole, not a comparison of more and less.`;
-  render(`<div class="canvas">${renderModel(S.currentModel)}</div>
+  const ok=r===S.currentAnswer;
+  recordResp('ident',ok);
+  if(ok){
+    document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;
+    setTimeout(()=>{S.identStep++;nextIdent();},400);
+    return;
+  }
+  S.identItemErrors++;
+  let audio;
+  if(S.identItemErrors>=2){
+    audio=S.currentAnswer==='comparison'
+      ?`This is a comparison. One bar is more than the other. Look for the difference bar between them.`
+      :`This is not a comparison. It shows a part-whole — two bars that add up to one bigger bar.`;
+  } else {
+    audio=r==='comparison'
+      ?`Look — is one bar more than another? Is there a difference bar?`
+      :`Look again. Is there a larger bar with a smaller bar and a gap between them?`;
+  }
+  const html=S.currentAnswer==='comparison'?renderComparison(S.currentModel):renderPW(S.currentModel);
+  render(`<div class="canvas">${html}</div>
     <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
-    `<div class="response-buttons"><button class="btn" onclick="submitIdent('comp')">Comparison</button><button class="btn" onclick="submitIdent('not')">Not</button></div>`);
+    `<div class="response-buttons"><button class="btn" onclick="submitIdent('comparison')">Comparison</button><button class="btn" onclick="submitIdent('not')">Not</button></div>`);
   speak(audio);animateText(audio,'instructAnim');
 }
 
 function showNamingIntro(){
-  S.phase='naming';S.namingStep=0;setPhase('Relation Naming');setProgress(64);
-  const audio=`Now name the relation to find the unknown. The unknown could be the larger, smaller, or difference bar.`;
+  S.phase='naming';S.namingStep=0;setPhase('Relation Naming');setProgress(68);
+  const audio=`Now name the relation to find the unknown. Use the buttons below.`;
   render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="nextNaming()">Ready</button></div>`);
   speak(audio);
@@ -139,11 +171,18 @@ function showNamingIntro(){
 }
 function nextNaming(){
   if(S.namingStep>=S.totalNaming){showComplete();return;}
-  setProgress(66+(S.namingStep/S.totalNaming)*28);
+  setProgress(70+(S.namingStep/S.totalNaming)*26);
+  S.namingItemErrors=0;
   const roles=['larger','smaller','diff'];
   const role=roles[S.namingStep%3];
-  S.currentModel=genComparison('bar',role);
-  S.currentNaming={larger:S.currentModel.larger.color.name,smaller:S.currentModel.smaller.color.name,diff:S.currentModel.diff.color.name,unknownRole:role};
+  const m=genComparison('bar',role);
+  S.currentModel=m;
+  S.currentNaming={
+    larger:m.larger.color.name,
+    smaller:m.smaller.color.name,
+    diff:m.diff.color.name,
+    unknownRole:role
+  };
   startTimer();
   if(!S.scaffoldColorLocked&&S.scaffoldColorActive) showColorScaffold();
   else if(!S.scaffoldRoleLocked&&S.scaffoldRoleActive) showRoleScaffold();
@@ -151,18 +190,20 @@ function nextNaming(){
 }
 function showColorScaffold(){
   const n=S.currentNaming;
-  const unk=n[n.unknownRole];
+  const unk=n.unknownRole==='larger'?n.larger:n.unknownRole==='smaller'?n.smaller:n.diff;
   const opts=shuffle([...COLORS.map(c=>c.name).filter(c=>c!==unk).slice(0,3),unk]);
   render(`<div class="canvas">${renderComparison(S.currentModel)}</div><div class="question-prompt">What color is the unknown?</div>`,
     `<div class="response-buttons">${opts.map(o=>`<button class="btn" onclick="submitColorScaffold('${o}')">${o}</button>`).join('')}</div>`);
   speak('What color is the unknown?');
 }
 function submitColorScaffold(r){
-  const n=S.currentNaming;const unk=n[n.unknownRole];
-  const ok=cmatch(r,unk);updateColorScaffold(ok);recordResp('scaffold_color',ok);
+  const n=S.currentNaming;
+  const unk=n.unknownRole==='larger'?n.larger:n.unknownRole==='smaller'?n.smaller:n.diff;
+  const ok=cmatch(r,unk);
+  updateColorScaffold(ok);recordResp('scaffold_color',ok);
   if(ok){if(!S.scaffoldRoleLocked&&S.scaffoldRoleActive)showRoleScaffold();else showNamingItem();}
   else{
-    const audio=`Look for the bar with the question mark. What color is it?`;
+    const audio=`Find the bar with the question mark. What color is it?`;
     render(`<div class="canvas">${renderComparison(S.currentModel)}</div>
       <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
       `<div class="response-buttons">${shuffle([...COLORS.map(c=>c.name).filter(c=>c!==unk).slice(0,3),unk]).map(o=>`<button class="btn" onclick="submitColorScaffold('${o}')">${o}</button>`).join('')}</div>`);
@@ -170,47 +211,68 @@ function submitColorScaffold(r){
   }
 }
 function showRoleScaffold(){
-  const n=S.currentNaming;const unk=n[n.unknownRole];
-  render(`<div class="canvas">${renderComparison(S.currentModel)}</div><div class="question-prompt">Is the ${unk} bar the larger, smaller, or difference?</div>`,
+  const n=S.currentNaming;
+  const unk=n.unknownRole==='larger'?n.larger:n.unknownRole==='smaller'?n.smaller:n.diff;
+  render(`<div class="canvas">${renderComparison(S.currentModel)}</div><div class="question-prompt">Is ${unk} the larger bar, the smaller bar, or the difference?</div>`,
     `<div class="response-buttons"><button class="btn" onclick="submitRoleScaffold('larger')">Larger</button><button class="btn" onclick="submitRoleScaffold('smaller')">Smaller</button><button class="btn" onclick="submitRoleScaffold('diff')">Difference</button></div>`);
-  speak(`Is the ${unk} bar the larger, smaller, or difference?`);
+  speak(`Is ${unk} the larger, smaller, or difference?`);
 }
 function submitRoleScaffold(r){
-  const n=S.currentNaming;const ok=r===n.unknownRole;
+  const n=S.currentNaming;
+  const ok=r===n.unknownRole;
   updateRoleScaffold(ok);recordResp('scaffold_role',ok);
   if(ok){showNamingItem();return;}
-  const unk=n[n.unknownRole];
-  const audio=n.unknownRole==='larger'?`The ${unk} bar is the largest — it is the larger bar.`:n.unknownRole==='smaller'?`The ${unk} bar is the smallest — it is the smaller bar.`:`The ${unk} bar shows how much more — it is the difference.`;
+  const unk=n.unknownRole==='larger'?n.larger:n.unknownRole==='smaller'?n.smaller:n.diff;
+  const msg={larger:`${unk} is the longest bar — that is the larger.`,smaller:`${unk} is the shorter full bar — that is the smaller.`,diff:`${unk} is the gap bar — that is the difference.`}[n.unknownRole];
   render(`<div class="canvas">${renderComparison(S.currentModel)}</div>
     <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div class="response-buttons"><button class="btn" onclick="submitRoleScaffold('larger')">Larger</button><button class="btn" onclick="submitRoleScaffold('smaller')">Smaller</button><button class="btn" onclick="submitRoleScaffold('diff')">Difference</button></div>`);
-  speak(audio);animateText(audio,'instructAnim');
+  speak(msg);animateText(msg,'instructAnim');
 }
 function showNamingItem(){
   const n=S.currentNaming;
   const{larger,smaller,diff,unknownRole}=n;
   let correct,opts;
-  if(unknownRole==='larger'){correct=`${smaller} plus ${diff} equals unknown`;opts=[correct,`${larger} minus ${diff} equals unknown`,`${diff} minus ${smaller} equals unknown`];}
-  else if(unknownRole==='smaller'){correct=`${larger} minus ${diff} equals unknown`;opts=[correct,`${smaller} plus ${diff} equals unknown`,`${larger} plus ${diff} equals unknown`];}
-  else{correct=`${larger} minus ${smaller} equals unknown`;opts=[correct,`${smaller} plus ${larger} equals unknown`,`${larger} minus ${diff} equals unknown`];}
+  if(unknownRole==='larger'){
+    correct=`${smaller} plus ${diff} equals unknown`;
+    opts=shuffle([correct,`${larger} minus ${diff} equals unknown`,`${smaller} minus ${diff} equals unknown`]);
+  } else if(unknownRole==='smaller'){
+    correct=`${larger} minus ${diff} equals unknown`;
+    opts=shuffle([correct,`${smaller} plus ${diff} equals unknown`,`${diff} minus ${larger} equals unknown`]);
+  } else {
+    correct=`${larger} minus ${smaller} equals unknown`;
+    opts=shuffle([correct,`${smaller} minus ${larger} equals unknown`,`${larger} plus ${smaller} equals unknown`]);
+  }
+  if(!opts.includes(correct))opts[opts.length-1]=correct;
   render(`<div class="canvas">${renderComparison(S.currentModel)}</div><div class="question-prompt">What equals the unknown?</div>`,
     `<div class="response-buttons">${shuffle(opts).map(o=>`<button class="btn" onclick="submitNaming('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
   speak('What equals the unknown?');
 }
 function submitNaming(r){
-  const n=S.currentNaming;const{larger,smaller,diff,unknownRole}=n;
-  let correct;
-  if(unknownRole==='larger')correct=`${smaller} plus ${diff} equals unknown`;
-  else if(unknownRole==='smaller')correct=`${larger} minus ${diff} equals unknown`;
-  else correct=`${larger} minus ${smaller} equals unknown`;
-  const ok=r===correct||(unknownRole==='larger'&&cmatch(r,smaller)&&cmatch(r,diff)&&r.includes('plus'))||(unknownRole!=='larger'&&cmatch(r,larger)&&r.includes('minus'));
-  recordResp('naming',ok);updateColorScaffold(ok);updateRoleScaffold(ok);
-  if(ok){S.namingStep++;nextNaming();return;}
-  let audio=unknownRole==='larger'?`Add smaller plus difference to find the larger. Try: ${smaller} plus ${diff} equals unknown.`
-    :unknownRole==='smaller'?`Subtract difference from larger to find smaller. Try: ${larger} minus ${diff} equals unknown.`
-    :`Subtract smaller from larger to find the difference. Try: ${larger} minus ${smaller} equals unknown.`;
+  const n=S.currentNaming;
+  const{larger,smaller,diff,unknownRole}=n;
+  let isCorrect;
+  if(unknownRole==='larger') isCorrect=cmatch(r,smaller)&&cmatch(r,diff)&&r.includes('plus');
+  else if(unknownRole==='smaller') isCorrect=cmatch(r,larger)&&cmatch(r,diff)&&r.includes('minus');
+  else isCorrect=cmatch(r,larger)&&cmatch(r,smaller)&&r.includes('minus');
+  recordResp('naming',isCorrect);updateColorScaffold(isCorrect);updateRoleScaffold(isCorrect);
+  if(isCorrect){
+    document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;
+    setTimeout(()=>{S.namingStep++;nextNaming();},500);
+    return;
+  }
+  S.namingItemErrors++;
+  const correct=unknownRole==='larger'?`${smaller} plus ${diff} equals unknown`:unknownRole==='smaller'?`${larger} minus ${diff} equals unknown`:`${larger} minus ${smaller} equals unknown`;
+  let audio;
+  if(S.namingItemErrors>=2){
+    audio=`The relation is: ${correct}.`;
+  } else {
+    if(unknownRole==='larger') audio=`The unknown is the larger bar. To find the larger, add smaller plus difference.`;
+    else if(unknownRole==='smaller') audio=`The unknown is the smaller bar. To find the smaller, take larger minus difference.`;
+    else audio=`The unknown is the difference. To find the difference, take larger minus smaller.`;
+  }
   render(`<div class="canvas">${renderComparison(S.currentModel)}</div>
     <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
-    `<div class="response-buttons">${shuffle([correct,unknownRole==='larger'?`${larger} minus ${diff} equals unknown`:unknownRole==='smaller'?`${smaller} plus ${diff} equals unknown`:`${smaller} plus ${larger} equals unknown`]).slice(0,3).map(o=>`<button class="btn" onclick="submitNaming('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
+    `<div class="response-buttons">${shuffle([correct,unknownRole==='larger'?`${larger} minus ${diff} equals unknown`:unknownRole==='smaller'?`${smaller} plus ${diff} equals unknown`:`${larger} plus ${smaller} equals unknown`,`${diff} minus ${larger} equals unknown`]).slice(0,3).map(o=>`<button class="btn" onclick="submitNaming('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
   speak(audio);animateText(audio,'instructAnim');
 }
