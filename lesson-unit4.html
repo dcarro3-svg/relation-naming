@@ -158,12 +158,12 @@ function audioBtnHtml() {
 }
 
 // ── Utilities ────────────────────────────────────────────────────────────────
-const COLORS = [{name:'blue',hex:'#1B6CA8'},{name:'orange',hex:'#D4600A'},{name:'green',hex:'#2D6A4F'},{name:'red',hex:'#C0392B'},{name:'purple',hex:'#6C3483'}];
+const COLORS = [{name:'a',hex:'#4A5568'},{name:'b',hex:'#718096'},{name:'c',hex:'#2D3748'},{name:'d',hex:'#8B9BAA'},{name:'e',hex:'#64748B'}];
 function tc(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(0.299*r+0.587*g+0.114*b)/255>0.55?'#1A1714':'#FFFFFF';}
 function shuffle(a){const arr=[...a];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
 const FRAC_NAMES=['half','third','fourth','fifth'];
 function fracName(n){return FRAC_NAMES[n-2]||`${n}th`;}
-const BH=62, GAP=6, SNAP=10, CVW=460;
+const BH=62, CVW=460;
 
 // ── Static model renderers ───────────────────────────────────────────────────
 function renderStaticPW(labels, colors, proportions, w) {
@@ -333,197 +333,6 @@ const S = {
   drawOk: false,
 };
 
-// ── Drag-and-Draw Canvas State ───────────────────────────────────────────────
-let DC = {
-  bars: [],
-  drawing: false,
-  drawStart: 0,
-  ghostX: 0,
-  ghostW: 0,
-  draggingBarId: null,
-  dragOffsetX: 0,
-  colorIdx: 0,
-  nextId: 0,
-  labelPending: null,
-};
-
-function resetDC() {
-  DC = { bars: [], drawing: false, drawStart: 0, ghostX: 0, ghostW: 0, draggingBarId: null, dragOffsetX: 0, colorIdx: 0, nextId: 0, labelPending: null };
-}
-
-// ── Canvas helpers ───────────────────────────────────────────────────────────
-function snap(v) { return Math.round(v / SNAP) * SNAP; }
-
-function snapAligned(w, startX) {
-  const rEdge = startX + w;
-  for (const b of DC.bars) {
-    if (Math.abs(rEdge - b.x) < 8) return b.x - startX;
-    if (Math.abs(rEdge - (b.x + b.w)) < 8) return (b.x + b.w) - startX;
-  }
-  return snap(w);
-}
-
-function canvasH() { return Math.max((DC.bars.length + (DC.drawing ? 1 : 0)) * (BH + GAP) + 8, 140); }
-
-function barDiv(b, i) {
-  const col = COLORS[b.colorIdx];
-  const textColor = tc(col.hex);
-  const y = i * (BH + GAP);
-  const isSelected = b.id === DC.labelPending || b.selected;
-  const border = isSelected ? `3px solid ${col.hex}` : 'none';
-  const label = b.label
-    ? `<span style="font-size:11px;font-weight:600;color:${textColor};text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${b.w - 12}px">${b.label}</span>`
-    : `<span style="font-size:11px;color:${textColor};opacity:0.6;font-style:italic">unlabeled</span>`;
-  return `<div id="bar_${b.id}" data-barid="${b.id}" style="position:absolute;left:${b.x}px;top:${y}px;width:${b.w}px;height:${BH}px;background:${col.hex};border-radius:6px;border:${border};display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;box-sizing:border-box" onmousedown="dcBarDown(event,${b.id})" onclick="dcSelectBar(${b.id})">${label}</div>`;
-}
-
-function ghostDiv() {
-  if (!DC.drawing || DC.ghostW < 10) return '';
-  const col = COLORS[DC.colorIdx];
-  const y = DC.bars.length * (BH + GAP);
-  return `<div style="position:absolute;left:${DC.ghostX}px;top:${y}px;width:${DC.ghostW}px;height:${BH}px;background:${col.hex};opacity:0.45;border-radius:6px;pointer-events:none"></div>`;
-}
-
-function guides() {
-  if (!DC.drawing || DC.ghostW < 10) return '';
-  let html = '';
-  const gLeft = DC.ghostX, gRight = DC.ghostX + DC.ghostW;
-  DC.bars.forEach((b, i) => {
-    const y = i * (BH + GAP);
-    [b.x, b.x + b.w].forEach(edge => {
-      if (Math.abs(gLeft - edge) < 8 || Math.abs(gRight - edge) < 8) {
-        html += `<div style="position:absolute;left:${edge}px;top:0;bottom:-20px;border-left:2px dashed var(--accent);opacity:0.5;pointer-events:none"></div>`;
-      }
-    });
-  });
-  return html;
-}
-
-function dcHtml() {
-  const barsHtml = DC.bars.map((b, i) => barDiv(b, i)).join('');
-  return `<div id="dcCanvas" style="position:relative;width:${CVW}px;height:${canvasH()}px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:visible;cursor:crosshair"
-    onmousedown="dcDown(event)"
-    onmousemove="dcMove(event)"
-    onmouseup="dcUp(event)"
-    onmouseleave="dcUp(event)"
-  >${barsHtml}${ghostDiv()}${guides()}</div>`;
-}
-
-// ── Canvas event handlers ────────────────────────────────────────────────────
-function dcDown(e) {
-  if (e.target.dataset.barid) return;
-  const rect = document.getElementById('dcCanvas').getBoundingClientRect();
-  const x = snap(e.clientX - rect.left);
-  DC.drawing = true;
-  DC.drawStart = x;
-  DC.ghostX = x;
-  DC.ghostW = 0;
-  renderBuilder();
-}
-
-function dcMove(e) {
-  if (DC.draggingBarId !== null) {
-    const rect = document.getElementById('dcCanvas').getBoundingClientRect();
-    let newX = snap(e.clientX - rect.left - DC.dragOffsetX);
-    newX = Math.max(0, Math.min(newX, CVW - 40));
-    const b = DC.bars.find(b => b.id === DC.draggingBarId);
-    if (b) b.x = newX;
-    renderBuilder();
-    return;
-  }
-  if (!DC.drawing) return;
-  const rect = document.getElementById('dcCanvas').getBoundingClientRect();
-  const x = snap(e.clientX - rect.left);
-  const rawW = x - DC.drawStart;
-  if (rawW > 0) {
-    DC.ghostX = DC.drawStart;
-    DC.ghostW = snapAligned(rawW, DC.drawStart);
-  } else {
-    DC.ghostX = snap(x);
-    DC.ghostW = snap(DC.drawStart - x);
-  }
-  DC.ghostW = Math.max(0, Math.min(DC.ghostW, CVW - DC.ghostX));
-  renderBuilder();
-}
-
-function dcUp(e) {
-  if (DC.draggingBarId !== null) {
-    DC.draggingBarId = null;
-    return;
-  }
-  if (!DC.drawing) return;
-  DC.drawing = false;
-  if (DC.ghostW >= 40) {
-    const id = DC.nextId++;
-    DC.bars.push({ id, colorIdx: DC.colorIdx, x: DC.ghostX, w: DC.ghostW, label: '', selected: false });
-    DC.labelPending = id;
-  }
-  DC.ghostW = 0;
-  renderBuilder();
-}
-
-function dcBarDown(e, id) {
-  e.stopPropagation();
-  const rect = document.getElementById('dcCanvas').getBoundingClientRect();
-  const b = DC.bars.find(b => b.id === id);
-  if (!b) return;
-  DC.draggingBarId = id;
-  DC.dragOffsetX = e.clientX - rect.left - b.x;
-}
-
-function dcSelectBar(id) {
-  DC.labelPending = id;
-  renderBuilder();
-}
-
-function dcUndo() {
-  DC.bars.pop();
-  DC.labelPending = null;
-  S.drawFeedback = null;
-  renderBuilder();
-}
-
-function dcReset() {
-  DC.bars = [];
-  DC.labelPending = null;
-  DC.nextId = 0;
-  S.drawFeedback = null;
-  renderBuilder();
-}
-
-function dcSetColor(idx) {
-  DC.colorIdx = idx;
-  renderBuilder();
-}
-
-function dcAssignLabel(label) {
-  if (DC.labelPending !== null) {
-    const b = DC.bars.find(b => b.id === DC.labelPending);
-    if (b) b.label = label;
-    DC.labelPending = null;
-  }
-  renderBuilder();
-}
-
-function colorPalette() {
-  return `<div style="display:flex;gap:8px;align-items:center">
-    ${COLORS.map((c, i) => `<div onclick="dcSetColor(${i})" style="width:28px;height:28px;border-radius:50%;background:${c.hex};cursor:pointer;outline:${i === DC.colorIdx ? '3px solid var(--text-primary)' : '2px solid transparent'};outline-offset:2px;transition:outline 0.1s"></div>`).join('')}
-    <span style="font-size:11px;color:var(--text-muted);margin-left:4px">Color</span>
-  </div>`;
-}
-
-function labelPanel(labels) {
-  if (DC.labelPending === null) return '';
-  const usedLabels = new Set(DC.bars.filter(b => b.id !== DC.labelPending && b.label).map(b => b.label));
-  const available = labels.filter(l => !usedLabels.has(l));
-  if (available.length === 0) return '';
-  return `<div style="margin-top:8px;padding:10px 12px;background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius)">
-    <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">Assign label</div>
-    <div style="display:flex;flex-wrap:wrap;gap:6px">
-      ${available.map(l => `<button onclick="dcAssignLabel('${l.replace(/'/g, "\\'")}')" style="padding:6px 12px;border-radius:var(--radius);border:1px solid var(--accent);background:white;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer">${l}</button>`).join('')}
-    </div>
-  </div>`;
-}
 
 // ── Relation strip state ─────────────────────────────────────────────────────
 let assembled = [];
@@ -562,39 +371,6 @@ function checkRelation(problem) {
   return { ok: false, fb: `Try: ${cor}` };
 }
 
-// ── Model check ──────────────────────────────────────────────────────────────
-function checkModel(problem) {
-  if (DC.bars.length !== problem.expectedBars) {
-    return { ok: false, fb: `Draw exactly ${problem.expectedBars} bars — one for each quantity in the problem.` };
-  }
-  const labels = DC.bars.map(b => b.label).filter(l => l);
-  if (labels.length < DC.bars.length) {
-    return { ok: false, fb: `Assign a label to every bar.` };
-  }
-  const used = new Set(labels);
-  for (const lbl of problem.labels) {
-    if (!used.has(lbl)) return { ok: false, fb: `Missing: ${lbl}. Each label should appear exactly once.` };
-  }
-  if (problem.type === 'pw' || problem.type === 'cmp') {
-    const sorted = [...DC.bars].sort((a, b) => b.w - a.w);
-    const totalW = sorted[0].w;
-    const partBars = sorted.slice(1);
-    const partWidths = partBars.map(b => b.w / totalW);
-    const expProportions = problem.proportions;
-    const sortedParts = [...partWidths].sort((a, b) => b - a);
-    const sortedExp = [...expProportions].sort((a, b) => b - a);
-    for (let i = 0; i < Math.min(sortedParts.length, sortedExp.length); i++) {
-      if (Math.abs(sortedParts[i] - sortedExp[i]) > 0.30) {
-        return { ok: false, fb: `Check the bar sizes — they should roughly match the quantities described. The largest part should be noticeably bigger than the smallest.` };
-      }
-    }
-    const partSum = partWidths.reduce((a, b) => a + b, 0);
-    if (Math.abs(partSum - 1.0) > 0.25) {
-      return { ok: false, fb: `The parts together should span the same width as the whole bar. Adjust the bar sizes.` };
-    }
-  }
-  return { ok: true, fb: null };
-}
 
 // ── Record response ──────────────────────────────────────────────────────────
 function recordResp(phase, ok) {
@@ -625,18 +401,12 @@ function updateProgress() {
 function render(html) { document.getElementById('main').innerHTML = html; }
 function setPhase(l) { document.getElementById('phaseLabel').textContent = l; }
 
-// ── Snapshot of drawn model (for name phase) ─────────────────────────────────
-function snapshotModel() {
-  const h = Math.max(DC.bars.length * (BH + GAP) + 8, 80);
-  const barsHtml = DC.bars.map((b, i) => {
-    const col = COLORS[b.colorIdx];
-    const y = i * (BH + GAP);
-    const textColor = tc(col.hex);
-    return `<div style="position:absolute;left:${b.x}px;top:${y}px;width:${b.w}px;height:${BH}px;background:${col.hex};border-radius:6px;display:flex;align-items:center;justify-content:center">
-      <span style="font-size:11px;font-weight:600;color:${textColor};text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${b.w - 12}px">${b.label}</span>
-    </div>`;
-  }).join('');
-  return `<div style="position:relative;width:${CVW}px;height:${h}px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">${barsHtml}</div>`;
+// ── Static model for practice name phase ─────────────────────────────────────
+function renderPracticeModel(p) {
+  const colors = [0, 1, 2];
+  if (p.type === 'pw') return renderStaticPW(p.labels, colors, p.proportions);
+  if (p.type === 'cmp') return renderStaticCMP(p.labels, colors, p.proportions);
+  return '';
 }
 
 // ── Phases ───────────────────────────────────────────────────────────────────
@@ -773,29 +543,9 @@ function startPractice() {
   S.phase = 'practice';
   S.practiceStep = 0;
   S.practicePhase = 'draw';
-  resetDC();
   assembled = [];
-  S.drawFeedback = null;
   setPhase('Practice');
   renderPracticeItem();
-}
-
-function renderBuilder() {
-  const container = document.getElementById('builderContainer');
-  if (!container) return;
-  const p = PRACTICE_PROBLEMS[S.practiceStep];
-  const doneDisabled = DC.bars.length < 2 ? 'disabled' : '';
-  container.innerHTML = `
-    <div class="toolbar">
-      ${colorPalette()}
-      <button class="btn-secondary" onclick="dcUndo()">Undo</button>
-      <button class="btn-secondary" onclick="dcReset()">Reset</button>
-    </div>
-    ${dcHtml()}
-    ${labelPanel(p.labels)}
-    ${S.drawFeedback ? `<div class="feedback-card err" style="margin-top:8px">${S.drawFeedback}</div>` : ''}
-    <button class="btn-continue" style="margin-top:10px" onclick="doneDrawing()" ${doneDisabled}>Done Drawing</button>
-  `;
 }
 
 function renderPracticeItem() {
@@ -803,29 +553,19 @@ function renderPracticeItem() {
   const p = PRACTICE_PROBLEMS[S.practiceStep];
 
   if (S.practicePhase === 'draw') {
-    const doneDisabled = DC.bars.length < 2 ? 'disabled' : '';
     render(`<div class="card" style="animation:fadeUp 0.3s ease">
       <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Draw the bar model</div>
       <div class="problem-text">${p.text}</div>
       <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">Labels to use: <strong>${p.labels.join(', ')}</strong></div>
-      <div id="builderContainer">
-        <div class="toolbar">
-          ${colorPalette()}
-          <button class="btn-secondary" onclick="dcUndo()">Undo</button>
-          <button class="btn-secondary" onclick="dcReset()">Reset</button>
-        </div>
-        ${dcHtml()}
-        ${labelPanel(p.labels)}
-        ${S.drawFeedback ? `<div class="feedback-card err" style="margin-top:8px">${S.drawFeedback}</div>` : ''}
-        <button class="btn-continue" style="margin-top:10px" onclick="doneDrawing()" ${doneDisabled}>Done Drawing</button>
-      </div>
+      <div id="bar-tool-placeholder"></div>
+      <button class="btn-continue" style="margin-top:10px" onclick="doneDrawing()">Done Drawing</button>
     </div>`);
   } else {
     // Name phase
     render(`<div class="card" style="animation:fadeUp 0.3s ease">
       <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Name the relation</div>
       <div class="problem-text">${p.text}</div>
-      <div style="margin-bottom:12px">${snapshotModel()}</div>
+      <div style="margin-bottom:12px">${renderPracticeModel(p)}</div>
       ${strip(p.ops, p.labels)}
       <div id="nameFeedback"></div>
     </div>`);
@@ -833,14 +573,6 @@ function renderPracticeItem() {
 }
 
 function doneDrawing() {
-  const p = PRACTICE_PROBLEMS[S.practiceStep];
-  const result = checkModel(p);
-  if (!result.ok) {
-    S.drawFeedback = result.fb;
-    renderBuilder();
-    return;
-  }
-  S.drawFeedback = null;
   S.practicePhase = 'name';
   assembled = [];
   renderPracticeItem();
@@ -868,9 +600,7 @@ function nextPracticeStep() {
     showComplete();
   } else {
     S.practicePhase = 'draw';
-    resetDC();
     assembled = [];
-    S.drawFeedback = null;
     renderPracticeItem();
   }
 }

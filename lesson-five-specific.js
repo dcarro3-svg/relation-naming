@@ -227,7 +227,7 @@ function submitNaming(r){
 // ── Free Relation Practice ────────────────────────────────────────────────────
 function showFreeIntro(){
   S.phase='free';S.freeStep=0;setPhase('Free Relations');setProgress(72);
-  const audio=`Now name four true relations for each picture. Use fractional, multiplicative, or both.`;
+  const audio=`Now name a relation for each picture. Say either the fractional or the multiplicative relation — both are correct.`;
   render(`<div class="instruct-text bridge" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="nextFree()">Ready</button></div>`);
   speak(audio);
@@ -236,57 +236,38 @@ function showFreeIntro(){
 function nextFree(){
   if(S.freeStep>=S.totalFree){showComplete();return;}
   setProgress(74+(S.freeStep/S.totalFree)*22);
-  S.freeModel=genFrac(null);S.freeRelationsFound=[];
+  S.freeModel=genFrac(null);
   showFreeItem();
 }
 function showFreeItem(){
-  const m=S.freeModel;const remaining=S.freeTarget-S.freeRelationsFound.length;
-  const tags=S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('');
-  const opts=shuffle([
-    `one ${fracName(m.denominator)} of ${m.wholeColor.name}`,
-    `${numWord(m.denominator)} times ${m.partColor.name}`,
-    `one ${fracName(m.denominator===2?3:2)} of ${m.wholeColor.name}`,
-    `${numWord(m.denominator===2?3:2)} times ${m.partColor.name}`,
-  ]).slice(0,3);
+  const m=S.freeModel;
+  const wN=m.wholeColor.name,pN=m.partColor.name,d=m.denominator,fN=fracName(d),nW=numWord(d);
+  const fracOpt=`one ${fN} of ${wN}`;
+  const multOpt=`${nW} times ${pN}`;
+  const wrongOpt=`one ${fracName(d===2?3:2)} of ${wN}`;
+  // fracOpt and multOpt both accepted — present as 3 buttons
+  const opts=shuffle([fracOpt,multOpt,wrongOpt]);
   render(`<div class="canvas">${renderFractional({...m,unknownRole:null})}</div>
-    <div class="question-prompt">Name a true relation. ${remaining} more to find.</div>
-    ${tags?`<div class="relations-found">${tags}</div>`:''}`,
+    <div class="question-prompt">Name a true relation.</div>`,
     `<div class="response-buttons">${opts.map(o=>`<button class="btn" onclick="submitFree('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
-  speak(`Name a true relation. ${remaining} more to find.`);
+  speak('Name a true relation.');
 }
 function submitFree(r){
   const m=S.freeModel;
   const wN=m.wholeColor.name,pN=m.partColor.name,d=m.denominator,fN=fracName(d),nW=numWord(d);
-  const isFracRel=cmatch(r,wN)&&r.includes(fN);
-  const isMultRel=(cmatch(r,pN)||cmatch(r,wN))&&r.includes(nW);
-  const isTrue=isFracRel||isMultRel;
-  if(!isTrue){
-    const audio=`Try: one ${fN} of ${wN}, or ${nW} times ${pN}.`;
-    render(`<div class="canvas">${renderFractional({...m,unknownRole:null})}</div>
-      <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
-      ${S.freeRelationsFound.length?`<div class="relations-found">${S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('')}</div>`:''}`,
-      `<div class="response-buttons">${shuffle([`one ${fN} of ${wN}`,`${nW} times ${pN}`,`one ${fracName(d===2?3:2)} of ${wN}`]).slice(0,3).map(o=>`<button class="btn" onclick="submitFree('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
-    speak(audio);animateText(audio,'instructAnim');return;
-  }
-  const canon=isFracRel?`one ${fN} of ${wN}`:`${nW} times ${pN}`;
-  if(S.freeRelationsFound.includes(canon)){
-    render(`<div class="canvas">${renderFractional({...m,unknownRole:null})}</div>
-      <div class="question-prompt">You found that one. Try a different relation.</div>
-      <div class="relations-found">${S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('')}</div>`,
-      `<div class="response-buttons">${shuffle([`one ${fN} of ${wN}`,`${nW} times ${pN}`,`one ${fracName(d===2?3:2)} of ${wN}`,`${numWord(d===2?3:2)} times ${pN}`]).filter(o=>!S.freeRelationsFound.includes(o)).slice(0,3).map(o=>`<button class="btn" onclick="submitFree('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
-    return;
-  }
-  S.freeRelationsFound.push(canon);recordResp('free',true);
-  if(S.freeRelationsFound.length>=S.freeTarget){
-    S.freeStep++;
-    if(S.freeStep>=S.totalFree){showComplete();return;}
-    const audio=`You found all of them. Next picture.`;
-    render(`<div class="canvas">${renderFractional({...m,unknownRole:null})}</div>
-      <div class="instruct-text">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
-      <div class="relations-found">${S.freeRelationsFound.map(r=>`<span class="relation-tag">${r}</span>`).join('')}</div>`,
-      `<div id="instructBtns"><button class="btn-continue" onclick="nextFree()">Next</button></div>`);
-    speak(audio);animateText(audio,'instructAnim');
+  const isFrac=cmatch(r,wN)&&r.includes(fN);
+  const isMult=(cmatch(r,pN)||cmatch(r,wN))&&r.includes(nW);
+  if(isFrac||isMult){
+    recordResp('free',true);
+    document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;
+    setTimeout(()=>{S.freeStep++;nextFree();},500);
   } else {
-    showFreeItem();
+    recordResp('free',false);
+    const audio=`Try: one ${fN} of ${wN}, or ${nW} times ${pN}.`;
+    const opts=shuffle([`one ${fN} of ${wN}`,`${nW} times ${pN}`,`one ${fracName(d===2?3:2)} of ${wN}`]);
+    render(`<div class="canvas">${renderFractional({...m,unknownRole:null})}</div>
+      <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+      `<div class="response-buttons">${opts.map(o=>`<button class="btn" onclick="submitFree('${o.replace(/'/g,"&#39;")}')">${o}</button>`).join('')}</div>`);
+    speak(audio);animateText(audio,'instructAnim');
   }
 }

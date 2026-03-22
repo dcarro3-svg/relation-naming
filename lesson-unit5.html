@@ -190,12 +190,12 @@ function animateText(text, containerId, onDone) {
 }
 
 // ── Colors ────────────────────────────────────────────────────────────────────
-const COLORS=[{name:'blue',hex:'#1B6CA8'},{name:'orange',hex:'#D4600A'},{name:'green',hex:'#2D6A4F'},{name:'red',hex:'#C0392B'},{name:'purple',hex:'#6C3483'},{name:'teal',hex:'#0E7E7E'}];
+const COLORS=[{name:'a',hex:'#4A5568'},{name:'b',hex:'#718096'},{name:'c',hex:'#2D3748'},{name:'d',hex:'#8B9BAA'},{name:'e',hex:'#64748B'},{name:'f',hex:'#A0ADB8'}];
 function tc(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(0.299*r+0.587*g+0.114*b)/255>0.55?'#1A1714':'#FFFFFF';}
 function shuffle(a){const arr=[...a];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
 const FRAC_NAMES=['half','third','fourth','fifth'];
 function fracName(n){return FRAC_NAMES[n-2]||`${n}th`;}
-const BH=62, GAP=6, SNAP=10, CVW=460;
+const BH=62, CVW=460;
 
 // ── Static model renderers ─────────────────────────────────────────────────────
 function renderStaticStep1(p, w=340) {
@@ -234,135 +234,6 @@ function renderStaticComplex(p) {
   return `<div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">${s1}${divider}${s2}</div>`;
 }
 
-// ── Canvas drag-and-draw ──────────────────────────────────────────────────────
-let DC1 = createDC();
-let DC2 = createDC();
-
-function createDC() {
-  return {bars:[],drawing:false,drawStart:0,ghostX:0,ghostW:0,draggingBarId:null,dragOffsetX:0,colorIdx:0,nextId:0,labelPending:null};
-}
-
-function snap(v){return Math.round(v/SNAP)*SNAP;}
-
-function snapW(dc,w,startX){
-  const rEdge=startX+w;
-  for(const b of dc.bars){
-    if(Math.abs(rEdge-b.x)<8)return b.x-startX;
-    if(Math.abs(rEdge-(b.x+b.w))<8)return(b.x+b.w)-startX;
-  }
-  return snap(w);
-}
-
-function canvasH(dc){return Math.max((dc.bars.length+(dc.drawing?1:0))*(BH+GAP)+8,140);}
-
-function ghostDiv(dc){
-  if(!dc.drawing||dc.ghostW<10)return'';
-  const col=COLORS[dc.colorIdx];
-  const y=dc.bars.length*(BH+GAP);
-  return`<div style="position:absolute;left:${dc.ghostX}px;top:${y}px;width:${dc.ghostW}px;height:${BH}px;background:${col.hex};opacity:0.45;border-radius:6px;pointer-events:none"></div>`;
-}
-
-function barDivDC(dc,b,i,canvasId){
-  const col=COLORS[b.colorIdx];
-  const textColor=tc(col.hex);
-  const y=i*(BH+GAP);
-  const sel=b.id===dc.labelPending;
-  const label=b.label
-    ?`<span style="font-size:10px;font-weight:600;color:${textColor};text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${b.w-12}px">${b.label}</span>`
-    :`<span style="font-size:11px;color:${textColor};opacity:0.6;font-style:italic">unlabeled</span>`;
-  const dcRef=canvasId==='dcCanvas1'?'DC1':'DC2';
-  return`<div id="bar_${canvasId}_${b.id}" data-barid="${b.id}" style="position:absolute;left:${b.x}px;top:${y}px;width:${b.w}px;height:${BH}px;background:${col.hex};border-radius:6px;${sel?`outline:3px solid ${col.hex};outline-offset:2px;`:''}display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;box-sizing:border-box" onmousedown="dcBarDown(${dcRef},event,${b.id})" onclick="dcSelect(${dcRef},${b.id})">${label}</div>`;
-}
-
-function dcHtml(dc,canvasId){
-  const dcRef=canvasId==='dcCanvas1'?'DC1':'DC2';
-  const barsHtml=dc.bars.map((b,i)=>barDivDC(dc,b,i,canvasId)).join('');
-  return`<div id="${canvasId}" style="position:relative;width:${CVW}px;height:${canvasH(dc)}px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:visible;cursor:crosshair"
-    onmousedown="dcDown(${dcRef},'${canvasId}',event)"
-    onmousemove="dcMove(${dcRef},'${canvasId}',event)"
-    onmouseup="dcUp(${dcRef},'${canvasId}',event)"
-    onmouseleave="dcUp(${dcRef},'${canvasId}',event)"
-  >${barsHtml}${ghostDiv(dc)}</div>`;
-}
-
-function dcDown(dc,canvasId,e){
-  if(e.target.dataset.barid)return;
-  const rect=document.getElementById(canvasId).getBoundingClientRect();
-  const x=snap(e.clientX-rect.left);
-  dc.drawing=true;dc.drawStart=x;dc.ghostX=x;dc.ghostW=0;
-  renderCurrent();
-}
-
-function dcMove(dc,canvasId,e){
-  if(dc.draggingBarId!==null){
-    const rect=document.getElementById(canvasId).getBoundingClientRect();
-    let nx=snap(e.clientX-rect.left-dc.dragOffsetX);
-    nx=Math.max(0,Math.min(nx,CVW-40));
-    const b=dc.bars.find(b=>b.id===dc.draggingBarId);
-    if(b)b.x=nx;
-    renderCurrent();return;
-  }
-  if(!dc.drawing)return;
-  const rect=document.getElementById(canvasId).getBoundingClientRect();
-  const x=snap(e.clientX-rect.left);
-  const rw=x-dc.drawStart;
-  if(rw>0){dc.ghostX=dc.drawStart;dc.ghostW=Math.min(snapW(dc,rw,dc.drawStart),CVW-dc.ghostX);}
-  else{dc.ghostX=snap(x);dc.ghostW=Math.min(snap(dc.drawStart-x),CVW-dc.ghostX);}
-  dc.ghostW=Math.max(0,dc.ghostW);
-  renderCurrent();
-}
-
-function dcUp(dc,canvasId,e){
-  if(dc.draggingBarId!==null){dc.draggingBarId=null;return;}
-  if(!dc.drawing)return;
-  dc.drawing=false;
-  if(dc.ghostW>=40){
-    const id=dc.nextId++;
-    dc.bars.push({id,colorIdx:dc.colorIdx,x:dc.ghostX,w:dc.ghostW,label:'',selected:false});
-    dc.labelPending=id;
-  }
-  dc.ghostW=0;
-  renderCurrent();
-}
-
-function dcBarDown(dc,e,id){
-  e.stopPropagation();
-  const canvasId=dc===DC1?'dcCanvas1':'dcCanvas2';
-  const rect=document.getElementById(canvasId).getBoundingClientRect();
-  const b=dc.bars.find(b=>b.id===id);
-  if(!b)return;
-  dc.draggingBarId=id;
-  dc.dragOffsetX=e.clientX-rect.left-b.x;
-}
-
-function dcSelect(dc,id){dc.labelPending=id;renderCurrent();}
-function dcSetColor(dc,idx){dc.colorIdx=idx;renderCurrent();}
-function dcAssignLabel(dc,label){
-  if(dc.labelPending!==null){
-    const b=dc.bars.find(b=>b.id===dc.labelPending);
-    if(b)b.label=label;
-    dc.labelPending=null;
-  }
-  renderCurrent();
-}
-function dcUndo(dc){dc.bars.pop();dc.labelPending=null;renderCurrent();}
-function dcReset(dc){dc.bars=[];dc.labelPending=null;dc.nextId=0;renderCurrent();}
-
-function colorPaletteDC(dc,dcRef){
-  return`<div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-    ${COLORS.slice(0,5).map((c,i)=>`<div onclick="dcSetColor(${dcRef},${i})" style="width:26px;height:26px;border-radius:50%;background:${c.hex};cursor:pointer;outline:${i===dc.colorIdx?'3px solid var(--text-primary)':'2px solid transparent'};outline-offset:2px"></div>`).join('')}
-  </div>`;
-}
-
-function labelPanelDC(dc,dcRef,labels){
-  if(dc.labelPending===null)return'';
-  return`<div style="margin-top:6px;padding:8px 10px;background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius)">
-    <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:5px">Assign label</div>
-    <div style="display:flex;flex-wrap:wrap;gap:5px">
-      ${labels.map(l=>`<button onclick="dcAssignLabel(${dcRef},'${l.replace(/'/g,"\\'").replace(/"/g,'&quot;')}');renderCurrent()" style="padding:5px 10px;border-radius:var(--radius);border:1px solid var(--accent);background:white;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer">${l}</button>`).join('')}
-    </div>
-  </div>`;
-}
 
 // ── Problems ───────────────────────────────────────────────────────────────────
 const PROBLEMS5 = [
@@ -504,25 +375,6 @@ function render(main, response='') {
 function setPhase(l) { document.getElementById('phaseLabel').textContent = l; }
 function setProgress(pct) { document.getElementById('progressFill').style.width = pct + '%'; }
 
-// ── Check both models ─────────────────────────────────────────────────────────
-function checkBothModels(problem) {
-  if(DC1.bars.length!==3) return {ok:false,fb:`Step 1 needs exactly 3 bars: one whole bar and two part bars.`,canvas:1};
-  if(DC2.bars.length<2) return {ok:false,fb:`Step 2 needs at least 2 bars: the whole bar and one part (the unknown).`,canvas:2};
-  const labels1=new Set(DC1.bars.map(b=>b.label));
-  for(const l of problem.step1Labels){
-    if(!labels1.has(l)) return {ok:false,fb:`Step 1 is missing the label: "${l}". Click a bar and assign the label.`,canvas:1};
-  }
-  const labels2=new Set(DC2.bars.map(b=>b.label));
-  if(!labels2.has(problem.bridge)) return {ok:false,fb:`Step 2 should include the bridge bar labeled: "${problem.bridge}".`,canvas:2};
-  const sorted1=[...DC1.bars].sort((a,b)=>b.w-a.w);
-  const totalW=sorted1[0].w;
-  const partBars=sorted1.slice(1);
-  const partSum=partBars.reduce((s,b)=>s+b.w,0)/totalW;
-  if(Math.abs(partSum-1.0)>0.28){
-    return {ok:false,fb:`In step 1, the two parts together should span the same width as the whole bar.`,canvas:1};
-  }
-  return {ok:true,fb:null};
-}
 
 // ── INTRO ─────────────────────────────────────────────────────────────────────
 function showIntro() {
@@ -619,7 +471,6 @@ function startPractice() {
   S.practiceStep=0;
   S.practicePhase='draw';
   setPhase('Practice');
-  DC1=createDC();DC2=createDC();
   S.assembled=[];
   S.drawFeedback=null;
   showPracticeItem();
@@ -647,60 +498,23 @@ function renderCurrent() {
 
 function showDrawPhase(p) {
   setProgress(38 + (S.practiceStep / S.totalPractice) * 32);
-  const pct = Math.round((S.practiceStep / S.totalPractice) * 100);
-
-  const canDone = DC1.bars.length >= 3 && DC2.bars.length >= 2;
-
-  const fbHtml = S.drawFeedback
-    ? `<div class="feedback-card error">${S.drawFeedback}</div>`
-    : '';
 
   render(
     `<div class="problem-card">
        <div class="problem-label">Practice ${S.practiceStep+1} of ${S.totalPractice}</div>
        <div class="problem-text">${p.text}</div>
      </div>
-     ${fbHtml}
-     <div class="dc-section">
-       <div class="dc-step-label">Step 1: Part-Whole Model</div>
-       <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Draw: whole bar first, then two part bars. Label each bar.</div>
-       ${dcHtml(DC1,'dcCanvas1')}
-       ${colorPaletteDC(DC1,'DC1')}
-       ${labelPanelDC(DC1,'DC1',p.step1Labels)}
-       <div class="dc-toolbar">
-         <button class="dc-tool-btn" onclick="dcUndo(DC1)">Undo last</button>
-         <button class="dc-tool-btn" onclick="dcReset(DC1)">Reset</button>
-         <span style="font-size:12px;color:var(--text-muted)">${DC1.bars.length} bar${DC1.bars.length!==1?'s':''}</span>
-       </div>
-     </div>
-     <div class="dc-section">
-       <div class="dc-step-label">Step 2: Fractional Model</div>
-       <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Draw: whole bar (the bridge), then the unknown part. Label each bar.</div>
-       ${dcHtml(DC2,'dcCanvas2')}
-       ${colorPaletteDC(DC2,'DC2')}
-       ${labelPanelDC(DC2,'DC2',p.step2Labels)}
-       <div class="dc-toolbar">
-         <button class="dc-tool-btn" onclick="dcUndo(DC2)">Undo last</button>
-         <button class="dc-tool-btn" onclick="dcReset(DC2)">Reset</button>
-         <span style="font-size:12px;color:var(--text-muted)">${DC2.bars.length} bar${DC2.bars.length!==1?'s':''}</span>
-       </div>
-     </div>`,
-    `<button class="btn-continue" onclick="submitDraw()" ${canDone?'':'disabled'}>Done Drawing — Name the Relation</button>`
+     <div id="bar-tool-placeholder"></div>`,
+    `<button class="btn-continue" onclick="submitDraw()">Done Drawing — Name the Relation</button>`
   );
 }
 
 function submitDraw() {
   const p = PRACTICE_ITEMS[S.practiceStep];
-  const {ok,fb} = checkBothModels(p);
-  if (ok) {
-    S.practicePhase='name';
-    S.assembled=[];
-    S.drawFeedback=null;
-    showNamePhase(p);
-  } else {
-    S.drawFeedback = fb;
-    showDrawPhase(p);
-  }
+  S.practicePhase='name';
+  S.assembled=[];
+  S.drawFeedback=null;
+  showNamePhase(p);
 }
 
 function showNamePhase(p) {
@@ -759,7 +573,6 @@ function submitRelation5() {
     S.practiceStep++;
     S.practicePhase='draw';
     S.drawFeedback=null;
-    DC1=createDC();DC2=createDC();
     if (S.practiceStep >= S.totalPractice) {
       showComplete();
     } else {

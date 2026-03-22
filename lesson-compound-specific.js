@@ -3,6 +3,8 @@
 // All five simple relations are mastered (L1–L5).
 // Step 0 of INSTRUCT reviews a single relation → initialMode:'T'.
 // Steps 1–5 introduce compound logic → initialMode:'D'.
+// Steps 1–5 share one compound model (built once in step 1) for continuity.
+// Steps 3–5 show that model with phase1Solved=true (bridge revealed).
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const NUM_WORDS=['two','three','four','five'];
@@ -68,7 +70,7 @@ function genCompound(){
   const relB=genSimpleRelation(relBColors);
   injectBridgeColor(relB, bridgeColor);
   const solvableOnTop=Math.random()>0.5;
-  return{relA, relB, bridgeColor, solvableOnTop, phase:1};
+  return{relA, relB, bridgeColor, solvableOnTop, phase1Solved:false};
 }
 
 function injectBridgeColor(rel, bridgeColor){
@@ -102,13 +104,13 @@ function renderSimple(rel, opts={}){
 
   if(rel.type==='partwhole'){
     const{whole,p1,p2,unknownRole}=rel;
-    const showBridgeUnk=bridgeColor&&!bridgeFilled&&
-      (p1.color.name===bridgeColor.name||p2.color.name===bridgeColor.name||whole.color.name===bridgeColor.name);
+    // Bridge bar (p1) is unknown when not yet filled; real unknown is unknownRole bar
+    const bridgeIsHere=bridgeColor&&p1.color.name===bridgeColor.name;
+    const p1IsUnk=(unknownRole==='p1')||(bridgeIsHere&&!bridgeFilled);
     const wUnk=unknownRole==='whole';
-    const p1Unk=unknownRole==='p1'||(showBridgeUnk&&rel.bridgeIsP1);
     const p2Unk=unknownRole==='p2';
     const wB=sbar(whole.color.hex,whole.color.name,whole.w,wUnk);
-    const p1B=sbar(p1.color.hex,p1.color.name,p1.w,p1Unk&&!bridgeFilled);
+    const p1B=sbar(p1.color.hex,p1.color.name,p1.w,p1IsUnk);
     const p2B=sbar(p2.color.hex,p2.color.name,p2.w,p2Unk);
     const lines=`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591"></div><div style="position:absolute;right:0;top:0;bottom:0;border-right:2px dashed #9B9591"></div>`;
     return`<div style="${opacity}position:relative;display:inline-block">${lines}
@@ -120,13 +122,16 @@ function renderSimple(rel, opts={}){
   if(rel.type==='fractional'||rel.type==='multiplicative'){
     const{wholeColor,partColor,denominator,filledIndex,unknownRole,wholeW}=rel;
     const boxW=wholeW/denominator;
-    const wUnk=unknownRole==='whole';
-    const pUnk=unknownRole==='part';
-    const wBar=sbar(wholeColor.hex,wholeColor.name,wholeW,wUnk&&!bridgeFilled);
+    // Bridge makes the whole or part also unknown before it's filled
+    const bridgeIsWhole=bridgeColor&&!bridgeFilled&&rel.wholeColor&&rel.wholeColor.name===bridgeColor.name;
+    const bridgeIsPart=bridgeColor&&!bridgeFilled&&rel.partColor&&rel.partColor.name===bridgeColor.name;
+    const wUnk=(unknownRole==='whole')||bridgeIsWhole;
+    const pUnk=(unknownRole==='part')||bridgeIsPart;
+    const wBar=sbar(wholeColor.hex,wholeColor.name,wholeW,wUnk);
     let boxes='';
     for(let i=0;i<denominator;i++){
       const iF=i===filledIndex;
-      const isUnk=iF&&pUnk&&!bridgeFilled;
+      const isUnk=iF&&pUnk;
       const bg=iF?partColor.hex:partColor.hex+'33';
       const bdr=iF?'none':'2px dashed #9B9591';
       const col=iF?tc(partColor.hex):'#9B9591';
@@ -155,7 +160,8 @@ function renderCompound(item, phase1Solved=false){
   const topHtml=renderSimple(topRel,{pale:topPale,bridgeFilled:phase1Solved,bridgeColor});
   const botHtml=renderSimple(botRel,{pale:botPale,bridgeFilled:phase1Solved,bridgeColor});
   const bridgeStrip=`<div style="width:4px;border-radius:2px;background:${bridgeColor.hex};align-self:stretch;flex-shrink:0;margin-right:8px"></div>`;
-  return`<div style="display:flex;gap:0;align-items:stretch">
+  const popAnim=phase1Solved?'<style>@keyframes popIn{0%{transform:scale(0.8);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}.bridge-pop{animation:popIn 0.4s ease forwards;}</style>':'';
+  return`${popAnim}<div style="display:flex;gap:0;align-items:stretch">
     ${bridgeStrip}
     <div style="display:flex;flex-direction:column;gap:14px;flex:1">
       <div id="compTop">${topHtml}</div>
@@ -166,7 +172,7 @@ function renderCompound(item, phase1Solved=false){
 }
 
 function renderModel(m){
-  if(m.relA) return renderCompound(m);
+  if(m.relA) return renderCompound(m, !!m.phase1Solved);
   if(m.isFractional) return renderFractional(m);
   if(m.whole&&m.p1) return renderPW(m);
   return renderEqual(m);
@@ -241,6 +247,33 @@ function renderWB(colors, addFn){
   </div>`;
 }
 
+// ── Helper: build correct + two wrong button options for a simple relation ──────
+// Returns [correct, wrong1, wrong2] — correct is ALWAYS index 0
+function simpleRelOpts(rel){
+  const cor=rel.correct.join(' ');
+  if(rel.type==='partwhole'){
+    const{whole,p1,p2,unknownRole}=rel;
+    let w1,w2;
+    if(unknownRole==='whole'){
+      w1=`${whole.color.name} minus ${p1.color.name} equals unknown`;
+      w2=`${whole.color.name} minus ${p2.color.name} equals unknown`;
+    } else if(unknownRole==='p1'){
+      w1=`${p1.color.name} plus ${p2.color.name} equals unknown`;
+      w2=`${p2.color.name} minus ${whole.color.name} equals unknown`;
+    } else {
+      w1=`${p1.color.name} plus ${p2.color.name} equals unknown`;
+      w2=`${p1.color.name} minus ${whole.color.name} equals unknown`;
+    }
+    return [cor, w1, w2];
+  }
+  // fractional / multiplicative
+  const altF=fracName(rel.denominator===2?3:2);
+  const altN=numWord(rel.denominator===2?3:2);
+  const w1=`one ${altF} of ${rel.wholeColor.name} equals unknown`;
+  const w2=`${altN} times ${rel.partColor.name} equals unknown`;
+  return [cor, w1, w2];
+}
+
 // ── INSTRUCT ───────────────────────────────────────────────────────────────────
 const INSTRUCT=[
   // Step 0: Review — single relation, one unknown. Prior knowledge → T.
@@ -248,142 +281,201 @@ const INSTRUCT=[
     initialMode:'T',
     build(){
       const rel=genSimpleRelation([]);
-      if(rel.type==='partwhole') return{...rel,_review:true};
-      return{...rel,isFractional:true,_review:true};
+      if(rel.type==='partwhole') return{...rel};
+      return{...rel,isFractional:true};
     },
     audio(m){
-      const unk=m.type==='partwhole'?(m.unknownRole==='whole'?m.whole:m.unknownRole==='p1'?m.p1:m.p2).color.name:(m.unknownRole==='part'?m.partColor:m.wholeColor).name;
-      return`You know how to find one unknown using a relation. Here is one unknown — ${unk}. Name the relation to find it.`;
+      const unk=m.type==='partwhole'
+        ?(m.unknownRole==='whole'?m.whole:m.unknownRole==='p1'?m.p1:m.p2).color.name
+        :(m.unknownRole==='part'?m.partColor:m.wholeColor).name;
+      return`You know how to find one unknown using a relation. This model has one unknown — ${unk}. Name the relation to find it.`;
     },
     guide(m){
-      const unk=m.type==='partwhole'?(m.unknownRole==='whole'?m.whole:m.unknownRole==='p1'?m.p1:m.p2).color.name:(m.unknownRole==='part'?m.partColor:m.wholeColor).name;
+      const unk=m.type==='partwhole'
+        ?(m.unknownRole==='whole'?m.whole:m.unknownRole==='p1'?m.p1:m.p2).color.name
+        :(m.unknownRole==='part'?m.partColor:m.wholeColor).name;
       return`Find the bar with the question mark. What relation finds ${unk}?`;
     },
     question(m){
-      const unk=m.type==='partwhole'?(m.unknownRole==='whole'?m.whole:m.unknownRole==='p1'?m.p1:m.p2).color.name:(m.unknownRole==='part'?m.partColor:m.wholeColor).name;
+      const unk=m.type==='partwhole'
+        ?(m.unknownRole==='whole'?m.whole:m.unknownRole==='p1'?m.p1:m.p2).color.name
+        :(m.unknownRole==='part'?m.partColor:m.wholeColor).name;
       return`What equals ${unk}?`;
     },
-    opts(m){
-      const cor=m.correct.join(' ');
-      if(m.type==='partwhole'){
-        const{whole,p1,p2,unknownRole}=m;
-        const wrong1=unknownRole==='whole'?`${whole.color.name} minus ${p1.color.name} equals unknown`:`${p1.color.name} plus ${p2.color.name} equals unknown`;
-        const wrong2=unknownRole==='p1'?`${p2.color.name} minus ${whole.color.name} equals unknown`:`${whole.color.name} minus ${p2.color.name} equals unknown`;
-        return shuffle([cor,wrong1,wrong2]);
-      }
-      const altF=fracName(m.denominator===2?3:2);
-      return shuffle([cor,`one ${altF} of ${m.wholeColor.name} equals unknown`,`${numWord(m.denominator===2?3:2)} times ${m.partColor.name} equals unknown`]);
-    },
-    fu(m){return`One relation, one unknown — you can always solve that. Now look at what happens when there are two unknowns.`;},
-    fuQ:`What do you need to solve for two unknowns?`,
-    fuOpts:['You need two relations.','You need one relation and a guess.','You need to know all the colors first.'],
+    opts(m){ return simpleRelOpts(m); },
+    fu(){return`One relation, one unknown — you can always solve that. Now look at what happens when there are two unknowns.`;},
+    fuQ:`What do you need to find two unknowns?`,
+    fuOpts:['You need two relations — one for each unknown.','You need one relation and a guess.','You only need one relation for both unknowns.'],
     fuGuide(){return`One relation finds one unknown. What would you need for two unknowns?`;},
   },
-  // Step 1: Two unknowns — which relation is solvable first? → D
+  // Step 1: Two unknowns — identify the solvable relation → D
+  // Builds the SHARED compound model used in steps 1–5
   {
     initialMode:'D',
-    build(){return genCompound();},
-    audio(m){return`Now there are two unknowns. Look at both relations. One has only one unknown — that one can be solved. The other has two unknowns and must wait.`;},
-    guide(m){return`Count the question marks in each relation. Which one has only one question mark?`;},
-    question(m){return`Which relation can you solve first — top or bottom?`;},
-    opts(m){const s=m.solvableOnTop?'top':'bottom',o=m.solvableOnTop?'bottom':'top';return[`The ${s} relation — it has one unknown.`,`The ${o} relation — it has one unknown.`,`Both can be solved at the same time.`];},
-    fu(m){const pos=m.solvableOnTop?'top':'bottom';return`The ${pos} relation has one unknown. Solve it first. Once you find that value, it unlocks the other relation.`;},
-    fuQ(m){return`Why can the ${m.solvableOnTop?'top':'bottom'} relation be solved first?`;},
-    fuOpts:['It has only one unknown.','It has two unknowns.','It uses a different relation type.'],
-    fuGuide(m){return`Count the question marks. One relation has one — the other has two. Which has one?`;},
-  },
-  // Step 2: Solve the first relation — D
-  {
-    initialMode:'D',
-    build(){return genCompound();},
-    audio(m){const pos=m.solvableOnTop?'top':'bottom';return`Solve the ${pos} relation. Name the relation to find the unknown.`;},
-    guide(m){const solvable=m.solvableOnTop?m.relA:m.relB;const pos=m.solvableOnTop?'top':'bottom';return`Look at the ${pos} relation only. What are the known bars?`;},
-    question(m){return`What equals the unknown in the ${m.solvableOnTop?'top':'bottom'} relation?`;},
+    build(){
+      S.sharedCompound=genCompound();
+      S.sharedCompound.phase1Solved=false;
+      return S.sharedCompound;
+    },
+    audio(m){
+      const pos=m.solvableOnTop?'top':'bottom';
+      const pos2=m.solvableOnTop?'bottom':'top';
+      return`Look at these two models. The ${pos} model has one unknown — one question mark. The ${pos2} model has two unknowns. A model with two unknowns cannot be solved yet. But the one with one unknown can be solved right now.`;
+    },
+    guide(m){return`Count the question marks in each model. Which model has only one?`;},
+    question(m){
+      const pos=m.solvableOnTop?'top':'bottom';
+      return`Which model can you solve first — ${m.solvableOnTop?'top or bottom':'top or bottom'}?`;
+    },
     opts(m){
+      const s=m.solvableOnTop?'top':'bottom', o=m.solvableOnTop?'bottom':'top';
+      return[`The ${s} model — it has one unknown.`,`The ${o} model — it has one unknown.`,`Both models can be solved at the same time.`];
+    },
+    fu(m){
+      const pos=m.solvableOnTop?'top':'bottom';
+      return`The ${pos} model has one unknown. Solve it first. Once you find that bar, it will appear in the other model and unlock it.`;
+    },
+    fuQ:`Why must you solve the one-unknown model first?`,
+    fuOpts:['It has only one unknown — that is solvable.','It has two unknowns — that is solvable.','It uses a simpler relation type.'],
+    fuGuide(m){return`One unknown means one unknown bar. That bar can be found. A model with two unknowns has one bar that is not yet known. What has to happen first?`;},
+  },
+  // Step 2: Solve the first relation → D (same shared model, phase1Solved=false)
+  {
+    initialMode:'D',
+    build(){
+      if(!S.sharedCompound) S.sharedCompound=genCompound();
+      S.sharedCompound.phase1Solved=false;
+      return S.sharedCompound;
+    },
+    audio(m){
+      const pos=m.solvableOnTop?'top':'bottom';
+      return`Solve the ${pos} model now. Name the relation to find its unknown.`;
+    },
+    guide(m){
       const solvable=m.solvableOnTop?m.relA:m.relB;
-      const cor=solvable.correct.join(' ');
-      if(solvable.type==='partwhole'){
-        const{whole,p1,p2,unknownRole}=solvable;
-        const w1=unknownRole==='whole'?`${whole.color.name} minus ${p1.color.name} equals unknown`:`${p1.color.name} plus ${p2.color.name} equals unknown`;
-        const w2=unknownRole==='p1'?`${p2.color.name} minus ${whole.color.name} equals unknown`:`${whole.color.name} minus ${p2.color.name} equals unknown`;
-        return shuffle([cor,w1,w2]);
-      }
-      const altF=fracName(solvable.denominator===2?3:2);
-      return shuffle([cor,`one ${altF} of ${solvable.wholeColor.name} equals unknown`,`${numWord(solvable.denominator===2?3:2)} times ${solvable.partColor.name} equals unknown`]);
+      const pos=m.solvableOnTop?'top':'bottom';
+      return`Look at the ${pos} model only. What are the known bars?`;
     },
-    fu(m){return`You found ${m.bridgeColor.name}. That same bar appears in the other relation. Solving one relation unlocked the next.`;},
-    fuQ(m){return`Where does ${m.bridgeColor.name} appear now?`;},
-    fuOpts:['In both relations — it connects them.','Only in the relation you just solved.','It disappears once solved.'],
-    fuGuide(m){return`Look at the other relation. Can you find ${m.bridgeColor.name} in it?`;},
+    question(m){return`What equals the unknown in the ${m.solvableOnTop?'top':'bottom'} model?`;},
+    opts(m){ return simpleRelOpts(m.solvableOnTop?m.relA:m.relB); },
+    fu(m){
+      const solvable=m.solvableOnTop?m.relA:m.relB;
+      const bridge=m.bridgeColor.name;
+      return`You found ${bridge}. That same ${bridge} bar is in the other model. Watch — it is now revealed below.`;
+    },
+    fuQ(m){return`${m.bridgeColor.name} is now in both models. How many unknowns are left?`;},
+    fuOpts:['One unknown is left.','Two unknowns are left.','No unknowns are left.'],
+    fuGuide(m){return`The other model had two unknowns. One was ${m.bridgeColor.name} — now that is known. How many question marks remain?`;},
   },
-  // Step 3: Bridge — count remaining unknowns → D
+  // Step 3: Bridge revealed — count remaining unknowns → D (phase1Solved=true)
   {
     initialMode:'D',
-    build(){return genCompound();},
-    audio(m){const{bridgeColor,solvableOnTop}=m;const pos=solvableOnTop?'bottom':'top';return`The ${bridgeColor.name} bar you solved is now shown in the ${pos} relation. It was unknown — now it is known. How many unknowns are left?`;},
-    guide(){return`Count the question marks in both relations now. How many are there?`;},
+    build(){
+      if(!S.sharedCompound) S.sharedCompound=genCompound();
+      S.sharedCompound.phase1Solved=true;
+      return S.sharedCompound;
+    },
+    audio(m){
+      const bridge=m.bridgeColor.name;
+      const pos2=m.solvableOnTop?'bottom':'top';
+      return`The ${bridge} bar you found is now shown in the ${pos2} model. It was unknown — now it is known. One unknown remains. One relation, one unknown — you can solve this.`;
+    },
+    guide(){return`Count the question marks across both models. How many are left?`;},
     question:`How many unknowns are left now?`,
-    opts:['There is one unknown left.','There are two unknowns left.','There are no unknowns left.'],
-    fu(){return`One unknown left. One relation, one unknown — you know how to solve that.`;},
-    fuQ:`Which relation do you use now?`,
-    fuOpts:['The other relation — the one that was waiting.','The same relation you already solved.','Start from the beginning.'],
-    fuGuide(){return`The remaining unknown is in the other relation. Which one is that?`;},
+    opts:['One unknown is left.','Two unknowns are left.','No unknowns are left.'],
+    fu(){return`One unknown left. You know how to solve that.`;},
+    fuQ:`Which model do you use now?`,
+    fuOpts:['The other model — the one that was waiting.','The same model you already solved.','Start from the beginning.'],
+    fuGuide(){return`The remaining unknown is in the other model. Which one is that?`;},
   },
-  // Step 4: Solve the second relation → D
+  // Step 4: Solve the second relation → D (phase1Solved=true)
   {
     initialMode:'D',
-    build(){return genCompound();},
-    audio(m){const pos=m.solvableOnTop?'bottom':'top';return`Now solve the ${pos} relation. The bridge value is known. Name the relation to find the final unknown.`;},
-    guide(m){const pos=m.solvableOnTop?'bottom':'top';return`Look at the ${pos} relation only. Name the relation for the remaining unknown.`;},
-    question(m){return`What equals the unknown in the ${m.solvableOnTop?'bottom':'top'} relation?`;},
-    opts(m){
-      const second=m.solvableOnTop?m.relB:m.relA;
-      const cor=second.correct.join(' ');
-      if(second.type==='partwhole'){
-        const{whole,p1,p2,unknownRole}=second;
-        const w1=unknownRole==='whole'?`${whole.color.name} minus ${p1.color.name} equals unknown`:`${p1.color.name} plus ${p2.color.name} equals unknown`;
-        const w2=unknownRole==='p1'?`${p2.color.name} minus ${whole.color.name} equals unknown`:`${whole.color.name} minus ${p2.color.name} equals unknown`;
-        return shuffle([cor,w1,w2]);
-      }
-      const altF=fracName(second.denominator===2?3:2);
-      return shuffle([cor,`one ${altF} of ${second.wholeColor.name} equals unknown`,`${numWord(second.denominator===2?3:2)} times ${second.partColor.name} equals unknown`]);
+    build(){
+      if(!S.sharedCompound) S.sharedCompound=genCompound();
+      S.sharedCompound.phase1Solved=true;
+      return S.sharedCompound;
     },
+    audio(m){
+      const pos=m.solvableOnTop?'bottom':'top';
+      return`Solve the ${pos} model now. The bridge is known. Name the relation to find the final unknown.`;
+    },
+    guide(m){
+      const pos=m.solvableOnTop?'bottom':'top';
+      return`Look at the ${pos} model only. What are the known bars?`;
+    },
+    question(m){return`What equals the unknown in the ${m.solvableOnTop?'bottom':'top'} model?`;},
+    opts(m){ return simpleRelOpts(m.solvableOnTop?m.relB:m.relA); },
     fu(){return`Both unknowns found — one at a time. That is a compound relation.`;},
     fuQ:`What is a compound relation?`,
-    fuOpts:['Two linked relations that each find one unknown.','One relation with two unknowns.','A relation that needs no bridge.'],
-    fuGuide(){return`You solved two unknowns using two relations. What do we call that?`;},
+    fuOpts:['Two linked relations — each finds one unknown.','One relation with two unknowns.','A relation that needs no bridge.'],
+    fuGuide(){return`You solved two unknowns using two models linked by one bar. What do we call that?`;},
   },
-  // Step 5: Full example — which first, then solve → D
+  // Step 5: Full example — which first, then solve → D (fresh model)
   {
     initialMode:'D',
-    build(){return genCompound();},
-    audio(){return`Now try the full thing. Find which relation is solvable first. Solve it. Then use that value to solve the second.`;},
-    guide(m){return`Count the question marks in each relation. Which one has only one?`;},
-    question(m){return`Which relation do you solve first — top or bottom?`;},
-    opts(m){const s=m.solvableOnTop?'top':'bottom',o=m.solvableOnTop?'bottom':'top';return[`The ${s} relation — it has only one unknown.`,`The ${o} relation — it has only one unknown.`,`Both at the same time.`];},
-    fu(m){const pos=m.solvableOnTop?'top':'bottom';return`Right — the ${pos} relation. Now name the relation for it.`;},
-    fuQ(m){return`What equals the unknown in the ${m.solvableOnTop?'top':'bottom'} relation?`;},
-    fuOpts(m){
-      const solvable=m.solvableOnTop?m.relA:m.relB;
-      const cor=solvable.correct.join(' ');
-      if(solvable.type==='partwhole'){
-        const{whole,p1,p2,unknownRole}=solvable;
-        const w1=unknownRole==='whole'?`${whole.color.name} minus ${p1.color.name} equals unknown`:`${p1.color.name} plus ${p2.color.name} equals unknown`;
-        return shuffle([cor,w1,`${solvable.type} does not apply here`]).slice(0,3);
-      }
-      const altF=fracName(solvable.denominator===2?3:2);
-      return shuffle([cor,`one ${altF} of ${solvable.wholeColor.name} equals unknown`,`${numWord(solvable.denominator===2?3:2)} times ${solvable.partColor.name} equals unknown`]);
+    build(){
+      S.sharedCompound=genCompound();
+      S.sharedCompound.phase1Solved=false;
+      return S.sharedCompound;
     },
-    fuGuide(m){const pos=m.solvableOnTop?'top':'bottom';return`Focus on the ${pos} relation only. What are the known bars?`;},
+    audio(){return`Now try the full thing. Find which model has one unknown. Solve it. Then use that bar to solve the second model.`;},
+    guide(m){return`Count the question marks in each model. Which one has only one?`;},
+    question(m){const s=m.solvableOnTop?'top':'bottom';return`Which model do you solve first — ${s} or ${m.solvableOnTop?'bottom':'top'}?`;},
+    opts(m){
+      const s=m.solvableOnTop?'top':'bottom', o=m.solvableOnTop?'bottom':'top';
+      return[`The ${s} model — it has one unknown.`,`The ${o} model — it has one unknown.`,`Both at the same time.`];
+    },
+    fu(m){
+      const pos=m.solvableOnTop?'top':'bottom';
+      return`Right — solve the ${pos} model first. Name the relation.`;
+    },
+    fuQ(m){return`What equals the unknown in the ${m.solvableOnTop?'top':'bottom'} model?`;},
+    fuOpts(m){ return simpleRelOpts(m.solvableOnTop?m.relA:m.relB); },
+    fuGuide(m){const pos=m.solvableOnTop?'top':'bottom';return`Focus on the ${pos} model only. What are the two known bars?`;},
   },
 ];
 
 // ── Phases ─────────────────────────────────────────────────────────────────────
 function showIntro(){
   S.phase='intro';setPhase('Introduction');setProgress(2);
-  const audio=`You have learned five relations. Today you will combine them. A compound relation links two relations through one shared bar. You solve them one at a time.`;
+  const audio=`You have learned five relations. Today you will combine two of them. A compound relation links two models through one shared bar. You solve them one at a time.`;
   render(`<div class="instruct-text neutral" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
-    `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="showInstruct(0)">Show me</button></div>`);
+    `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="showCompoundPreamble()">Show me</button></div>`);
+  speak(audio);
+  animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
+}
+
+// ── Preamble: animated two-model diagram showing bridge unlocking ───────────────
+function showCompoundPreamble(){
+  S.demoCompound=genCompound();
+  S.demoCompound.phase1Solved=false;
+  const item=S.demoCompound;
+  const pos=item.solvableOnTop?'top':'bottom';
+  const pos2=item.solvableOnTop?'bottom':'top';
+  const bridge=item.bridgeColor.name;
+  render(
+    `<div class="canvas" style="padding:24px 20px">${renderCompound(item,false)}</div>
+     <div class="instruct-text neutral" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+    `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="showPreambleUnlock()">Watch what happens →</button></div>`
+  );
+  const audio=`Look at these two models. The ${pos} model has one question mark — one unknown. The ${pos2} model has two question marks. You cannot solve a model with two unknowns until one of them is found somewhere else.`;
+  speak(audio);
+  animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
+}
+
+function showPreambleUnlock(){
+  const item=S.demoCompound;
+  item.phase1Solved=true;
+  const pos=item.solvableOnTop?'top':'bottom';
+  const pos2=item.solvableOnTop?'bottom':'top';
+  const bridge=item.bridgeColor.name;
+  render(
+    `<div class="canvas" style="padding:24px 20px">${renderCompound(item,true)}</div>
+     <div class="instruct-text bridge" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+    `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="showInstruct(0)">I see it — Let's start</button></div>`
+  );
+  const audio=`When you solve the ${pos} model, you find the ${bridge} bar. That same ${bridge} bar is in the ${pos2} model — and now it is known. The two models share the ${bridge} bar. Solving the first model unlocks the second.`;
   speak(audio);
   animateText(audio,'instructAnim',()=>{const b=document.getElementById('instructBtns');if(b)b.style.display='block';});
 }
@@ -393,7 +485,7 @@ function afterInstruct(){showNamingIntro();}
 // ── Naming phase ───────────────────────────────────────────────────────────────
 function showNamingIntro(){
   S.phase='naming';S.namingStep=0;setPhase('Relation Naming');setProgress(68);
-  const audio=`Now try full compound relations. Two unknowns, two relations. Find the solvable one first. Use that value to solve the second.`;
+  const audio=`Now try full compound relations. Two unknowns, two models. Find the solvable model first. Use that bar to solve the second.`;
   render(`<div class="instruct-text" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
     `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="nextNaming()">Ready</button></div>`);
   speak(audio);
@@ -405,6 +497,7 @@ function nextNaming(){
   setProgress(70+(S.namingStep/S.totalNaming)*26);
   S.namingItemErrors=0;
   S.currentModel=genCompound();
+  S.currentModel.phase1Solved=false;
   S.assembled=[];
   startTimer();
   showNamingPhase1();
@@ -436,6 +529,7 @@ function submitNaming1(){
   if(ok){
     recordResp('naming',true);
     S.assembled=[];
+    S.namingItemErrors=0;
     showBridgeAndPhase2();
   } else {
     recordResp('naming',false);
@@ -443,9 +537,7 @@ function submitNaming1(){
     const colors=compoundColors(item);
     const pos=item.solvableOnTop?'top':'bottom';
     let msg=fb;
-    if(S.namingItemErrors>=2){
-      msg=`The relation is: ${solvable.correct.join(' ')}.`;
-    }
+    if(S.namingItemErrors>=2) msg=`The relation is: ${solvable.correct.join(' ')}.`;
     render(
       `<div class="canvas" style="padding:24px 20px">${renderCompound(item,false)}</div>
        <div class="instruct-text correction">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
@@ -460,24 +552,22 @@ function submitNaming1(){
 
 function showBridgeAndPhase2(){
   const item=S.currentModel;
+  item.phase1Solved=true;
   S.namingItemErrors=0;
   const{bridgeColor}=item;
   const second=item.solvableOnTop?item.relB:item.relA;
   const colors=compoundColors(item);
   const pos=item.solvableOnTop?'bottom':'top';
   render(
-    `<div class="canvas" style="padding:24px 20px">
-       <style>@keyframes popIn{0%{transform:scale(0.8);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}.bridge-pop{animation:popIn 0.35s ease forwards;}</style>
-       ${renderCompound(item,true)}
-     </div>
-     <div class="instruct-text bridge">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
+    `<div class="canvas" style="padding:24px 20px">${renderCompound(item,true)}</div>
+     <div class="instruct-text bridge" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
      <div class="question-prompt" id="questionBox" style="display:none">Now name the relation for the <strong>${pos}</strong> model.</div>`,
     `<div id="phase2btns" style="display:none;gap:12px;align-items:flex-start">
        ${renderWB(colors,'addNaming2Token')}
        <div style="flex:1">${strip(S.assembled,'submitNaming2','backNaming2')}</div>
      </div>`
   );
-  const bridgeText=`${bridgeColor.name} is now known in both models. Use it to solve the ${pos} relation.`;
+  const bridgeText=`${bridgeColor.name} is now known in both models. Use it to solve the ${pos} model.`;
   speak(bridgeText);
   animateText(bridgeText,'instructAnim',()=>{
     const q=document.getElementById('questionBox');const b=document.getElementById('phase2btns');
@@ -490,7 +580,6 @@ function backNaming2(){S.assembled.pop();refreshPhase2();}
 function refreshPhase2(){
   const item=S.currentModel;
   const colors=compoundColors(item);
-  const pos=item.solvableOnTop?'bottom':'top';
   const p2div=document.getElementById('phase2btns');
   if(p2div) p2div.innerHTML=`${renderWB(colors,'addNaming2Token')}<div style="flex:1">${strip(S.assembled,'submitNaming2','backNaming2')}</div>`;
 }
@@ -507,9 +596,7 @@ function submitNaming2(){
     recordResp('naming',false);
     S.namingItemErrors++;
     let msg=fb;
-    if(S.namingItemErrors>=2){
-      msg=`The relation is: ${second.correct.join(' ')}.`;
-    }
+    if(S.namingItemErrors>=2) msg=`The relation is: ${second.correct.join(' ')}.`;
     const animEl=document.getElementById('instructAnim');
     if(animEl) animateText(msg,'instructAnim');
     speak(msg);
