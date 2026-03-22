@@ -1,0 +1,57 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Build Commands
+
+```bash
+node build-lessons.js   # Generates lesson-one.html through lesson-compound.html
+node build-fluency.js   # Generates fluency-l1.html through fluency-l5.html
+```
+
+No test or lint tooling is configured.
+
+## Architecture
+
+This is a **static educational web app** for teaching mathematical relationship naming. All output files are auto-generated — never edit them directly.
+
+### Generation Pipeline
+
+```
+lesson-template.html + lesson-config.json + lesson-N-specific.js
+  → build-lessons.js → lesson-one.html ... lesson-compound.html
+
+fluency-template.html + fluency-config.json
+  → build-fluency.js → fluency-l1.html ... fluency-l5.html
+```
+
+### Two App Types
+
+**Lessons** (`lesson-*.html`) — Instructional phase. Each lesson has:
+- An instruction phase (guided scenarios with audio/text)
+- A practice phase (random model generation + word bank answers)
+
+**Fluency drills** (`fluency-*.html`) — Timed drill phase. 5 levels map to lesson types: equal, partwhole, comparison, fractional, multiplicative.
+
+**Hub** (`index.html`) — Navigation and progress overview.
+**Chart** (`chart.html`) — Local-storage-based progress visualization.
+
+### Source Files to Edit
+
+| File | Purpose |
+|------|---------|
+| `lesson-template.html` | Shared UI + JS engine for all lessons |
+| `lesson-config.json` | Metadata per lesson (titles, storage keys, nav links) |
+| `lesson-N-specific.js` | Per-lesson content: `INSTRUCT` array, generator functions, render functions |
+| `fluency-template.html` | Shared UI + JS engine for all fluency drills |
+| `fluency-config.json` | Metadata per fluency level |
+
+### CI/CD
+
+GitHub Actions auto-builds and commits generated HTML on changes to source files:
+- `.github/workflows/build-lessons.yml` — triggers on template/config/specific-file changes
+- `.github/workflows/build.yml` — triggers on fluency source changes
+
+### State
+
+All user progress is stored in **localStorage** only — no backend. Keys follow the pattern `fluency_l1_sessions`, etc., defined in `fluency-config.json`.
