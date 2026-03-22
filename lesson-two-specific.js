@@ -52,6 +52,7 @@ const INSTRUCT=[
     fu(m){return`Right — ${m.whole.color.name} is the whole. Now, what colors are the parts?`;},
     fuQ(m){return`What colors are the two parts?`;},
     fuAcc(m){return[m.p1.color.name,m.p2.color.name,`${m.p1.color.name} and ${m.p2.color.name}`,`${m.p2.color.name} and ${m.p1.color.name}`];},
+    fuOpts(m){return[`${m.p1.color.name} and ${m.p2.color.name} are the parts.`,`${m.whole.color.name} and ${m.p1.color.name} are the parts.`,`${m.whole.color.name} and ${m.p2.color.name} are the parts.`];},
     fuCor(m){return`The parts are the two smaller bars that together equal the whole. What colors are they?`;},
   },
   {

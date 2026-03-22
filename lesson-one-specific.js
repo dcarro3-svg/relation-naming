@@ -49,7 +49,7 @@ const INSTRUCT=[
     fuCor:`Two things of different sizes are not equal. What do we call them?`,
   },
   {
-    build(){const c1=COLORS[2],c2=COLORS[3];const w=BASE*0.65;return{c1,c2,w1:w,w2:w*1.07,isEqual:false,layout:'stacked'};},
+    build(){const c1=COLORS[2],c2=COLORS[3];const w=BASE*0.65;return{c1,c2,w1:w,w2:w*1.22,isEqual:false,layout:'stacked'};},
     audio(m){return`These rectangles look like they might be equal — they are close in size. But the picture does not show me that they are exactly the same size. To call two things equal, the picture must confirm it. Can I call these equal?`;},
     question:`Can I call these rectangles equal?`,
     acc:['no','not equal','cannot','can\'t','no i cannot'],
