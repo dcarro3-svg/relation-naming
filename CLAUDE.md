@@ -77,3 +77,4 @@ All user progress is stored in **localStorage** only — no backend. Keys follow
 - Never make unrequested changes to existing files
 - If you notice something that needs fixing beyond the request, flag it and wait for instruction
 - Always run the appropriate build script after editing source files and confirm it succeeded
+- After every commit or push, verify the action succeeded — do not assume it worked without checking output
