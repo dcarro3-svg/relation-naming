@@ -55,3 +55,12 @@ GitHub Actions auto-builds and commits generated HTML on changes to source files
 ### State
 
 All user progress is stored in **localStorage** only — no backend. Keys follow the pattern `fluency_l1_sessions`, etc., defined in `fluency-config.json`.
+
+## Working Rules
+
+- Never edit generated files directly (lesson-one.html through lesson-compound.html, fluency-l1.html through fluency-l5.html)
+- Before making any changes, read the relevant source file first
+- After making changes, document exactly what was changed
+- Never make unrequested changes to existing files
+- If you notice something that needs fixing beyond the request, flag it and wait for instruction
+- Always run the appropriate build script after editing source files and confirm it succeeded
