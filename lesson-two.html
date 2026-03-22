@@ -61,18 +61,18 @@
   .question-prompt{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
     padding:14px 18px;font-size:15px;font-weight:500;color:var(--text-primary);animation:fadeUp 0.2s ease;}
 
-  /* Word bank — same design as fluency */
+  /* Word bank — full-width below question for instruction phase */
   .instruct-layout{display:flex;gap:12px;align-items:flex-start;}
   .instruct-model{flex:1;}
-  .instruct-word-bank{width:136px;flex-shrink:0;border:2px solid var(--text-primary);
-    border-radius:var(--radius);padding:8px 7px;display:flex;flex-direction:column;
+  .instruct-word-bank{width:100%;border:2px solid var(--text-primary);
+    border-radius:var(--radius);padding:8px;display:flex;flex-direction:column;
     gap:5px;background:var(--surface);}
-  .wb-group{display:flex;flex-direction:column;gap:3px;}
+  .wb-group{display:flex;flex-direction:column;gap:6px;}
   .wb-row{display:flex;gap:3px;}
   .wb-div{height:1px;background:var(--border);margin:3px 0;}
-  .wb-btn{width:100%;padding:7px 4px;border-radius:7px;border:1px solid var(--border);
-    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
-    color:var(--text-primary);cursor:pointer;transition:all 0.1s;text-align:center;}
+  .wb-btn{width:100%;padding:10px 14px;border-radius:7px;border:1px solid var(--border);
+    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+    color:var(--text-primary);cursor:pointer;transition:all 0.1s;text-align:left;line-height:1.4;}
   .wb-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
   .wb-btn:active{transform:scale(0.96);}
   .wb-btn.selected{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
