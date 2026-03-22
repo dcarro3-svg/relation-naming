@@ -71,10 +71,23 @@
     "storageKey": "fluency_compound_sessions",
     "lessonNum": 6,
     "fluencyHref": "fluency-compound.html",
-    "nextLessonHref": "index.html",
-    "nextLessonLabel": "Home",
+    "nextLessonHref": "lesson-unit3.html",
+    "nextLessonLabel": "Lesson Seven →",
     "output": "lesson-compound.html",
     "completionSummary": "Two unknowns, two relations, solved one at a time.<br><br><em>find the solvable relation first — its solution unlocks the second</em>",
     "completionTitle": "Compound Relations"
+  },
+  {
+    "id": 7,
+    "label": "Complex Relations",
+    "title": "Complex Relations — Lesson Seven",
+    "storageKey": "fluency_unit3_sessions",
+    "lessonNum": 7,
+    "fluencyHref": "fluency-unit3.html",
+    "nextLessonHref": "index.html",
+    "nextLessonLabel": "Home",
+    "output": "lesson-unit3.html",
+    "completionSummary": "A complex relation chains two steps through a bridge color.<br><br><em>solve the step with the unknown — part-whole or fractional</em>",
+    "completionTitle": "Complex Relations"
   }
 ]

@@ -206,20 +206,39 @@
   <!-- ═══ UNIT THREE ══════════════════════════════════════════════════════════ -->
   <div class="unit">
     <button class="unit-btn" onclick="toggleUnit('u3')" id="u3-btn">
-      <div class="unit-icon empty">III</div>
+      <div class="unit-icon">III</div>
       <div class="unit-text">
         <strong>Unit Three: Complex Relations</strong>
-        <span>Coming soon</span>
+        <span>Two-step sequential models</span>
       </div>
       <span class="unit-chevron">▼</span>
     </button>
     <div class="unit-body" id="u3-body">
+
+      <!-- Complex Lessons sub-section -->
       <div class="sub-section">
-        <button class="sub-btn empty-sub">
-          <div class="sub-icon empty">⚡</div>
-          <div class="sub-text"><strong>Complex Relations Fluency</strong><span>Coming soon</span></div>
+        <button class="sub-btn" onclick="toggleSub('u3-lessons')" id="u3-lessons-btn">
+          <div class="sub-icon lesson">📖</div>
+          <div class="sub-text"><strong>Complex Relations Lessons</strong><span>One lesson</span></div>
+          <span class="sub-chevron">▼</span>
         </button>
+        <div class="sub-body" id="u3-lessons-body">
+          <a href="lesson-unit3.html" class="leaf"><div class="leaf-icon lesson">⑦</div><div class="leaf-text"><strong>Complex Relations</strong><span>Lesson Seven</span></div></a>
+        </div>
       </div>
+
+      <!-- Complex Fluency sub-section -->
+      <div class="sub-section">
+        <button class="sub-btn" onclick="toggleSub('u3-fluency')" id="u3-fluency-btn">
+          <div class="sub-icon fluency">⚡</div>
+          <div class="sub-text"><strong>Complex Relations Fluency</strong><span>One practice session</span></div>
+          <span class="sub-chevron">▼</span>
+        </button>
+        <div class="sub-body" id="u3-fluency-body">
+          <a href="fluency-unit3.html" class="leaf"><div class="leaf-icon fluency">⚡</div><div class="leaf-text"><strong>Complex Relations</strong><span>Lesson Seven Fluency</span></div></a>
+        </div>
+      </div>
+
     </div>
   </div>
 
