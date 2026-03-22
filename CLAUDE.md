@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Context
+
+This is a curriculum tool for teaching relational perception as a foundation for mathematics. Target users are students learning to identify and name mathematical relations using visual bar models. The instructional design follows a specific sequence: instruction → identification → relation naming → fluency practice.
+
 ## Build Commands
 
 ```bash
