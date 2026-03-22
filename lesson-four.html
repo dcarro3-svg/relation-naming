@@ -286,7 +286,7 @@ function renderFractional(m){
     const iF=i===filledIndex,isUnk=iF&&unknownRole==='part';
     const bg=iF?partColor.hex:partColor.hex+'33',bdr=iF?'none':'2px dashed #9B9591',col=iF?tc(partColor.hex):'#9B9591';
     const c=isUnk?`<span style="font-family:'DM Serif Display',serif;font-size:22px;font-style:italic;color:${col}">?</span>`:iF?`<span style="font-size:11px;font-weight:600;text-transform:capitalize;color:${col}">${partColor.name}</span>`:' ';
-    boxes+=`<div style="width:${boxW}px;height:${BH}px;background:${bg};border:${bdr};${i===0?'border-radius:6px 0 0 6px':''}${i===denominator-1?'border-radius:0 6px 6px 0':''}display:flex;align-items:center;justify-content:center;flex-shrink:0">${c}</div>`;
+    boxes+=`<div style="width:${boxW}px;height:${BH}px;background:${bg};border:${bdr};${i===0?'border-radius:6px 0 0 6px;':''}${i===denominator-1?'border-radius:0 6px 6px 0;':''}display:flex;align-items:center;justify-content:center;flex-shrink:0">${c}</div>`;
   }
   let lines='';
   for(let i=1;i<denominator;i++) lines+=`<div style="position:absolute;left:${i*boxW}px;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div>`;
