@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Problems — Lesson Nine</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+  :root{--bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;--text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;--accent:#2D6A4F;--accent-light:#EAF4EF;--accent-warm:#C17D3C;--accent-warm-light:#FBF0E4;--error:#C0392B;--radius:12px;--radius-lg:20px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+  .app{width:100%;max-width:700px;display:flex;flex-direction:column;gap:20px;}
+  .header{display:flex;align-items:center;gap:12px;}
+  .lesson-label{font-family:'DM Serif Display',serif;font-size:26px;letter-spacing:-0.5px;}
+  .phase-label{font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;flex:1;}
+  .tts-toggle{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0;margin-left:auto;}
+  .tts-toggle svg{width:16px;height:16px;fill:var(--text-muted);transition:fill 0.15s;}
+  .tts-toggle.on{border-color:var(--accent);background:var(--accent-light);}
+  .tts-toggle.on svg{fill:var(--accent);}
+  .tts-toggle:hover{border-color:var(--accent);}
+  .tts-toggle:hover svg{fill:var(--accent);}
+  .progress-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.5s ease;}
+
+  /* Instruction text */
+  .instruct-text{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius-lg);padding:18px 24px;font-size:16px;font-weight:400;color:var(--text-primary);line-height:1.7;animation:fadeUp 0.35s ease;display:flex;align-items:flex-start;gap:12px;}
+  .instruct-text.correction{background:var(--accent-warm-light);border-color:#E8C99A;}
+  .instruct-text.neutral{background:var(--surface);border-color:var(--border);}
+  .typed-text .char{opacity:0;animation:charFade 0.04s forwards;}
+  @keyframes charFade{to{opacity:1;}}
+  .audio-indicator{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all 0.15s;border:none;margin-top:2px;}
+  .audio-indicator:hover{background:#255C43;transform:scale(1.05);}
+  .audio-indicator.speaking{background:var(--accent-warm);animation:pulse 1s infinite;}
+  .audio-indicator svg{width:16px;height:16px;fill:white;}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+  /* Problem card */
+  .problem-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;font-size:15px;line-height:1.7;color:var(--text-primary);animation:fadeUp 0.3s ease;}
+  .problem-card .problem-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+  .problem-card .problem-text{font-size:15px;line-height:1.7;color:var(--text-primary);}
+
+  /* Model area */
+  .model-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;animation:fadeUp 0.35s ease;overflow:visible;}
+  .model-card .step-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+
+  /* Canvas */
+  .canvas{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:44px 40px;display:flex;align-items:center;justify-content:center;min-height:200px;box-shadow:0 2px 12px rgba(0,0,0,0.04);animation:fadeUp 0.35s ease;overflow:visible;}
+
+  /* DC canvas section */
+  .dc-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;overflow:visible;}
+  .dc-section .dc-step-label{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;}
+  .dc-toolbar{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;}
+  .dc-tool-btn{padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;}
+  .dc-tool-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+
+  /* Word bank */
+  .instruct-word-bank{width:100%;border:2px solid var(--text-primary);border-radius:var(--radius);padding:8px;display:flex;flex-direction:column;gap:5px;background:var(--surface);}
+  .wb-group{display:flex;flex-direction:column;gap:6px;}
+  .wb-row{display:flex;gap:3px;}
+  .wb-div{height:1px;background:var(--border);margin:3px 0;}
+  .wb-btn{width:100%;padding:10px 14px;border-radius:7px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:all 0.1s;text-align:left;line-height:1.4;}
+  .wb-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+  .wb-btn:active{transform:scale(0.96);}
+  .wb-btn.correct{border-color:var(--accent);background:var(--accent);color:white;}
+  .wb-btn.incorrect{border-color:#C0392B;background:#FDF0F0;color:#C0392B;}
+
+  /* Relation strip */
+  .relation-strip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:44px;}
+  .token{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:5px;padding:3px 9px;font-size:13px;font-weight:600;color:var(--accent);}
+  .token.unk{background:#F0EAF8;border-color:#C9B8E8;color:#6C3483;}
+  .strip-ph{font-size:13px;color:var(--text-muted);font-style:italic;}
+  .strip-row{display:flex;gap:8px;align-items:center;margin-top:6px;}
+
+  /* Buttons */
+  .btn-continue{width:100%;padding:15px;border-radius:var(--radius);border:none;background:var(--accent);color:white;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+  .btn-continue:hover{background:#255C43;transform:translateY(-1px);}
+  .btn-continue:disabled{opacity:0.35;pointer-events:none;}
+  .response-buttons{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn{flex:1;padding:14px 16px;border-radius:var(--radius);border:2px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--text-primary);cursor:pointer;transition:all 0.15s;text-align:left;line-height:1.4;}
+  .btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn-back{padding:7px 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;}
+  .btn-back:hover{border-color:var(--accent-warm);color:var(--accent-warm);}
+
+  /* Completion */
+  .completion{text-align:center;padding:44px 32px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 2px 12px rgba(0,0,0,0.04);animation:fadeUp 0.5s ease;}
+  .completion h2{font-family:'DM Serif Display',serif;font-size:26px;margin:12px 0 10px;color:var(--accent);}
+  .completion p{color:var(--text-secondary);font-size:15px;line-height:1.6;max-width:380px;margin:0 auto;}
+  .nav-links{display:flex;gap:8px;margin-top:16px;}
+  .nav-link{flex:1;padding:11px;border-radius:var(--radius);border:2px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;text-align:center;display:block;}
+  .nav-link:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+  .nav-link.primary{background:var(--accent);border-color:var(--accent);color:white;}
+
+  /* Feedback */
+  .feedback-card{border-radius:var(--radius);padding:12px 16px;font-size:14px;line-height:1.6;margin-top:8px;}
+  .feedback-card.error{background:var(--accent-warm-light);border:1px solid #E8C99A;}
+  .feedback-card.ok{background:var(--accent-light);border:1px solid #B8DAC8;color:var(--accent);}
+
+  /* Progress bar */
+  .progress-bar-row{display:flex;align-items:center;gap:10px;}
+  .progress-num{font-size:12px;font-weight:600;color:var(--text-muted);}
+
+  /* Step divider */
+  .step-divider{display:flex;align-items:center;gap:8px;padding-left:4px;margin:10px 0;}
+  .step-divider div{width:20px;height:2px;background:#9B9591;border-radius:1px;}
+  .step-divider span{font-size:11px;font-weight:600;color:#9B9591;text-transform:uppercase;letter-spacing:0.8px;}
+
+  /* Summary */
+  .model-summary{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius);padding:12px 16px;font-size:13px;color:var(--accent);font-weight:500;margin-bottom:10px;line-height:1.8;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <span class="lesson-label">Word Problems</span>
+    <span class="phase-label" id="phaseLabel">Introduction</span>
+    <button class="tts-toggle on" id="ttsToggle" onclick="toggleTTS()" title="Toggle audio">
+      <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+    </button>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="mainContent"></div>
+  <div id="responseArea"></div>
+</div>
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+const CFG = {
+  id: 9,
+  storageKey: 'fluency_unit5_sessions',
+  fluencyHref: 'fluency-unit5.html',
+  nextHref: 'index.html',
+  nextLabel: 'Home',
+  lessonNum: 9,
+};
+
+// ── TTS ───────────────────────────────────────────────────────────────────────
+let ttsEnabled = true;
+let currentUtteranceText = '';
+let isSpeaking = false;
+
+function toggleTTS() {
+  ttsEnabled = !ttsEnabled;
+  const btn = document.getElementById('ttsToggle');
+  if (btn) btn.classList.toggle('on', ttsEnabled);
+  if (!ttsEnabled) window.speechSynthesis.cancel();
+}
+
+function speak(text, onEnd) {
+  if (!ttsEnabled) { if (onEnd) onEnd(); return; }
+  const clean = text.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+  currentUtteranceText = clean;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.rate = 0.92; utt.pitch = 1.0; utt.volume = 1.0;
+  const voices = window.speechSynthesis.getVoices();
+  const pref = voices.find(v => v.name.includes('Samantha')||v.name.includes('Karen')||v.name.includes('Daniel')||v.name.includes('Google')||v.lang==='en-US');
+  if (pref) utt.voice = pref;
+  utt.onstart = () => { isSpeaking=true; const b=document.getElementById('audioBtn'); if(b)b.classList.add('speaking'); };
+  utt.onend = () => { isSpeaking=false; const b=document.getElementById('audioBtn'); if(b)b.classList.remove('speaking'); if(onEnd)onEnd(); };
+  utt.onerror = () => { isSpeaking=false; if(onEnd)onEnd(); };
+  window.speechSynthesis.speak(utt);
+}
+
+function replayAudio() { if (currentUtteranceText && ttsEnabled) speak(currentUtteranceText); }
+function audioBtn() {
+  return `<button class="audio-indicator" id="audioBtn" onclick="replayAudio()">
+    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+  </button>`;
+}
+
+// ── Text animation ────────────────────────────────────────────────────────────
+const CHAR_DELAY_MS = 30;
+function animateText(text, containerId, onDone) {
+  const el = document.getElementById(containerId);
+  if (!el) { if (onDone) onDone(); return; }
+  el.innerHTML = '';
+  const plain = text.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '');
+  const chars = plain.split('');
+  chars.forEach((ch, i) => {
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = ch === '\n' ? '' : ch;
+    if (ch === '\n') span.appendChild(document.createElement('br'));
+    span.style.animationDelay = `${i * CHAR_DELAY_MS}ms`;
+    el.appendChild(span);
+  });
+  if (onDone) setTimeout(onDone, chars.length * CHAR_DELAY_MS + 80);
+}
+
+// ── Colors ────────────────────────────────────────────────────────────────────
+const COLORS=[{name:'blue',hex:'#1B6CA8'},{name:'orange',hex:'#D4600A'},{name:'green',hex:'#2D6A4F'},{name:'red',hex:'#C0392B'},{name:'purple',hex:'#6C3483'},{name:'teal',hex:'#0E7E7E'}];
+function tc(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(0.299*r+0.587*g+0.114*b)/255>0.55?'#1A1714':'#FFFFFF';}
+function shuffle(a){const arr=[...a];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+const FRAC_NAMES=['half','third','fourth','fifth'];
+function fracName(n){return FRAC_NAMES[n-2]||`${n}th`;}
+const BH=62, GAP=6, SNAP=10, CVW=460;
+
+// ── Static model renderers ─────────────────────────────────────────────────────
+function renderStaticStep1(p, w=340) {
+  const c1=COLORS[0],c2=COLORS[1],c3=COLORS[2];
+  const p1w=Math.round(w*(p.step1Proportions?p.step1Proportions[0]:0.45));
+  const p2w=w-p1w;
+  const textColor3=tc(c3.hex),textColor1=tc(c1.hex),textColor2=tc(c2.hex);
+  const wholeBar=`<div style="width:${w}px;height:${BH}px;background:${c3.hex};border-radius:6px;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:600;color:${textColor3};text-align:center;padding:0 4px">${p.step1Labels[0]}</span></div>`;
+  const part1=`<div style="width:${p1w}px;height:${BH}px;background:${c1.hex};border-radius:6px 0 0 6px;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:600;color:${textColor1};text-align:center;padding:0 4px">${p.step1Labels[1]}</span></div>`;
+  const part2=`<div style="width:${p2w}px;height:${BH}px;background:${c2.hex};border-radius:0 6px 6px 0;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:600;color:${textColor2};text-align:center;padding:0 4px">${p.step1Labels[2]}</span></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:6px">${wholeBar}<div style="display:flex">${part1}${part2}</div></div>`;
+}
+
+function renderStaticStep2(p, w=340) {
+  const c3=COLORS[2],c4=COLORS[3];
+  const d=p.denominator;
+  const bw=Math.round(w/d);
+  const textColor3=tc(c3.hex),textColor4=tc(c4.hex);
+  const wBar=`<div style="width:${w}px;height:${BH}px;background:${c3.hex};border-radius:6px;display:flex;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:600;color:${textColor3};text-align:center;padding:0 4px">${p.step2Labels[0]}</span></div>`;
+  let boxes='';
+  for(let i=0;i<d;i++){
+    const isFirst=i===0,isLast=i===d-1;
+    const isFilled=i===0;
+    const bg=isFilled?c4.hex:c4.hex+'33';
+    const bdr=isFilled?'none':'2px dashed #9B9591';
+    const content=isFilled?`<span style="font-family:'DM Serif Display',serif;font-size:19px;font-style:italic;color:${textColor4}">?</span>`:'';
+    boxes+=`<div style="width:${bw}px;height:${BH}px;background:${bg};border:${bdr};${isFirst?'border-radius:6px 0 0 6px;':''}${isLast?'border-radius:0 6px 6px 0;':''}display:flex;align-items:center;justify-content:center;flex-shrink:0">${content}</div>`;
+  }
+  return `<div style="display:flex;flex-direction:column;gap:6px">${wBar}<div style="display:flex">${boxes}</div></div>`;
+}
+
+function renderStaticComplex(p) {
+  const s1=renderStaticStep1(p);
+  const s2=renderStaticStep2(p);
+  const divider=`<div class="step-divider"><div></div><span>then</span><div></div></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">${s1}${divider}${s2}</div>`;
+}
+
+// ── Canvas drag-and-draw ──────────────────────────────────────────────────────
+let DC1 = createDC();
+let DC2 = createDC();
+
+function createDC() {
+  return {bars:[],drawing:false,drawStart:0,ghostX:0,ghostW:0,draggingBarId:null,dragOffsetX:0,colorIdx:0,nextId:0,labelPending:null};
+}
+
+function snap(v){return Math.round(v/SNAP)*SNAP;}
+
+function snapW(dc,w,startX){
+  const rEdge=startX+w;
+  for(const b of dc.bars){
+    if(Math.abs(rEdge-b.x)<8)return b.x-startX;
+    if(Math.abs(rEdge-(b.x+b.w))<8)return(b.x+b.w)-startX;
+  }
+  return snap(w);
+}
+
+function canvasH(dc){return Math.max((dc.bars.length+(dc.drawing?1:0))*(BH+GAP)+8,140);}
+
+function ghostDiv(dc){
+  if(!dc.drawing||dc.ghostW<10)return'';
+  const col=COLORS[dc.colorIdx];
+  const y=dc.bars.length*(BH+GAP);
+  return`<div style="position:absolute;left:${dc.ghostX}px;top:${y}px;width:${dc.ghostW}px;height:${BH}px;background:${col.hex};opacity:0.45;border-radius:6px;pointer-events:none"></div>`;
+}
+
+function barDivDC(dc,b,i,canvasId){
+  const col=COLORS[b.colorIdx];
+  const textColor=tc(col.hex);
+  const y=i*(BH+GAP);
+  const sel=b.id===dc.labelPending;
+  const label=b.label
+    ?`<span style="font-size:10px;font-weight:600;color:${textColor};text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${b.w-12}px">${b.label}</span>`
+    :`<span style="font-size:11px;color:${textColor};opacity:0.6;font-style:italic">unlabeled</span>`;
+  const dcRef=canvasId==='dcCanvas1'?'DC1':'DC2';
+  return`<div id="bar_${canvasId}_${b.id}" data-barid="${b.id}" style="position:absolute;left:${b.x}px;top:${y}px;width:${b.w}px;height:${BH}px;background:${col.hex};border-radius:6px;${sel?`outline:3px solid ${col.hex};outline-offset:2px;`:''}display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;box-sizing:border-box" onmousedown="dcBarDown(${dcRef},event,${b.id})" onclick="dcSelect(${dcRef},${b.id})">${label}</div>`;
+}
+
+function dcHtml(dc,canvasId){
+  const dcRef=canvasId==='dcCanvas1'?'DC1':'DC2';
+  const barsHtml=dc.bars.map((b,i)=>barDivDC(dc,b,i,canvasId)).join('');
+  return`<div id="${canvasId}" style="position:relative;width:${CVW}px;height:${canvasH(dc)}px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:visible;cursor:crosshair"
+    onmousedown="dcDown(${dcRef},'${canvasId}',event)"
+    onmousemove="dcMove(${dcRef},'${canvasId}',event)"
+    onmouseup="dcUp(${dcRef},'${canvasId}',event)"
+    onmouseleave="dcUp(${dcRef},'${canvasId}',event)"
+  >${barsHtml}${ghostDiv(dc)}</div>`;
+}
+
+function dcDown(dc,canvasId,e){
+  if(e.target.dataset.barid)return;
+  const rect=document.getElementById(canvasId).getBoundingClientRect();
+  const x=snap(e.clientX-rect.left);
+  dc.drawing=true;dc.drawStart=x;dc.ghostX=x;dc.ghostW=0;
+  renderCurrent();
+}
+
+function dcMove(dc,canvasId,e){
+  if(dc.draggingBarId!==null){
+    const rect=document.getElementById(canvasId).getBoundingClientRect();
+    let nx=snap(e.clientX-rect.left-dc.dragOffsetX);
+    nx=Math.max(0,Math.min(nx,CVW-40));
+    const b=dc.bars.find(b=>b.id===dc.draggingBarId);
+    if(b)b.x=nx;
+    renderCurrent();return;
+  }
+  if(!dc.drawing)return;
+  const rect=document.getElementById(canvasId).getBoundingClientRect();
+  const x=snap(e.clientX-rect.left);
+  const rw=x-dc.drawStart;
+  if(rw>0){dc.ghostX=dc.drawStart;dc.ghostW=Math.min(snapW(dc,rw,dc.drawStart),CVW-dc.ghostX);}
+  else{dc.ghostX=snap(x);dc.ghostW=Math.min(snap(dc.drawStart-x),CVW-dc.ghostX);}
+  dc.ghostW=Math.max(0,dc.ghostW);
+  renderCurrent();
+}
+
+function dcUp(dc,canvasId,e){
+  if(dc.draggingBarId!==null){dc.draggingBarId=null;return;}
+  if(!dc.drawing)return;
+  dc.drawing=false;
+  if(dc.ghostW>=40){
+    const id=dc.nextId++;
+    dc.bars.push({id,colorIdx:dc.colorIdx,x:dc.ghostX,w:dc.ghostW,label:'',selected:false});
+    dc.labelPending=id;
+  }
+  dc.ghostW=0;
+  renderCurrent();
+}
+
+function dcBarDown(dc,e,id){
+  e.stopPropagation();
+  const canvasId=dc===DC1?'dcCanvas1':'dcCanvas2';
+  const rect=document.getElementById(canvasId).getBoundingClientRect();
+  const b=dc.bars.find(b=>b.id===id);
+  if(!b)return;
+  dc.draggingBarId=id;
+  dc.dragOffsetX=e.clientX-rect.left-b.x;
+}
+
+function dcSelect(dc,id){dc.labelPending=id;renderCurrent();}
+function dcSetColor(dc,idx){dc.colorIdx=idx;renderCurrent();}
+function dcAssignLabel(dc,label){
+  if(dc.labelPending!==null){
+    const b=dc.bars.find(b=>b.id===dc.labelPending);
+    if(b)b.label=label;
+    dc.labelPending=null;
+  }
+  renderCurrent();
+}
+function dcUndo(dc){dc.bars.pop();dc.labelPending=null;renderCurrent();}
+function dcReset(dc){dc.bars=[];dc.labelPending=null;dc.nextId=0;renderCurrent();}
+
+function colorPaletteDC(dc,dcRef){
+  return`<div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+    ${COLORS.slice(0,5).map((c,i)=>`<div onclick="dcSetColor(${dcRef},${i})" style="width:26px;height:26px;border-radius:50%;background:${c.hex};cursor:pointer;outline:${i===dc.colorIdx?'3px solid var(--text-primary)':'2px solid transparent'};outline-offset:2px"></div>`).join('')}
+  </div>`;
+}
+
+function labelPanelDC(dc,dcRef,labels){
+  if(dc.labelPending===null)return'';
+  return`<div style="margin-top:6px;padding:8px 10px;background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius)">
+    <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:5px">Assign label</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px">
+      ${labels.map(l=>`<button onclick="dcAssignLabel(${dcRef},'${l.replace(/'/g,"\\'").replace(/"/g,'&quot;')}');renderCurrent()" style="padding:5px 10px;border-radius:var(--radius);border:1px solid var(--accent);background:white;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer">${l}</button>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── Problems ───────────────────────────────────────────────────────────────────
+const PROBLEMS5 = [
+  {
+    id:0,phase:'instruct',
+    text:`Sam collects red and blue tokens. His whole collection is then split equally into two groups to share with friends. One group is unknown.`,
+    step1Labels:['whole collection','red tokens','blue tokens'],
+    step2Labels:['whole collection','one share'],
+    bridge:'whole collection',
+    denominator:2,
+    unknownStep:2,
+    step1Proportions:[0.45,0.55],
+    correct:['one','half','of','whole collection','equals','unknown'],
+    audio:`Listen. Sam has red and blue tokens — that is a part-whole relation. His whole collection is then split into two equal groups. The whole collection is the bridge — it appears in both steps. The unknown is one of the groups. The relation is: one half of whole collection equals unknown.`,
+    explanation:`Step one: red tokens plus blue tokens equals whole collection. Step two: the whole collection is divided equally — one half of whole collection equals the unknown share.`,
+  },
+  {
+    id:1,phase:'instruct',
+    text:`A garden has a vegetable section and a flower section. The whole garden is divided into three equal parts for different families. One part goes to the unknown family.`,
+    step1Labels:['whole garden','vegetable section','flower section'],
+    step2Labels:['whole garden','family share'],
+    bridge:'whole garden',
+    denominator:3,
+    unknownStep:2,
+    step1Proportions:[0.4,0.6],
+    correct:['one','third','of','whole garden','equals','unknown'],
+    audio:`The whole garden is made of two sections — vegetable and flower. That is step one, a part-whole relation. Then the whole garden is divided into three equal parts. Step two is fractional. The bridge is the whole garden. The relation is: one third of whole garden equals unknown.`,
+    explanation:`Two steps: part-whole (step 1), then fractional (step 2). The bridge connects them.`,
+  },
+  {
+    id:2,phase:'instruct',
+    text:`There are small and large stones in a pile. The whole pile is split into four equal portions. One portion is the unknown.`,
+    step1Labels:['whole pile','small stones','large stones'],
+    step2Labels:['whole pile','one portion'],
+    bridge:'whole pile',
+    denominator:4,
+    unknownStep:2,
+    step1Proportions:[0.45,0.55],
+    correct:['one','fourth','of','whole pile','equals','unknown'],
+    audio:`Small stones and large stones make the whole pile — part-whole, step one. Then the pile is split into four equal portions — fractional, step two. One fourth of whole pile equals unknown.`,
+    explanation:`The bridge (whole pile) is the output of step one and the input for step two.`,
+  },
+  {
+    id:3,phase:'practice',
+    text:`A jar holds red marbles and blue marbles. The whole jar is then split equally in half — one half is the unknown.`,
+    step1Labels:['whole jar','red marbles','blue marbles'],
+    step2Labels:['whole jar','one half'],
+    bridge:'whole jar',
+    denominator:2,
+    unknownStep:2,
+    correct:['one','half','of','whole jar','equals','unknown'],
+    step1Proportions:[0.45,0.55],
+    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+  {
+    id:4,phase:'practice',
+    text:`A bag has green chips and purple chips. The whole bag is divided into three equal portions. One portion is the unknown.`,
+    step1Labels:['whole bag','green chips','purple chips'],
+    step2Labels:['whole bag','one portion'],
+    bridge:'whole bag',
+    denominator:3,
+    unknownStep:2,
+    correct:['one','third','of','whole bag','equals','unknown'],
+    step1Proportions:[0.4,0.6],
+    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+  {
+    id:5,phase:'practice',
+    text:`A road has a paved section and an unpaved section. The whole road is split into four equal segments. One segment is the unknown.`,
+    step1Labels:['whole road','paved section','unpaved section'],
+    step2Labels:['whole road','one segment'],
+    bridge:'whole road',
+    denominator:4,
+    unknownStep:2,
+    correct:['one','fourth','of','whole road','equals','unknown'],
+    step1Proportions:[0.6,0.4],
+    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+  {
+    id:6,phase:'practice',
+    text:`A shelf holds fiction books and science books. The entire shelf is split equally in half. One half is unknown.`,
+    step1Labels:['whole shelf','fiction books','science books'],
+    step2Labels:['whole shelf','one half'],
+    bridge:'whole shelf',
+    denominator:2,
+    unknownStep:2,
+    correct:['one','half','of','whole shelf','equals','unknown'],
+    step1Proportions:[0.5,0.5],
+    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+  {
+    id:7,phase:'practice',
+    text:`A park has a grass area and a path area. The whole park is divided into three equal zones. One zone is the unknown.`,
+    step1Labels:['whole park','grass area','path area'],
+    step2Labels:['whole park','one zone'],
+    bridge:'whole park',
+    denominator:3,
+    unknownStep:2,
+    correct:['one','third','of','whole park','equals','unknown'],
+    step1Proportions:[0.55,0.45],
+    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+  {
+    id:8,phase:'practice',
+    text:`A collection has old and new items. The whole collection is split into four equal groups. One group is the unknown.`,
+    step1Labels:['whole collection','old items','new items'],
+    step2Labels:['whole collection','one group'],
+    bridge:'whole collection',
+    denominator:4,
+    unknownStep:2,
+    correct:['one','fourth','of','whole collection','equals','unknown'],
+    step1Proportions:[0.35,0.65],
+    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+];
+
+const INSTRUCT_ITEMS = PROBLEMS5.filter(p=>p.phase==='instruct');
+const PRACTICE_ITEMS = PROBLEMS5.filter(p=>p.phase==='practice');
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const S = {
+  phase:'intro',
+  instructStep:0,
+  practiceStep:0,
+  practicePhase:'draw',
+  totalInstruct:3,
+  totalPractice:6,
+  responses:[],
+  assembled:[],
+  drawFeedback:null,
+};
+
+// ── Render helpers ────────────────────────────────────────────────────────────
+function render(main, response='') {
+  document.getElementById('mainContent').innerHTML = main;
+  document.getElementById('responseArea').innerHTML = response;
+}
+
+function setPhase(l) { document.getElementById('phaseLabel').textContent = l; }
+function setProgress(pct) { document.getElementById('progressFill').style.width = pct + '%'; }
+
+// ── Check both models ─────────────────────────────────────────────────────────
+function checkBothModels(problem) {
+  if(DC1.bars.length!==3) return {ok:false,fb:`Step 1 needs exactly 3 bars: one whole bar and two part bars.`,canvas:1};
+  if(DC2.bars.length<2) return {ok:false,fb:`Step 2 needs at least 2 bars: the whole bar and one part (the unknown).`,canvas:2};
+  const labels1=new Set(DC1.bars.map(b=>b.label));
+  for(const l of problem.step1Labels){
+    if(!labels1.has(l)) return {ok:false,fb:`Step 1 is missing the label: "${l}". Click a bar and assign the label.`,canvas:1};
+  }
+  const labels2=new Set(DC2.bars.map(b=>b.label));
+  if(!labels2.has(problem.bridge)) return {ok:false,fb:`Step 2 should include the bridge bar labeled: "${problem.bridge}".`,canvas:2};
+  const sorted1=[...DC1.bars].sort((a,b)=>b.w-a.w);
+  const totalW=sorted1[0].w;
+  const partBars=sorted1.slice(1);
+  const partSum=partBars.reduce((s,b)=>s+b.w,0)/totalW;
+  if(Math.abs(partSum-1.0)>0.28){
+    return {ok:false,fb:`In step 1, the two parts together should span the same width as the whole bar.`,canvas:1};
+  }
+  return {ok:true,fb:null};
+}
+
+// ── INTRO ─────────────────────────────────────────────────────────────────────
+function showIntro() {
+  S.phase='intro';
+  setPhase('Introduction');
+  setProgress(2);
+  const text = `Now you will apply all your knowledge to word problems with no numbers. Each problem has two steps. You will build two-step bar models and name the relation for the unknown.`;
+  render(
+    `<div class="instruct-text neutral" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>`,
+    `<div id="instructBtns" style="display:none"><button class="btn-continue" onclick="startInstruct()">Let\'s begin</button></div>`
+  );
+  speak(text);
+  animateText(text, 'instructAnim', () => {
+    const b = document.getElementById('instructBtns');
+    if (b) b.style.display = 'block';
+  });
+}
+
+// ── INSTRUCTION PHASE ─────────────────────────────────────────────────────────
+function startInstruct() {
+  S.phase='instruct';
+  S.instructStep=0;
+  setPhase('Instruction');
+  showInstructItem();
+}
+
+function showInstructItem() {
+  const p = INSTRUCT_ITEMS[S.instructStep];
+  if (!p) { startPractice(); return; }
+  setProgress(5 + (S.instructStep / S.totalInstruct) * 30);
+
+  const modelHtml = renderStaticComplex(p);
+
+  const correctStr = p.correct.join(' ');
+  const wrongFrac = p.denominator === 2 ? 'third' : (p.denominator === 3 ? 'half' : 'third');
+  const wrongFracStr = `one ${wrongFrac} of ${p.bridge} equals unknown`;
+  const wrongStep = `${p.step1Labels[1]} plus ${p.step1Labels[2]} equals unknown`;
+  const opts = shuffle([correctStr, wrongFracStr, wrongStep]);
+
+  const btnHtml = opts.map(o =>
+    `<button class="btn" onclick="handleInstructAnswer5('${o.replace(/'/g,"\\'")}')">${o}</button>`
+  ).join('');
+
+  render(
+    `<div class="problem-card"><div class="problem-label">Problem ${S.instructStep+1} of ${S.totalInstruct} — Study</div><div class="problem-text">${p.text}</div></div>
+     <div class="model-card">${audioBtn()}${modelHtml}</div>`,
+    `<div>
+       <div style="font-size:14px;font-weight:600;color:var(--text-secondary);margin-bottom:10px">What is the relation for the unknown?</div>
+       <div class="response-buttons" style="flex-direction:column">${btnHtml}</div>
+     </div>`
+  );
+  speak(p.audio);
+}
+
+function handleInstructAnswer5(chosen) {
+  const p = INSTRUCT_ITEMS[S.instructStep];
+  const correctStr = p.correct.join(' ');
+  if (chosen === correctStr) {
+    S.instructStep++;
+    const modelHtml = renderStaticComplex(p);
+    render(
+      `<div class="problem-card"><div class="problem-label">Correct!</div><div class="problem-text">${p.text}</div></div>
+       <div class="model-card">${modelHtml}</div>
+       <div class="feedback-card ok">${p.explanation}</div>`,
+      `<button class="btn-continue" onclick="${S.instructStep < S.totalInstruct ? 'showInstructItem()' : 'startPractice()'}">${S.instructStep < S.totalInstruct ? 'Next problem' : 'Start practice'}</button>`
+    );
+    speak(p.explanation);
+  } else {
+    const modelHtml = renderStaticComplex(p);
+    const wrongFrac = p.denominator === 2 ? 'third' : (p.denominator === 3 ? 'half' : 'third');
+    const wrongFracStr = `one ${wrongFrac} of ${p.bridge} equals unknown`;
+    const wrongStep = `${p.step1Labels[1]} plus ${p.step1Labels[2]} equals unknown`;
+    const opts = shuffle([correctStr, wrongFracStr, wrongStep]);
+    const btnHtml = opts.map(o =>
+      `<button class="btn${o===chosen?' incorrect':''}" onclick="handleInstructAnswer5('${o.replace(/'/g,"\\'")}')">${o}</button>`
+    ).join('');
+    const fb = `The relation describes step two — the fractional step. The bridge is "${p.bridge}". Count the equal parts: there are ${p.denominator}. The relation is: ${correctStr}.`;
+    render(
+      `<div class="problem-card"><div class="problem-label">Problem ${S.instructStep+1} of ${S.totalInstruct} — Study</div><div class="problem-text">${p.text}</div></div>
+       <div class="model-card">${audioBtn()}${modelHtml}</div>
+       <div class="feedback-card error">${fb}</div>`,
+      `<div>
+         <div style="font-size:14px;font-weight:600;color:var(--text-secondary);margin-bottom:10px">Try again — what is the relation for the unknown?</div>
+         <div class="response-buttons" style="flex-direction:column">${btnHtml}</div>
+       </div>`
+    );
+    speak(fb);
+  }
+}
+
+// ── PRACTICE PHASE ────────────────────────────────────────────────────────────
+function startPractice() {
+  S.phase='practice';
+  S.practiceStep=0;
+  S.practicePhase='draw';
+  setPhase('Practice');
+  DC1=createDC();DC2=createDC();
+  S.assembled=[];
+  S.drawFeedback=null;
+  showPracticeItem();
+}
+
+function showPracticeItem() {
+  const p = PRACTICE_ITEMS[S.practiceStep];
+  if (!p) { showComplete(); return; }
+  if (S.practicePhase === 'draw') {
+    showDrawPhase(p);
+  } else {
+    showNamePhase(p);
+  }
+}
+
+function renderCurrent() {
+  const p = PRACTICE_ITEMS[S.practiceStep];
+  if (!p) return;
+  if (S.practicePhase === 'draw') {
+    showDrawPhase(p);
+  } else {
+    showNamePhase(p);
+  }
+}
+
+function showDrawPhase(p) {
+  setProgress(38 + (S.practiceStep / S.totalPractice) * 32);
+  const pct = Math.round((S.practiceStep / S.totalPractice) * 100);
+
+  const canDone = DC1.bars.length >= 3 && DC2.bars.length >= 2;
+
+  const fbHtml = S.drawFeedback
+    ? `<div class="feedback-card error">${S.drawFeedback}</div>`
+    : '';
+
+  render(
+    `<div class="problem-card">
+       <div class="problem-label">Practice ${S.practiceStep+1} of ${S.totalPractice}</div>
+       <div class="problem-text">${p.text}</div>
+     </div>
+     ${fbHtml}
+     <div class="dc-section">
+       <div class="dc-step-label">Step 1: Part-Whole Model</div>
+       <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Draw: whole bar first, then two part bars. Label each bar.</div>
+       ${dcHtml(DC1,'dcCanvas1')}
+       ${colorPaletteDC(DC1,'DC1')}
+       ${labelPanelDC(DC1,'DC1',p.step1Labels)}
+       <div class="dc-toolbar">
+         <button class="dc-tool-btn" onclick="dcUndo(DC1)">Undo last</button>
+         <button class="dc-tool-btn" onclick="dcReset(DC1)">Reset</button>
+         <span style="font-size:12px;color:var(--text-muted)">${DC1.bars.length} bar${DC1.bars.length!==1?'s':''}</span>
+       </div>
+     </div>
+     <div class="dc-section">
+       <div class="dc-step-label">Step 2: Fractional Model</div>
+       <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Draw: whole bar (the bridge), then the unknown part. Label each bar.</div>
+       ${dcHtml(DC2,'dcCanvas2')}
+       ${colorPaletteDC(DC2,'DC2')}
+       ${labelPanelDC(DC2,'DC2',p.step2Labels)}
+       <div class="dc-toolbar">
+         <button class="dc-tool-btn" onclick="dcUndo(DC2)">Undo last</button>
+         <button class="dc-tool-btn" onclick="dcReset(DC2)">Reset</button>
+         <span style="font-size:12px;color:var(--text-muted)">${DC2.bars.length} bar${DC2.bars.length!==1?'s':''}</span>
+       </div>
+     </div>`,
+    `<button class="btn-continue" onclick="submitDraw()" ${canDone?'':'disabled'}>Done Drawing — Name the Relation</button>`
+  );
+}
+
+function submitDraw() {
+  const p = PRACTICE_ITEMS[S.practiceStep];
+  const {ok,fb} = checkBothModels(p);
+  if (ok) {
+    S.practicePhase='name';
+    S.assembled=[];
+    S.drawFeedback=null;
+    showNamePhase(p);
+  } else {
+    S.drawFeedback = fb;
+    showDrawPhase(p);
+  }
+}
+
+function showNamePhase(p) {
+  setProgress(38 + (S.practiceStep / S.totalPractice) * 32 + 16 / S.totalPractice);
+
+  const step1Summary = `${p.step1Labels[1]} + ${p.step1Labels[2]} = ${p.bridge}`;
+  const step2Summary = `${p.bridge} ÷ ${p.denominator} equal parts`;
+
+  const labels = p.step1Labels.concat(p.step2Labels.filter(l=>!p.step1Labels.includes(l)));
+  const ops = p.ops || ['one','half','third','fourth','of','plus','minus','equals','unknown'];
+
+  const tokens = S.assembled.length
+    ? S.assembled.map(t=>`<span class="token${t==='unknown'?' unk':''}">${t}</span>`).join('')
+    : `<span class="strip-ph">Build the relation...</span>`;
+
+  const labelBtns = p.step1Labels.concat(p.step2Labels.filter(l=>!p.step1Labels.includes(l)))
+    .map(l=>`<button class="wb-btn" style="padding:7px 12px;font-size:13px" onclick="addToken5('${l.replace(/'/g,"\\'")}')">${l}</button>`).join('');
+  const opBtns = ops.map(o=>`<button class="wb-btn" style="padding:7px 12px;font-size:13px" onclick="addToken5('${o}')">${o}</button>`).join('');
+
+  render(
+    `<div class="problem-card">
+       <div class="problem-label">Practice ${S.practiceStep+1} of ${S.totalPractice} — Name the Relation</div>
+       <div class="problem-text">${p.text}</div>
+     </div>
+     <div class="model-summary">
+       <strong>Your model:</strong><br>
+       Step 1 (Part-Whole): ${step1Summary}<br>
+       Step 2 (Fractional): ${step2Summary}
+     </div>`,
+    `<div>
+       <div class="instruct-word-bank">
+         <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:4px">Labels</div>
+         <div class="wb-group" style="display:flex;flex-direction:row;flex-wrap:wrap;gap:4px">${labelBtns}</div>
+         <div class="wb-div"></div>
+         <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:4px">Words</div>
+         <div class="wb-group" style="display:flex;flex-direction:row;flex-wrap:wrap;gap:4px">${opBtns}</div>
+       </div>
+       <div class="relation-strip" style="margin-top:8px">${tokens}</div>
+       <div class="strip-row" style="margin-top:8px">
+         <button class="btn-back" onclick="undoToken5()">← Back</button>
+         <button class="btn-continue" style="flex:1;padding:10px;font-size:14px" onclick="submitRelation5()">Check Relation</button>
+       </div>
+     </div>`
+  );
+}
+
+function addToken5(t){S.assembled.push(t);renderCurrent();}
+function undoToken5(){S.assembled.pop();renderCurrent();}
+
+function submitRelation5() {
+  const p = PRACTICE_ITEMS[S.practiceStep];
+  const s = S.assembled.join(' ');
+  const cor = p.correct.join(' ');
+  if (s === cor) {
+    S.assembled=[];
+    S.practiceStep++;
+    S.practicePhase='draw';
+    S.drawFeedback=null;
+    DC1=createDC();DC2=createDC();
+    if (S.practiceStep >= S.totalPractice) {
+      showComplete();
+    } else {
+      const next = PRACTICE_ITEMS[S.practiceStep];
+      const modelHtml = renderStaticComplex(p);
+      render(
+        `<div class="feedback-card ok" style="margin-bottom:4px">Correct! ${cor}</div>
+         <div class="problem-card"><div class="problem-label">Next up</div><div class="problem-text">${next.text}</div></div>`,
+        `<button class="btn-continue" onclick="showPracticeItem()">Draw the model</button>`
+      );
+    }
+  } else {
+    let fb;
+    const spokenFrac = FRAC_NAMES.find(f=>S.assembled.includes(f));
+    if (spokenFrac && spokenFrac !== fracName(p.denominator)) {
+      fb = `Count the equal parts in step two — there are ${p.denominator}. Use "${fracName(p.denominator)}".`;
+    } else if (!S.assembled.includes('of')) {
+      fb = `The fractional relation uses "of": one ${fracName(p.denominator)} of ${p.bridge} equals unknown.`;
+    } else {
+      fb = `Try again. The correct relation is: ${cor}`;
+    }
+    S.assembled=[];
+    const step1Summary = `${p.step1Labels[1]} + ${p.step1Labels[2]} = ${p.bridge}`;
+    const step2Summary = `${p.bridge} ÷ ${p.denominator} equal parts`;
+    const ops = p.ops || ['one','half','third','fourth','of','plus','minus','equals','unknown'];
+    const labelBtns = p.step1Labels.concat(p.step2Labels.filter(l=>!p.step1Labels.includes(l)))
+      .map(l=>`<button class="wb-btn" style="padding:7px 12px;font-size:13px" onclick="addToken5('${l.replace(/'/g,"\\'")}')">${l}</button>`).join('');
+    const opBtns = ops.map(o=>`<button class="wb-btn" style="padding:7px 12px;font-size:13px" onclick="addToken5('${o}')">${o}</button>`).join('');
+    const tokens = `<span class="strip-ph">Build the relation...</span>`;
+    render(
+      `<div class="problem-card">
+         <div class="problem-label">Practice ${S.practiceStep+1} of ${S.totalPractice} — Try Again</div>
+         <div class="problem-text">${p.text}</div>
+       </div>
+       <div class="model-summary">
+         <strong>Your model:</strong><br>
+         Step 1 (Part-Whole): ${step1Summary}<br>
+         Step 2 (Fractional): ${step2Summary}
+       </div>
+       <div class="feedback-card error">${fb}</div>`,
+      `<div>
+         <div class="instruct-word-bank">
+           <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:4px">Labels</div>
+           <div class="wb-group" style="display:flex;flex-direction:row;flex-wrap:wrap;gap:4px">${labelBtns}</div>
+           <div class="wb-div"></div>
+           <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:4px">Words</div>
+           <div class="wb-group" style="display:flex;flex-direction:row;flex-wrap:wrap;gap:4px">${opBtns}</div>
+         </div>
+         <div class="relation-strip" style="margin-top:8px">${tokens}</div>
+         <div class="strip-row" style="margin-top:8px">
+           <button class="btn-back" onclick="undoToken5()">← Back</button>
+           <button class="btn-continue" style="flex:1;padding:10px;font-size:14px" onclick="submitRelation5()">Check Relation</button>
+         </div>
+       </div>`
+    );
+    speak(fb);
+  }
+}
+
+// ── COMPLETE ──────────────────────────────────────────────────────────────────
+function showComplete() {
+  S.phase='complete';
+  setPhase('Complete');
+  setProgress(100);
+  render(
+    `<div class="completion">
+       <div style="font-size:48px">✓</div>
+       <h2>Word Problems Complete</h2>
+       <p>You built two-step bar models from word problems and named the fractional relation for the unknown. That is the full skill — from words to model to relation.</p>
+       <div class="nav-links">
+         <a class="nav-link" href="${CFG.fluencyHref}">Fluency drill</a>
+         <a class="nav-link primary" href="${CFG.nextHref}">${CFG.nextLabel}</a>
+       </div>
+     </div>`,
+    ''
+  );
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.speechSynthesis.onvoiceschanged = () => {};
+showIntro();
+</script>
+</body>
+</html>

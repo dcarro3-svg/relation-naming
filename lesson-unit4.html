@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Problems — Lesson Eight</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+  :root{--bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;--text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;--accent:#2D6A4F;--accent-light:#EAF4EF;--accent-warm:#C17D3C;--accent-warm-light:#FBF0E4;--error:#C0392B;--radius:12px;--radius-lg:20px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:24px;}
+  .app{width:100%;max-width:760px;display:flex;flex-direction:column;gap:16px;}
+  .header{display:flex;align-items:center;gap:12px;}
+  .lesson-label{font-family:'DM Serif Display',serif;font-size:24px;letter-spacing:-0.5px;}
+  .phase-label{font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;flex:1;}
+  .tts-toggle{width:34px;height:34px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0;margin-left:auto;}
+  .tts-toggle svg{width:16px;height:16px;fill:var(--text-muted);transition:fill 0.15s;}
+  .tts-toggle.on{border-color:var(--accent);background:var(--accent-light);}
+  .tts-toggle.on svg{fill:var(--accent);}
+  .tts-toggle:hover{border-color:var(--accent);}
+  .tts-toggle:hover svg{fill:var(--accent);}
+  .progress-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.5s ease;}
+
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;animation:fadeUp 0.3s ease;}
+  .card h2{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:10px;}
+  .card p{font-size:14px;line-height:1.6;color:var(--text-secondary);margin-bottom:6px;}
+
+  /* Problem text */
+  .problem-text{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius);padding:14px 18px;font-size:15px;line-height:1.7;color:var(--text-primary);margin-bottom:12px;}
+
+  /* Instruction text box */
+  .instruct-text{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;font-size:14px;line-height:1.6;color:var(--text-secondary);margin-bottom:10px;}
+
+  /* Audio button */
+  .audio-indicator{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all 0.15s;border:none;}
+  .audio-indicator:hover{background:#255C43;transform:scale(1.05);}
+  .audio-indicator.speaking{background:var(--accent-warm);animation:pulse 1s infinite;}
+  .audio-indicator svg{width:16px;height:16px;fill:white;}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+  /* Word bank */
+  .instruct-word-bank{width:100%;border:2px solid var(--text-primary);border-radius:var(--radius);padding:10px;display:flex;flex-direction:column;gap:6px;background:var(--surface);}
+  .wb-group{display:flex;flex-direction:row;flex-wrap:wrap;gap:6px;}
+  .wb-div{height:1px;background:var(--border);margin:2px 0;}
+  .wb-btn{padding:9px 14px;border-radius:7px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text-primary);cursor:pointer;transition:all 0.1s;text-align:left;line-height:1.3;}
+  .wb-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+  .wb-btn:active{transform:scale(0.96);}
+  .wb-btn.correct{border-color:var(--accent);background:var(--accent);color:white;}
+  .wb-btn.incorrect{border-color:var(--error);background:#FDF0F0;color:var(--error);}
+
+  /* Relation strip */
+  .relation-strip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:44px;}
+  .token{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:5px;padding:3px 9px;font-size:13px;font-weight:600;color:var(--accent);}
+  .token.unk{background:#F0EAF8;border-color:#C9B8E8;color:#6C3483;}
+  .strip-ph{font-size:13px;color:var(--text-muted);font-style:italic;}
+  .strip-row{display:flex;gap:8px;align-items:center;margin-top:6px;}
+
+  /* Buttons */
+  .btn-continue{width:100%;padding:13px;border-radius:var(--radius);border:none;background:var(--accent);color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+  .btn-continue:hover{background:#255C43;}
+  .btn-continue:disabled{opacity:0.35;pointer-events:none;}
+  .btn-start{width:100%;padding:14px;border-radius:var(--radius);border:none;background:var(--accent);color:white;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px;}
+  .btn-start:hover{background:#255C43;}
+  .btn-secondary{padding:9px 16px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;}
+  .btn-secondary:hover{border-color:var(--accent-warm);color:var(--accent-warm);}
+
+  /* Feedback */
+  .feedback-card{padding:12px 16px;border-radius:var(--radius);font-size:14px;line-height:1.5;margin-top:8px;}
+  .feedback-card.ok{background:var(--accent-light);border:1px solid #B8DAC8;color:var(--accent);}
+  .feedback-card.err{background:var(--accent-warm-light);border:1px solid #E8C99A;color:#7A4A1E;}
+
+  /* Toolbar row */
+  .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
+
+  /* Completion */
+  .completion{text-align:center;padding:44px 32px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);animation:fadeUp 0.5s ease;}
+  .completion h2{font-family:'DM Serif Display',serif;font-size:26px;margin:12px 0 10px;color:var(--accent);}
+  .completion p{color:var(--text-secondary);font-size:15px;line-height:1.6;max-width:380px;margin:0 auto 16px;}
+  .nav-links{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+  .nav-link{flex:1;padding:11px;border-radius:var(--radius);border:2px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text-primary);text-decoration:none;text-align:center;display:block;}
+  .nav-link:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+  .nav-link.primary{background:var(--accent);border-color:var(--accent);color:white;}
+
+  /* Step counter */
+  .step-counter{font-size:12px;color:var(--text-muted);font-weight:500;}
+
+  /* Typed text animation */
+  .char{opacity:0;animation:charFade 0.04s forwards;}
+  @keyframes charFade{to{opacity:1;}}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <span class="lesson-label">Word Problems</span>
+    <span class="phase-label" id="phaseLabel">Introduction</span>
+    <span class="step-counter" id="stepCounter"></span>
+    <button class="tts-toggle on" id="ttsToggle" onclick="toggleTTS()" title="Toggle audio">
+      <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+    </button>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div id="main"></div>
+</div>
+<script>
+// ── Config ───────────────────────────────────────────────────────────────────
+const CFG = {
+  id: 8,
+  storageKey: 'fluency_unit4_sessions',
+  fluencyHref: 'fluency-unit4.html',
+  nextHref: 'index.html',
+  nextLabel: 'Home',
+  lessonNum: 8,
+};
+
+// ── TTS ──────────────────────────────────────────────────────────────────────
+let ttsEnabled = true;
+let currentUtterance = null;
+
+function toggleTTS() {
+  ttsEnabled = !ttsEnabled;
+  const btn = document.getElementById('ttsToggle');
+  if (btn) btn.classList.toggle('on', ttsEnabled);
+  if (!ttsEnabled) window.speechSynthesis.cancel();
+}
+
+function speak(text, onEnd) {
+  if (!ttsEnabled) { if (onEnd) onEnd(); return; }
+  const clean = text.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(clean);
+  utt.rate = 0.92; utt.pitch = 1.0; utt.volume = 1.0;
+  const voices = window.speechSynthesis.getVoices();
+  const pref = voices.find(v => v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Daniel') || v.name.includes('Google') || v.lang === 'en-US');
+  if (pref) utt.voice = pref;
+  utt.onstart = () => { const b = document.getElementById('audioBtn'); if (b) b.classList.add('speaking'); };
+  utt.onend = () => { const b = document.getElementById('audioBtn'); if (b) b.classList.remove('speaking'); if (onEnd) onEnd(); };
+  utt.onerror = () => { if (onEnd) onEnd(); };
+  currentUtterance = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+function replayAudio() {
+  if (S.phase === 'instruct') {
+    const p = INSTRUCT_PROBLEMS[S.instructStep];
+    if (p) speak(p.audio);
+  }
+}
+
+function audioBtnHtml() {
+  return `<button class="audio-indicator" id="audioBtn" onclick="replayAudio()" style="margin-left:auto">
+    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+  </button>`;
+}
+
+// ── Utilities ────────────────────────────────────────────────────────────────
+const COLORS = [{name:'blue',hex:'#1B6CA8'},{name:'orange',hex:'#D4600A'},{name:'green',hex:'#2D6A4F'},{name:'red',hex:'#C0392B'},{name:'purple',hex:'#6C3483'}];
+function tc(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(0.299*r+0.587*g+0.114*b)/255>0.55?'#1A1714':'#FFFFFF';}
+function shuffle(a){const arr=[...a];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+const FRAC_NAMES=['half','third','fourth','fifth'];
+function fracName(n){return FRAC_NAMES[n-2]||`${n}th`;}
+const BH=62, GAP=6, SNAP=10, CVW=460;
+
+// ── Static model renderers ───────────────────────────────────────────────────
+function renderStaticPW(labels, colors, proportions, w) {
+  w = w || 340;
+  const col0 = COLORS[colors[0]], col1 = COLORS[colors[1]], col2 = COLORS[colors[2]];
+  const wBar = `<div style="width:${w}px;height:${BH}px;background:${col0.hex};border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:11px;font-weight:600;color:${tc(col0.hex)};padding:0 6px;text-align:center">${labels[0]}</span></div>`;
+  const p1w = Math.round(w * proportions[0]);
+  const p2w = w - p1w;
+  const p1Bar = `<div style="width:${p1w}px;height:${BH}px;background:${col1.hex};border-radius:6px 0 0 6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:10px;font-weight:600;color:${tc(col1.hex)};padding:0 4px;text-align:center;overflow:hidden">${labels[1]}</span></div>`;
+  const p2Bar = `<div style="width:${p2w}px;height:${BH}px;background:${col2.hex};border-radius:0 6px 6px 0;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:10px;font-weight:600;color:${tc(col2.hex)};padding:0 4px;text-align:center;overflow:hidden">${labels[2]}</span></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">${wBar}<div style="display:flex">${p1Bar}${p2Bar}</div></div>`;
+}
+
+function renderStaticCMP(labels, colors, proportions, w) {
+  w = w || 340;
+  const col0 = COLORS[colors[0]], col1 = COLORS[colors[1]], col2 = COLORS[colors[2]];
+  const largeBar = `<div style="width:${w}px;height:${BH}px;background:${col0.hex};border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:11px;font-weight:600;color:${tc(col0.hex)};padding:0 6px">${labels[0]}</span></div>`;
+  const smallW = Math.round(w * proportions[1]);
+  const diffW = w - smallW;
+  const smallBar = `<div style="width:${smallW}px;height:${BH}px;background:${col1.hex};border-radius:6px 0 0 6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:10px;font-weight:600;color:${tc(col1.hex)};padding:0 4px">${labels[1]}</span></div>`;
+  const diffBar = `<div style="width:${diffW}px;height:${BH}px;background:${col2.hex}44;border:2px dashed #9B9591;border-radius:0 6px 6px 0;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:10px;font-weight:600;color:#777;padding:0 4px">${labels[2]}</span></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">${largeBar}<div style="display:flex">${smallBar}${diffBar}</div></div>`;
+}
+
+// ── Problems database ────────────────────────────────────────────────────────
+const PROBLEMS = [
+  {
+    id: 0, phase: 'instruct',
+    text: `Tom has some stickers. He has red stickers and blue stickers. Together, all the stickers make up his whole collection.`,
+    explanation: `This is a part-whole model. The whole bar on top equals the two parts below — red stickers and blue stickers. To name the relation for the unknown: red plus blue equals whole.`,
+    audio: `Listen. Tom has red stickers and blue stickers. Together they make his whole collection. Draw a bar for the whole collection on top. Draw two smaller bars below — one for red, one for blue — that together match the width of the whole bar. The relation is: red stickers plus blue stickers equals whole.`,
+    type: 'pw', prebuilt: true,
+    colors: [0,1,2],
+    labels: ['red stickers','blue stickers','whole'],
+    proportions: [0.55, 0.45],
+    correct: ['red stickers','plus','blue stickers','equals','whole'],
+  },
+  {
+    id: 1, phase: 'instruct',
+    text: `A rope was cut into two pieces — a long piece and a short piece. The long piece is the longer part.`,
+    explanation: `This is also a part-whole model. The whole rope is on top. The two cut pieces are below. You can subtract: whole minus short piece equals long piece.`,
+    audio: `A rope was cut into two pieces. Draw the whole rope on top. Draw the long piece and the short piece below, side by side. They should exactly fill the width of the whole. The relation is: whole minus short piece equals long piece.`,
+    type: 'pw', prebuilt: true,
+    colors: [2,3,0],
+    labels: ['whole rope','long piece','short piece'],
+    proportions: [0.65, 0.35],
+    correct: ['whole rope','minus','short piece','equals','long piece'],
+  },
+  {
+    id: 2, phase: 'instruct',
+    text: `Ana's jump is longer than Ben's jump. Draw the model showing both jumps and the difference between them.`,
+    explanation: `This is a comparison model. The larger bar is Ana's jump. The smaller bar is Ben's jump. The difference is the extra part. Ben's jump plus the difference equals Ana's jump.`,
+    audio: `Ana jumped farther than Ben. Draw Ana's jump on top — it is the longer bar. Below it, draw Ben's jump and then the difference next to it. Together, Ben's jump and the difference should match Ana's jump. The relation is: Ben plus difference equals Ana.`,
+    type: 'cmp', prebuilt: true,
+    colors: [2,0,1],
+    labels: ["Ana's jump","Ben's jump",'difference'],
+    proportions: [0.6, 0.4],
+    correct: ["Ben's jump",'plus','difference','equals',"Ana's jump"],
+  },
+  {
+    id: 3, phase: 'practice',
+    text: `A jar holds green marbles and purple marbles. All the marbles together fill the jar.`,
+    type: 'pw',
+    labels: ['jar','green marbles','purple marbles'],
+    unkLabel: 'jar',
+    expectedBars: 3,
+    proportions: [0.45, 0.55],
+    correct: ['green marbles','plus','purple marbles','equals','jar'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 4, phase: 'practice',
+    text: `A board was split into a left section and a right section. The right section is smaller. Show the whole board and both sections.`,
+    type: 'pw',
+    labels: ['board','left section','right section'],
+    unkLabel: 'left section',
+    expectedBars: 3,
+    proportions: [0.7, 0.3],
+    correct: ['board','minus','right section','equals','left section'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 5, phase: 'practice',
+    text: `Sam's score is higher than Maya's score. The gap between them is the difference.`,
+    type: 'cmp',
+    labels: ["Sam's score","Maya's score",'difference'],
+    unkLabel: 'difference',
+    expectedBars: 3,
+    proportions: [0.65, 0.35],
+    correct: ["Sam's score",'minus',"Maya's score",'equals','difference'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 6, phase: 'practice',
+    text: `Two dogs weigh the same amount. Draw both dogs.`,
+    type: 'eq',
+    labels: ['dog one','dog two'],
+    unkLabel: 'dog two',
+    expectedBars: 2,
+    proportions: [1.0],
+    correct: ['dog one','equals','dog two'],
+    ops: ['equals','unknown'],
+  },
+  {
+    id: 7, phase: 'practice',
+    text: `One third of a garden is planted. Show the whole garden split into three equal parts, with one part planted.`,
+    type: 'frac',
+    labels: ['garden','planted part'],
+    unkLabel: 'planted part',
+    expectedBars: 2,
+    denominator: 3,
+    proportions: [1/3],
+    correct: ['one','third','of','garden','equals','planted part'],
+    ops: ['one','half','third','fourth','of','equals','unknown'],
+  },
+  {
+    id: 8, phase: 'practice',
+    text: `A shelf holds red books and blue books. There are more red books than blue books. The red and blue together fill the whole shelf.`,
+    type: 'pw',
+    labels: ['shelf','red books','blue books'],
+    unkLabel: 'shelf',
+    expectedBars: 3,
+    proportions: [0.6, 0.4],
+    correct: ['red books','plus','blue books','equals','shelf'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 9, phase: 'practice',
+    text: `The tall building is taller than the short building. Draw both buildings and show the height difference.`,
+    type: 'cmp',
+    labels: ['tall building','short building','height difference'],
+    unkLabel: 'height difference',
+    expectedBars: 3,
+    proportions: [0.7, 0.3],
+    correct: ['tall building','minus','short building','equals','height difference'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 10, phase: 'practice',
+    text: `One quarter of the field is covered in snow. Draw the whole field with four equal parts — one covered in snow.`,
+    type: 'frac',
+    labels: ['field','snow'],
+    unkLabel: 'snow',
+    expectedBars: 2,
+    denominator: 4,
+    proportions: [1/4],
+    correct: ['one','fourth','of','field','equals','snow'],
+    ops: ['one','half','third','fourth','of','equals','unknown'],
+  },
+];
+
+const INSTRUCT_PROBLEMS = PROBLEMS.filter(p => p.phase === 'instruct');
+const PRACTICE_PROBLEMS = PROBLEMS.filter(p => p.phase === 'practice');
+
+// ── State ────────────────────────────────────────────────────────────────────
+const S = {
+  phase: 'intro',
+  instructStep: 0,
+  practiceStep: 0,
+  practicePhase: 'draw',
+  totalInstruct: 3,
+  totalPractice: 8,
+  responses: [],
+  instructAnswered: false,
+  instructSelectedAnswer: null,
+  drawFeedback: null,
+  drawOk: false,
+};
+
+// ── Drag-and-Draw Canvas State ───────────────────────────────────────────────
+let DC = {
+  bars: [],
+  drawing: false,
+  drawStart: 0,
+  ghostX: 0,
+  ghostW: 0,
+  draggingBarId: null,
+  dragOffsetX: 0,
+  colorIdx: 0,
+  nextId: 0,
+  labelPending: null,
+};
+
+function resetDC() {
+  DC = { bars: [], drawing: false, drawStart: 0, ghostX: 0, ghostW: 0, draggingBarId: null, dragOffsetX: 0, colorIdx: 0, nextId: 0, labelPending: null };
+}
+
+// ── Canvas helpers ───────────────────────────────────────────────────────────
+function snap(v) { return Math.round(v / SNAP) * SNAP; }
+
+function snapAligned(w, startX) {
+  const rEdge = startX + w;
+  for (const b of DC.bars) {
+    if (Math.abs(rEdge - b.x) < 8) return b.x - startX;
+    if (Math.abs(rEdge - (b.x + b.w)) < 8) return (b.x + b.w) - startX;
+  }
+  return snap(w);
+}
+
+function canvasH() { return Math.max((DC.bars.length + (DC.drawing ? 1 : 0)) * (BH + GAP) + 8, 140); }
+
+function barDiv(b, i) {
+  const col = COLORS[b.colorIdx];
+  const textColor = tc(col.hex);
+  const y = i * (BH + GAP);
+  const isSelected = b.id === DC.labelPending || b.selected;
+  const border = isSelected ? `3px solid ${col.hex}` : 'none';
+  const label = b.label
+    ? `<span style="font-size:11px;font-weight:600;color:${textColor};text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${b.w - 12}px">${b.label}</span>`
+    : `<span style="font-size:11px;color:${textColor};opacity:0.6;font-style:italic">unlabeled</span>`;
+  return `<div id="bar_${b.id}" data-barid="${b.id}" style="position:absolute;left:${b.x}px;top:${y}px;width:${b.w}px;height:${BH}px;background:${col.hex};border-radius:6px;border:${border};display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;box-sizing:border-box" onmousedown="dcBarDown(event,${b.id})" onclick="dcSelectBar(${b.id})">${label}</div>`;
+}
+
+function ghostDiv() {
+  if (!DC.drawing || DC.ghostW < 10) return '';
+  const col = COLORS[DC.colorIdx];
+  const y = DC.bars.length * (BH + GAP);
+  return `<div style="position:absolute;left:${DC.ghostX}px;top:${y}px;width:${DC.ghostW}px;height:${BH}px;background:${col.hex};opacity:0.45;border-radius:6px;pointer-events:none"></div>`;
+}
+
+function guides() {
+  if (!DC.drawing || DC.ghostW < 10) return '';
+  let html = '';
+  const gLeft = DC.ghostX, gRight = DC.ghostX + DC.ghostW;
+  DC.bars.forEach((b, i) => {
+    const y = i * (BH + GAP);
+    [b.x, b.x + b.w].forEach(edge => {
+      if (Math.abs(gLeft - edge) < 8 || Math.abs(gRight - edge) < 8) {
+        html += `<div style="position:absolute;left:${edge}px;top:0;bottom:-20px;border-left:2px dashed var(--accent);opacity:0.5;pointer-events:none"></div>`;
+      }
+    });
+  });
+  return html;
+}
+
+function dcHtml() {
+  const barsHtml = DC.bars.map((b, i) => barDiv(b, i)).join('');
+  return `<div id="dcCanvas" style="position:relative;width:${CVW}px;height:${canvasH()}px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:visible;cursor:crosshair"
+    onmousedown="dcDown(event)"
+    onmousemove="dcMove(event)"
+    onmouseup="dcUp(event)"
+    onmouseleave="dcUp(event)"
+  >${barsHtml}${ghostDiv()}${guides()}</div>`;
+}
+
+// ── Canvas event handlers ────────────────────────────────────────────────────
+function dcDown(e) {
+  if (e.target.dataset.barid) return;
+  const rect = document.getElementById('dcCanvas').getBoundingClientRect();
+  const x = snap(e.clientX - rect.left);
+  DC.drawing = true;
+  DC.drawStart = x;
+  DC.ghostX = x;
+  DC.ghostW = 0;
+  renderBuilder();
+}
+
+function dcMove(e) {
+  if (DC.draggingBarId !== null) {
+    const rect = document.getElementById('dcCanvas').getBoundingClientRect();
+    let newX = snap(e.clientX - rect.left - DC.dragOffsetX);
+    newX = Math.max(0, Math.min(newX, CVW - 40));
+    const b = DC.bars.find(b => b.id === DC.draggingBarId);
+    if (b) b.x = newX;
+    renderBuilder();
+    return;
+  }
+  if (!DC.drawing) return;
+  const rect = document.getElementById('dcCanvas').getBoundingClientRect();
+  const x = snap(e.clientX - rect.left);
+  const rawW = x - DC.drawStart;
+  if (rawW > 0) {
+    DC.ghostX = DC.drawStart;
+    DC.ghostW = snapAligned(rawW, DC.drawStart);
+  } else {
+    DC.ghostX = snap(x);
+    DC.ghostW = snap(DC.drawStart - x);
+  }
+  DC.ghostW = Math.max(0, Math.min(DC.ghostW, CVW - DC.ghostX));
+  renderBuilder();
+}
+
+function dcUp(e) {
+  if (DC.draggingBarId !== null) {
+    DC.draggingBarId = null;
+    return;
+  }
+  if (!DC.drawing) return;
+  DC.drawing = false;
+  if (DC.ghostW >= 40) {
+    const id = DC.nextId++;
+    DC.bars.push({ id, colorIdx: DC.colorIdx, x: DC.ghostX, w: DC.ghostW, label: '', selected: false });
+    DC.labelPending = id;
+  }
+  DC.ghostW = 0;
+  renderBuilder();
+}
+
+function dcBarDown(e, id) {
+  e.stopPropagation();
+  const rect = document.getElementById('dcCanvas').getBoundingClientRect();
+  const b = DC.bars.find(b => b.id === id);
+  if (!b) return;
+  DC.draggingBarId = id;
+  DC.dragOffsetX = e.clientX - rect.left - b.x;
+}
+
+function dcSelectBar(id) {
+  DC.labelPending = id;
+  renderBuilder();
+}
+
+function dcUndo() {
+  DC.bars.pop();
+  DC.labelPending = null;
+  S.drawFeedback = null;
+  renderBuilder();
+}
+
+function dcReset() {
+  DC.bars = [];
+  DC.labelPending = null;
+  DC.nextId = 0;
+  S.drawFeedback = null;
+  renderBuilder();
+}
+
+function dcSetColor(idx) {
+  DC.colorIdx = idx;
+  renderBuilder();
+}
+
+function dcAssignLabel(label) {
+  if (DC.labelPending !== null) {
+    const b = DC.bars.find(b => b.id === DC.labelPending);
+    if (b) b.label = label;
+    DC.labelPending = null;
+  }
+  renderBuilder();
+}
+
+function colorPalette() {
+  return `<div style="display:flex;gap:8px;align-items:center">
+    ${COLORS.map((c, i) => `<div onclick="dcSetColor(${i})" style="width:28px;height:28px;border-radius:50%;background:${c.hex};cursor:pointer;outline:${i === DC.colorIdx ? '3px solid var(--text-primary)' : '2px solid transparent'};outline-offset:2px;transition:outline 0.1s"></div>`).join('')}
+    <span style="font-size:11px;color:var(--text-muted);margin-left:4px">Color</span>
+  </div>`;
+}
+
+function labelPanel(labels) {
+  if (DC.labelPending === null) return '';
+  const usedLabels = new Set(DC.bars.filter(b => b.id !== DC.labelPending && b.label).map(b => b.label));
+  const available = labels.filter(l => !usedLabels.has(l));
+  if (available.length === 0) return '';
+  return `<div style="margin-top:8px;padding:10px 12px;background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius)">
+    <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">Assign label</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">
+      ${available.map(l => `<button onclick="dcAssignLabel('${l.replace(/'/g, "\\'")}')" style="padding:6px 12px;border-radius:var(--radius);border:1px solid var(--accent);background:white;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer">${l}</button>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── Relation strip state ─────────────────────────────────────────────────────
+let assembled = [];
+
+function addToken(t) { assembled.push(t); renderPracticeItem(); }
+function undoToken() { assembled.pop(); renderPracticeItem(); }
+
+function strip(ops, colorLabels) {
+  const tokens = assembled.length
+    ? assembled.map(t => `<span class="token${t === 'unknown' ? ' unk' : ''}">${t}</span>`).join('')
+    : `<span class="strip-ph">Build the relation...</span>`;
+  const colorBtns = colorLabels.map(l =>
+    `<button class="wb-btn" onclick="addToken('${l.replace(/'/g, "\\'")}')">${l}</button>`).join('');
+  const opBtns = ops.map(o =>
+    `<button class="wb-btn" onclick="addToken('${o}')">${o}</button>`).join('');
+  return `<div style="margin-top:10px">
+    <div class="instruct-word-bank">
+      <div class="wb-group">${colorBtns}</div>
+      <div class="wb-div"></div>
+      <div class="wb-group">${opBtns}</div>
+    </div>
+    <div class="relation-strip" style="margin-top:6px">${tokens}</div>
+    <div class="strip-row" style="margin-top:6px">
+      <button class="btn-secondary" onclick="undoToken()">← Back</button>
+      <button class="btn-continue" style="padding:10px" onclick="submitRelation()">Check Relation</button>
+    </div>
+  </div>`;
+}
+
+function checkRelation(problem) {
+  const s = assembled.join(' ');
+  const cor = problem.correct.join(' ');
+  if (s === cor) return { ok: true };
+  const hasAll = problem.correct.every(t => assembled.includes(t));
+  if (hasAll) return { ok: false, fb: `Almost — check the order. Try: ${cor}` };
+  return { ok: false, fb: `Try: ${cor}` };
+}
+
+// ── Model check ──────────────────────────────────────────────────────────────
+function checkModel(problem) {
+  if (DC.bars.length !== problem.expectedBars) {
+    return { ok: false, fb: `Draw exactly ${problem.expectedBars} bars — one for each quantity in the problem.` };
+  }
+  const labels = DC.bars.map(b => b.label).filter(l => l);
+  if (labels.length < DC.bars.length) {
+    return { ok: false, fb: `Assign a label to every bar.` };
+  }
+  const used = new Set(labels);
+  for (const lbl of problem.labels) {
+    if (!used.has(lbl)) return { ok: false, fb: `Missing: ${lbl}. Each label should appear exactly once.` };
+  }
+  if (problem.type === 'pw' || problem.type === 'cmp') {
+    const sorted = [...DC.bars].sort((a, b) => b.w - a.w);
+    const totalW = sorted[0].w;
+    const partBars = sorted.slice(1);
+    const partWidths = partBars.map(b => b.w / totalW);
+    const expProportions = problem.proportions;
+    const sortedParts = [...partWidths].sort((a, b) => b - a);
+    const sortedExp = [...expProportions].sort((a, b) => b - a);
+    for (let i = 0; i < Math.min(sortedParts.length, sortedExp.length); i++) {
+      if (Math.abs(sortedParts[i] - sortedExp[i]) > 0.30) {
+        return { ok: false, fb: `Check the bar sizes — they should roughly match the quantities described. The largest part should be noticeably bigger than the smallest.` };
+      }
+    }
+    const partSum = partWidths.reduce((a, b) => a + b, 0);
+    if (Math.abs(partSum - 1.0) > 0.25) {
+      return { ok: false, fb: `The parts together should span the same width as the whole bar. Adjust the bar sizes.` };
+    }
+  }
+  return { ok: true, fb: null };
+}
+
+// ── Record response ──────────────────────────────────────────────────────────
+function recordResp(phase, ok) {
+  S.responses.push({ phase, ok, ts: Date.now() });
+  try {
+    const key = CFG.storageKey + '_progress';
+    const existing = JSON.parse(localStorage.getItem(key) || '[]');
+    existing.push({ date: new Date().toISOString(), phase, ok });
+    localStorage.setItem(key, JSON.stringify(existing));
+  } catch (e) {}
+}
+
+// ── Progress bar ─────────────────────────────────────────────────────────────
+function updateProgress() {
+  const total = S.totalInstruct + S.totalPractice;
+  let done = 0;
+  if (S.phase === 'instruct') done = S.instructStep;
+  else if (S.phase === 'practice') done = S.totalInstruct + S.practiceStep;
+  else if (S.phase === 'complete') done = total;
+  document.getElementById('progressFill').style.width = `${Math.round((done / total) * 100)}%`;
+  document.getElementById('stepCounter').textContent =
+    S.phase === 'intro' ? '' :
+    S.phase === 'instruct' ? `${S.instructStep + 1} / ${S.totalInstruct}` :
+    S.phase === 'practice' ? `${S.practiceStep + 1} / ${S.totalPractice}` : '';
+}
+
+// ── Render helpers ───────────────────────────────────────────────────────────
+function render(html) { document.getElementById('main').innerHTML = html; }
+function setPhase(l) { document.getElementById('phaseLabel').textContent = l; }
+
+// ── Snapshot of drawn model (for name phase) ─────────────────────────────────
+function snapshotModel() {
+  const h = Math.max(DC.bars.length * (BH + GAP) + 8, 80);
+  const barsHtml = DC.bars.map((b, i) => {
+    const col = COLORS[b.colorIdx];
+    const y = i * (BH + GAP);
+    const textColor = tc(col.hex);
+    return `<div style="position:absolute;left:${b.x}px;top:${y}px;width:${b.w}px;height:${BH}px;background:${col.hex};border-radius:6px;display:flex;align-items:center;justify-content:center">
+      <span style="font-size:11px;font-weight:600;color:${textColor};text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${b.w - 12}px">${b.label}</span>
+    </div>`;
+  }).join('');
+  return `<div style="position:relative;width:${CVW}px;height:${h}px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">${barsHtml}</div>`;
+}
+
+// ── Phases ───────────────────────────────────────────────────────────────────
+function showIntro() {
+  S.phase = 'intro';
+  setPhase('Introduction');
+  updateProgress();
+  render(`<div class="card">
+    <h2>Word Problems — Lesson Eight</h2>
+    <p>In this lesson you will read word problems and build bar models to show the relationships between quantities.</p>
+    <p>First you will see three worked examples with pre-built models. Then you will draw your own models and name the relations.</p>
+    <p style="color:var(--accent);font-weight:600">Read each problem carefully before drawing.</p>
+    <button class="btn-start" onclick="startInstruct()">Ready</button>
+  </div>`);
+}
+
+function startInstruct() {
+  S.phase = 'instruct';
+  S.instructStep = 0;
+  S.instructAnswered = false;
+  S.instructSelectedAnswer = null;
+  setPhase('Instruction');
+  showInstructStep();
+}
+
+function showInstructStep() {
+  updateProgress();
+  const p = INSTRUCT_PROBLEMS[S.instructStep];
+  S.instructAnswered = false;
+  S.instructSelectedAnswer = null;
+
+  let modelHtml = '';
+  if (p.type === 'pw') {
+    modelHtml = renderStaticPW(p.labels, p.colors, p.proportions);
+  } else if (p.type === 'cmp') {
+    modelHtml = renderStaticCMP(p.labels, p.colors, p.proportions);
+  }
+
+  // Generate 3 answer choices: correct + 2 distractors
+  const correctStr = p.correct.join(' ');
+  const distractors = generateDistractors(p);
+  const choices = shuffle([correctStr, ...distractors.slice(0, 2)]);
+
+  render(`<div class="card" style="animation:fadeUp 0.3s ease">
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">
+      <div style="flex:1">
+        <div class="problem-text">${p.text}</div>
+      </div>
+      ${audioBtnHtml()}
+    </div>
+    <div style="margin-bottom:14px;overflow-x:auto">${modelHtml}</div>
+    <div class="instruct-text">${p.explanation}</div>
+    <div style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px">Choose the correct relation:</div>
+    <div class="instruct-word-bank" id="choiceBank">
+      <div class="wb-group" style="flex-direction:column">
+        ${choices.map((c, idx) => `<button class="wb-btn" id="choice_${idx}" onclick="pickInstructAnswer('${c.replace(/'/g, "\\'")}')">${c}</button>`).join('')}
+      </div>
+    </div>
+    <div id="instructFeedback"></div>
+  </div>`);
+
+  speak(p.audio);
+}
+
+function generateDistractors(p) {
+  const correct = p.correct;
+  const labels = p.labels;
+  const ops = p.type === 'frac' ? ['of','equals'] : ['plus','minus','equals'];
+  const distList = [];
+
+  // Swap operator
+  if (correct.includes('plus')) {
+    const alt = [...correct];
+    const idx = alt.indexOf('plus');
+    alt[idx] = 'minus';
+    distList.push(alt.join(' '));
+  } else if (correct.includes('minus')) {
+    const alt = [...correct];
+    const idx = alt.indexOf('minus');
+    alt[idx] = 'plus';
+    distList.push(alt.join(' '));
+  }
+
+  // Reverse label order
+  const reversed = [...correct].reverse();
+  distList.push(reversed.join(' '));
+
+  // Shuffle labels
+  const shuffled = shuffle([...correct]);
+  if (shuffled.join(' ') !== correct.join(' ')) distList.push(shuffled.join(' '));
+
+  // Ensure distractors are different from correct
+  return distList.filter(d => d !== correct.join(' ')).slice(0, 2);
+}
+
+function pickInstructAnswer(chosen) {
+  if (S.instructAnswered) return;
+  const p = INSTRUCT_PROBLEMS[S.instructStep];
+  const correct = p.correct.join(' ');
+  const ok = chosen === correct;
+  S.instructAnswered = true;
+  S.instructSelectedAnswer = chosen;
+  recordResp('instruct', ok);
+
+  // Highlight buttons
+  const bank = document.getElementById('choiceBank');
+  if (bank) {
+    bank.querySelectorAll('.wb-btn').forEach(btn => {
+      if (btn.textContent === correct) btn.classList.add('correct');
+      else if (btn.textContent === chosen && !ok) btn.classList.add('incorrect');
+    });
+  }
+
+  const fb = document.getElementById('instructFeedback');
+  if (fb) {
+    fb.innerHTML = ok
+      ? `<div class="feedback-card ok" style="margin-top:10px">Correct! ${correct}</div>
+         <button class="btn-continue" style="margin-top:10px" onclick="nextInstructStep()">${S.instructStep < S.totalInstruct - 1 ? 'Next example →' : 'Start practice →'}</button>`
+      : `<div class="feedback-card err" style="margin-top:10px">Not quite. The correct relation is: <strong>${correct}</strong></div>
+         <button class="btn-continue" style="margin-top:10px" onclick="nextInstructStep()">${S.instructStep < S.totalInstruct - 1 ? 'Next example →' : 'Start practice →'}</button>`;
+  }
+}
+
+function nextInstructStep() {
+  S.instructStep++;
+  if (S.instructStep >= S.totalInstruct) {
+    startPractice();
+  } else {
+    showInstructStep();
+  }
+}
+
+function startPractice() {
+  S.phase = 'practice';
+  S.practiceStep = 0;
+  S.practicePhase = 'draw';
+  resetDC();
+  assembled = [];
+  S.drawFeedback = null;
+  setPhase('Practice');
+  renderPracticeItem();
+}
+
+function renderBuilder() {
+  const container = document.getElementById('builderContainer');
+  if (!container) return;
+  const p = PRACTICE_PROBLEMS[S.practiceStep];
+  const doneDisabled = DC.bars.length < 2 ? 'disabled' : '';
+  container.innerHTML = `
+    <div class="toolbar">
+      ${colorPalette()}
+      <button class="btn-secondary" onclick="dcUndo()">Undo</button>
+      <button class="btn-secondary" onclick="dcReset()">Reset</button>
+    </div>
+    ${dcHtml()}
+    ${labelPanel(p.labels)}
+    ${S.drawFeedback ? `<div class="feedback-card err" style="margin-top:8px">${S.drawFeedback}</div>` : ''}
+    <button class="btn-continue" style="margin-top:10px" onclick="doneDrawing()" ${doneDisabled}>Done Drawing</button>
+  `;
+}
+
+function renderPracticeItem() {
+  updateProgress();
+  const p = PRACTICE_PROBLEMS[S.practiceStep];
+
+  if (S.practicePhase === 'draw') {
+    const doneDisabled = DC.bars.length < 2 ? 'disabled' : '';
+    render(`<div class="card" style="animation:fadeUp 0.3s ease">
+      <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Draw the bar model</div>
+      <div class="problem-text">${p.text}</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">Labels to use: <strong>${p.labels.join(', ')}</strong></div>
+      <div id="builderContainer">
+        <div class="toolbar">
+          ${colorPalette()}
+          <button class="btn-secondary" onclick="dcUndo()">Undo</button>
+          <button class="btn-secondary" onclick="dcReset()">Reset</button>
+        </div>
+        ${dcHtml()}
+        ${labelPanel(p.labels)}
+        ${S.drawFeedback ? `<div class="feedback-card err" style="margin-top:8px">${S.drawFeedback}</div>` : ''}
+        <button class="btn-continue" style="margin-top:10px" onclick="doneDrawing()" ${doneDisabled}>Done Drawing</button>
+      </div>
+    </div>`);
+  } else {
+    // Name phase
+    render(`<div class="card" style="animation:fadeUp 0.3s ease">
+      <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Name the relation</div>
+      <div class="problem-text">${p.text}</div>
+      <div style="margin-bottom:12px">${snapshotModel()}</div>
+      ${strip(p.ops, p.labels)}
+      <div id="nameFeedback"></div>
+    </div>`);
+  }
+}
+
+function doneDrawing() {
+  const p = PRACTICE_PROBLEMS[S.practiceStep];
+  const result = checkModel(p);
+  if (!result.ok) {
+    S.drawFeedback = result.fb;
+    renderBuilder();
+    return;
+  }
+  S.drawFeedback = null;
+  S.practicePhase = 'name';
+  assembled = [];
+  renderPracticeItem();
+}
+
+function submitRelation() {
+  const p = PRACTICE_PROBLEMS[S.practiceStep];
+  const result = checkRelation(p);
+  recordResp('practice', result.ok);
+
+  const fb = document.getElementById('nameFeedback');
+  if (!fb) return;
+
+  if (result.ok) {
+    fb.innerHTML = `<div class="feedback-card ok" style="margin-top:10px">Correct! <strong>${p.correct.join(' ')}</strong></div>
+      <button class="btn-continue" style="margin-top:10px" onclick="nextPracticeStep()">${S.practiceStep < S.totalPractice - 1 ? 'Next problem →' : 'Finish →'}</button>`;
+  } else {
+    fb.innerHTML = `<div class="feedback-card err" style="margin-top:10px">${result.fb}</div>`;
+  }
+}
+
+function nextPracticeStep() {
+  S.practiceStep++;
+  if (S.practiceStep >= S.totalPractice) {
+    showComplete();
+  } else {
+    S.practicePhase = 'draw';
+    resetDC();
+    assembled = [];
+    S.drawFeedback = null;
+    renderPracticeItem();
+  }
+}
+
+function showComplete() {
+  S.phase = 'complete';
+  setPhase('Complete');
+  updateProgress();
+  const correct = S.responses.filter(r => r.ok).length;
+  const total = S.responses.length;
+  render(`<div class="completion">
+    <div style="font-size:44px">✓</div>
+    <h2>Lesson Eight Complete</h2>
+    <p>You drew bar models and named relations for word problems.</p>
+    <p style="color:var(--accent);font-weight:600">${correct} of ${total} correct</p>
+    <div class="nav-links">
+      <a class="nav-link" href="${CFG.fluencyHref}">Fluency Practice</a>
+      <a class="nav-link primary" href="${CFG.nextHref}">${CFG.nextLabel}</a>
+    </div>
+  </div>`);
+}
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+window.speechSynthesis.onvoiceschanged = () => {};
+showIntro();
+</script>
+</body>
+</html>
