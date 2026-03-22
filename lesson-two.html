@@ -297,16 +297,21 @@ function renderFractional(m){
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // WORD BANK BUILDER — for instruction phase button responses
-// Generates correct + distractor buttons from accepted answers and color pool
-// Always at least 2 options, max 4, shuffled
+// Always exactly 3 options, shuffled.
+// Pass distractors=null with a 3-item [correct, close, far] array as first arg,
+// or pass acc + distractors array to use the legacy auto-build path.
 // ═══════════════════════════════════════════════════════════════════════════════
-function buildInstructWB(acc, distractors, onSelect) {
-  // acc: array of accepted answer strings (first one is canonical)
-  // distractors: array of plausible wrong answers
-  const correct = acc[0];
-  const opts = shuffle([correct, ...distractors.filter(d=>d!==correct)]).slice(0, 4);
-  // Ensure correct is always present
-  if (!opts.includes(correct)) { opts[opts.length-1] = correct; shuffle(opts); }
+function buildInstructWB(accOrOpts, distractors, onSelect) {
+  let opts;
+  if (distractors === null) {
+    // Pre-built [correct, close, far] — shuffle and use directly
+    opts = shuffle([...accOrOpts]);
+  } else {
+    const correct = accOrOpts[0];
+    const pool = shuffle([correct, ...distractors.filter(d=>d!==correct)]).slice(0, 3);
+    if (!pool.includes(correct)) { pool[pool.length-1] = correct; shuffle(pool); }
+    opts = pool;
+  }
   const btns = opts.map(o =>
     `<button class="wb-btn" onclick="${onSelect}('${o.replace(/'/g,"\\'")}')">${o}</button>`
   ).join('');
@@ -334,6 +339,7 @@ const S = {
   phase:'intro',
   reviewStep:0, instructStep:0, identStep:0, namingStep:0, freeStep:0,
   instructFU:false, instructM:null,
+  currentOpts:null, currentFuOpts:null,
   currentModel:null, currentAnswer:null, currentNaming:null,
   scaffoldColorActive:true, scaffoldColorStreak:0, scaffoldColorLocked:false,
   scaffoldRoleActive:true, scaffoldRoleStreak:0, scaffoldRoleLocked:false,
@@ -370,6 +376,7 @@ function showInstruct(step) {
   const question = typeof def.question === 'function' ? def.question(m) : def.question;
   const acc = typeof def.acc === 'function' ? def.acc(m) : def.acc;
   const distractors = buildDistractors(acc, m, def);
+  S.currentOpts = def.opts ? (typeof def.opts === 'function' ? def.opts(m) : def.opts) : null;
 
   const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
 
@@ -392,7 +399,7 @@ function showInstruct(step) {
     if (qBox) qBox.style.display = 'block';
     if (bBox) {
       bBox.style.display = 'block';
-      bBox.innerHTML = buildInstructWB(acc, distractors, 'submitInstruct');
+      bBox.innerHTML = buildInstructWB(S.currentOpts || acc, S.currentOpts ? null : distractors, 'submitInstruct');
     }
   });
 }
@@ -404,7 +411,9 @@ function submitInstruct(chosen) {
   const acc = typeof def.acc === 'function' ? def.acc(m) : def.acc;
 
   if (!S.instructFU) {
-    const ok = acc.some(a => chosen.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(chosen.toLowerCase()));
+    const ok = S.currentOpts
+      ? chosen === S.currentOpts[0]
+      : acc.some(a => chosen.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(chosen.toLowerCase()));
     if (ok) {
       S.instructFU = true;
       // Show follow-up
@@ -412,6 +421,7 @@ function submitInstruct(chosen) {
       const fuQ = typeof def.fuQ === 'function' ? def.fuQ(m) : def.fuQ;
       const fuAcc = typeof def.fuAcc === 'function' ? def.fuAcc(m) : def.fuAcc;
       const fuDistractors = buildDistractors(fuAcc, m, def, true);
+      S.currentFuOpts = def.fuOpts ? (typeof def.fuOpts === 'function' ? def.fuOpts(m) : def.fuOpts) : null;
       const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
       render(
         `${modelHtml}
@@ -429,7 +439,7 @@ function submitInstruct(chosen) {
         if (qBox) qBox.style.display = 'block';
         if (bBox) {
           bBox.style.display = 'block';
-          bBox.innerHTML = buildInstructWB(fuAcc, fuDistractors, 'submitInstruct');
+          bBox.innerHTML = buildInstructWB(S.currentFuOpts || fuAcc, S.currentFuOpts ? null : fuDistractors, 'submitInstruct');
         }
       });
     } else {
@@ -453,7 +463,7 @@ function submitInstruct(chosen) {
         if (qBox) qBox.style.display = 'block';
         if (bBox) {
           bBox.style.display = 'block';
-          bBox.innerHTML = buildInstructWB(acc, distractors, 'submitInstruct');
+          bBox.innerHTML = buildInstructWB(S.currentOpts || acc, S.currentOpts ? null : distractors, 'submitInstruct');
         }
       });
     }
@@ -461,7 +471,9 @@ function submitInstruct(chosen) {
     // Follow-up response
     const fuAcc = typeof def.fuAcc === 'function' ? def.fuAcc(m) : def.fuAcc;
     const fuQ = typeof def.fuQ === 'function' ? def.fuQ(m) : def.fuQ;
-    const ok = fuAcc.some(a => chosen.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(chosen.toLowerCase()));
+    const ok = S.currentFuOpts
+      ? chosen === S.currentFuOpts[0]
+      : fuAcc.some(a => chosen.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(chosen.toLowerCase()));
     if (ok) {
       showInstruct(S.instructStep + 1);
     } else {
@@ -484,7 +496,7 @@ function submitInstruct(chosen) {
         if (qBox) qBox.style.display = 'block';
         if (bBox) {
           bBox.style.display = 'block';
-          bBox.innerHTML = buildInstructWB(fuAcc, fuDistractors, 'submitInstruct');
+          bBox.innerHTML = buildInstructWB(S.currentFuOpts || fuAcc, S.currentFuOpts ? null : fuDistractors, 'submitInstruct');
         }
       });
     }
@@ -520,7 +532,7 @@ function buildDistractors(acc, m, def, isFU=false) {
   // Number distractors
   ['two','three','four','five'].filter(n=>!acc.some(a=>a.includes(n))).slice(0,2).forEach(n=>pool.push(n));
 
-  return shuffle(pool.filter(d=>d&&d!==correct)).slice(0,3);
+  return shuffle(pool.filter(d=>d&&d!==correct)).slice(0,2);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -618,6 +630,7 @@ const INSTRUCT=[
     audio(m){return`Look at this picture. The ${m.whole.color.name} bar is on top. The ${m.p1.color.name} and ${m.p2.color.name} bars are on the bottom. Together, the bottom two bars equal the top bar. That is called a Part-Whole relation. The top bar is the whole. The two bottom bars are the parts. What color is the whole?`;},
     question(m){return`What color is the whole?`;},
     acc(m){return[m.whole.color.name,...fam(m.whole.color.name)];},
+    opts(m){return[`The ${m.whole.color.name} bar is the whole.`,`The ${m.p1.color.name} bar is the whole.`,`The ${m.p2.color.name} bar is the whole.`];},
     cor(m){return`The whole is the single bar that equals both parts together. What color is the top bar?`;},
     fu(m){return`Right — ${m.whole.color.name} is the whole. Now, what colors are the parts?`;},
     fuQ(m){return`What colors are the two parts?`;},
@@ -629,10 +642,12 @@ const INSTRUCT=[
     audio(m){return`The ${m.p1.color.name} part is faded — imagine it is taken away. What is left of the whole after the ${m.p1.color.name} part is removed?`;},
     question(m){return`If the ${m.p1.color.name} part is removed, what remains?`;},
     acc(m){return[m.p2.color.name,...fam(m.p2.color.name)];},
+    opts(m){return[`The ${m.p2.color.name} part remains.`,`The ${m.whole.color.name} part remains.`,`Nothing remains — it all equals the missing part.`];},
     cor(m){return`Look at the part that is not faded. What color is it?`;},
     fu(m){return`Right — ${m.p2.color.name}. So: ${m.whole.color.name} without ${m.p1.color.name} equals ${m.p2.color.name}. When we take away a part from the whole, we subtract.`;},
     fuQ(m){return`What word do we use when we take away?`;},
     fuAcc(){return['minus','subtract','take away','without'];},
+    fuOpts:['We use the word minus or subtract.','We use the word plus or add.','We use the word times or multiply.'],
     fuCor(){return`When we take away a part from the whole, we subtract. We say: whole minus part. What word means take away?`;},
   },
   {
@@ -640,10 +655,12 @@ const INSTRUCT=[
     audio(m){return`When the unknown is the whole, we add the parts: ${m.p1.color.name} plus ${m.p2.color.name} equals the whole. When the unknown is a part, we subtract: whole minus known part equals unknown. Which operation finds the whole?`;},
     question(m){return`Which operation finds the whole?`;},
     acc:['plus','addition','add'],
+    opts:['Addition finds the whole.','Subtraction finds the whole.','Multiplication finds the whole.'],
     cor:`To find the whole, we add the parts together. Which operation is that?`,
     fu(m){return`Right — plus. And which operation finds a missing part?`;},
     fuQ(m){return`Which operation finds a missing part?`;},
     fuAcc:['minus','subtraction','subtract'],
+    fuOpts:['Subtraction finds a missing part.','Addition finds a missing part.','Division finds a missing part.'],
     fuCor:`To find a missing part, we subtract from the whole. Which operation is that?`,
   },
 ];

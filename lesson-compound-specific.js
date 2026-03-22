@@ -320,6 +320,7 @@ const INSTRUCT=[
     },
     question(m){return`Which relation can you solve first — the top or the bottom?`;},
     acc(m){return[m.solvableOnTop?'top':'bottom'];},
+    opts(m){const s=m.solvableOnTop?'top':'bottom',o=m.solvableOnTop?'bottom':'top';return[`The ${s} relation can be solved first.`,`The ${o} relation can be solved first.`,'Both relations can be solved at the same time.'];},
     cor(m){
       const pos=m.solvableOnTop?'top':'bottom';
       return`Look at each relation. Count the question marks. The one with only one unknown is solvable first. Which one only has one unknown?`;
@@ -330,6 +331,7 @@ const INSTRUCT=[
     },
     fuQ(m){return`Why can you solve the ${m.solvableOnTop?'top':'bottom'} relation first?`;},
     fuAcc:['one unknown','only one','one question mark','one ?'],
+    fuOpts:['It has only one unknown — that makes it solvable.','It has two unknowns — it cannot be solved right away.','It uses a different type of relation.'],
     fuCor:`A relation with one unknown can always be solved. A relation with two unknowns cannot — not until one of those unknowns is found elsewhere. Why can you solve that one first?`,
   },
   // Step 2: Solve the first relation
@@ -367,10 +369,12 @@ const INSTRUCT=[
     },
     question:`How many unknowns are left now?`,
     acc:['one','one unknown','one ?','1'],
+    opts:['There is one unknown remaining.','There are two unknowns remaining.','The compound relation is fully solved.'],
     cor:`Count the question marks across both models. After solving the first relation, one unknown remains. How many?`,
     fu(m){return`Right — one unknown left. One relation, one unknown. You know how to solve that.`;},
     fuQ:`Which relation do you use now?`,
     fuAcc:['the other','second','other relation','the second relation','bottom','top'],
+    fuOpts:['Use the other relation to find the remaining unknown.','Use the same relation again.','Start the entire lesson from the beginning.'],
     fuCor:`The remaining unknown is in the other relation. Use that relation to find it. Which relation do you use now?`,
   },
   // Step 4: Solve the second relation
@@ -401,6 +405,7 @@ const INSTRUCT=[
     audio(m){return`Now try the full compound relation. Identify which relation is solvable first, solve it, then use that value to solve the second. You can do this.`;},
     question:`Which relation do you solve first?`,
     acc(m){return[m.solvableOnTop?'top':'bottom'];},
+    opts(m){const s=m.solvableOnTop?'top':'bottom',o=m.solvableOnTop?'bottom':'top';return[`The ${s} relation — it has only one unknown.`,`The ${o} relation — it has only one unknown.`,'Either relation — they can both be solved right away.'];},
     cor(m){return`Count the question marks. The relation with one unknown is solvable first.`;},
     fu(m){
       const solvable=m.solvableOnTop?m.relA:m.relB;
