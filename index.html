@@ -111,10 +111,161 @@
   /* ── Empty placeholder sub-button (coming soon) ───────────────────────── */
   .sub-btn.empty-sub{opacity:0.55;cursor:default;}
   .sub-btn.empty-sub:hover{background:var(--surface);}
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     SECTION 1 — LANDING PAGE STYLES
+  ══════════════════════════════════════════════════════════════════════════ */
+
+  .landing{width:100%;max-width:680px;display:flex;flex-direction:column;gap:32px;
+    margin-bottom:48px;}
+
+  /* Header */
+  .landing-header{display:flex;flex-direction:column;gap:6px;}
+  .landing-title{font-family:'DM Serif Display',serif;font-size:40px;letter-spacing:-1px;
+    color:var(--text-primary);}
+  .landing-tagline{font-size:18px;font-weight:400;color:var(--text-secondary);}
+
+  /* Intro paragraphs */
+  .intro-blocks{display:flex;flex-direction:column;gap:20px;}
+  .intro-block{}
+  .intro-block h3{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:6px;
+    color:var(--text-primary);}
+  .intro-block p{font-size:15px;line-height:1.75;color:var(--text-secondary);}
+
+  /* Tutorial card */
+  .tutorial-card{background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:32px 32px 28px;
+    box-shadow:0 2px 12px rgba(0,0,0,0.06);display:flex;flex-direction:column;gap:20px;}
+
+  .tut-counter{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
+    color:var(--text-muted);}
+
+  .tut-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text-primary);}
+
+  .tut-model{display:flex;align-items:center;justify-content:center;
+    min-height:100px;padding:8px 0;}
+
+  .tut-text{font-size:15px;line-height:1.75;color:var(--text-secondary);}
+
+  /* Progress dots */
+  .tut-dots{display:flex;gap:6px;align-items:center;}
+  .tut-dot{width:8px;height:8px;border-radius:50%;background:var(--border);
+    transition:background 0.2s;}
+  .tut-dot.done{background:var(--accent);}
+  .tut-dot.active{background:var(--accent);width:10px;height:10px;}
+
+  /* Next button */
+  .tut-footer{display:flex;align-items:center;justify-content:space-between;}
+  .tut-next{padding:11px 28px;border-radius:var(--radius);border:none;
+    background:var(--accent);color:white;font-family:'DM Sans',sans-serif;
+    font-size:15px;font-weight:600;cursor:pointer;transition:background 0.15s;}
+  .tut-next:hover{background:#255C43;}
+
+  /* Bar model helpers */
+  .bar-h{height:62px;border-radius:6px;display:flex;align-items:center;
+    justify-content:center;flex-shrink:0;}
+
+  /* Lesson flow pills */
+  .lesson-flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .flow-pill{padding:8px 18px;border-radius:99px;font-size:13px;font-weight:600;
+    background:var(--accent-light);color:var(--accent);border:1px solid #B8DAC8;}
+  .flow-arrow{font-size:18px;color:var(--text-muted);}
+
+  /* Word bank mock */
+  .mock-wb{border:2px solid var(--text-primary);border-radius:var(--radius);
+    padding:7px;display:flex;flex-direction:column;gap:4px;background:var(--surface);
+    width:110px;}
+  .mock-wb-btn{padding:6px 8px;border-radius:7px;border:1px solid var(--border);
+    background:var(--surface);font-family:'DM Sans',sans-serif;font-size:12px;
+    font-weight:600;color:var(--text-primary);text-align:center;}
+
+  /* Start Learning button */
+  .start-learning-btn{width:100%;padding:16px;border-radius:var(--radius);border:none;
+    background:var(--accent);color:white;font-family:'DM Sans',sans-serif;
+    font-size:17px;font-weight:600;cursor:pointer;transition:background 0.15s;
+    letter-spacing:0.2px;}
+  .start-learning-btn:hover{background:#255C43;}
+
+  /* Section divider */
+  .section-divider{display:flex;align-items:center;gap:16px;margin:8px 0;}
+  .section-divider hr{flex:1;border:none;border-top:1px solid var(--border);}
+  .section-divider span{font-size:11px;font-weight:600;text-transform:uppercase;
+    letter-spacing:1px;color:var(--text-muted);white-space:nowrap;}
 </style>
 </head>
 <body>
-<div class="app">
+<div style="width:100%;display:flex;flex-direction:column;align-items:center;">
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SECTION 1 — LANDING PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="landing">
+
+  <!-- 1. Header -->
+  <div class="landing-header">
+    <div class="landing-title">Relation Naming</div>
+    <div class="landing-tagline">Learn to Reason Abstractly!</div>
+  </div>
+
+  <!-- 2. Introduction text -->
+  <div class="intro-blocks">
+
+    <div class="intro-block">
+      <h3>Welcome</h3>
+      <p>Most math is just problem solving. Good problem solving is something that isn't taught that much. Some people are really good at working with numbers, some people have a hard time with those, too. Either way, problem solving can help make math less frustrating for everyone!</p>
+    </div>
+
+    <div class="intro-block">
+      <h3>How it works</h3>
+      <p>You will look at different shapes and say how they are related to each other. This may seem easy, or it may seem hard. The words you will use to talk about these shapes are the same kinds of words that show up in word problems. Talking about these shapes will also help you talk about numbers! This website will take you through 5 Units. You will be able to solve word problems and write equations all without doing any number math. By the end, doing math with numbers will be a breeze.</p>
+    </div>
+
+    <div class="intro-block">
+      <h3>Your Goal</h3>
+      <p>Each skill has a goal. When you reach it, you move on. Your progress is shown on a chart so you can see yourself getting better. Your goal shows you exactly what you are working towards. Once you complete Units 1–3, you will start solving word problems. First you'll solve without numbers, then with numbers. Along the way you may need help with some other skills — we'll let you know. Your first step is to go through the tutorial! Happy problem solving!</p>
+    </div>
+
+  </div>
+
+  <!-- 3. Tutorial slideshow -->
+  <div class="tutorial-card" id="tutorial">
+
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="tut-counter" id="tut-counter">1 of 7</div>
+      <div class="tut-title" id="tut-title">What is a relation?</div>
+    </div>
+
+    <div class="tut-model" id="tut-model"></div>
+
+    <p class="tut-text" id="tut-text"></p>
+
+    <div class="tut-footer">
+      <div class="tut-dots" id="tut-dots"></div>
+      <button class="tut-next" id="tut-next" onclick="tutNext()">Next →</button>
+    </div>
+
+  </div>
+
+  <!-- 4. Start Learning button -->
+  <button class="start-learning-btn" onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})">
+    Start Learning
+  </button>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SECTION DIVIDER
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="landing" style="gap:0;margin-bottom:0;">
+  <div class="section-divider">
+    <hr><span>Curriculum</span><hr>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SECTION 2 — CURRICULUM NAVIGATION
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="app" id="curriculum" style="padding-top:24px;padding-bottom:48px;">
   <h1>Relation Naming</h1>
 
   <!-- ═══ UNIT ONE ═══════════════════════════════════════════════════════════ -->
@@ -329,9 +480,12 @@
     </div>
   </div>
 
-</div>
+</div><!-- /#curriculum -->
+
+</div><!-- /outer wrapper -->
 
 <script>
+// ── Curriculum accordion ──────────────────────────────────────────────────────
 function toggleUnit(id) {
   const btn = document.getElementById(`${id}-btn`);
   const body = document.getElementById(`${id}-body`);
@@ -347,6 +501,179 @@ function toggleSub(id) {
   btn.classList.toggle('open', !isOpen);
   body.classList.toggle('open', !isOpen);
 }
+
+// ── Tutorial slideshow ────────────────────────────────────────────────────────
+const BH = 62;
+const BLUE = '#1B6CA8', GREEN = '#2D6A4F', ORANGE = '#D4600A', TEAL = '#0E7E7E';
+const PURPLE = '#6C3483';
+
+function bar(hex, label, width, isUnk) {
+  const lum = parseInt(hex.slice(1,3),16)*0.299 + parseInt(hex.slice(3,5),16)*0.587 + parseInt(hex.slice(5,7),16)*0.114;
+  const fg = lum > 140 ? '#1A1714' : '#FFFFFF';
+  const inner = isUnk
+    ? `<span style="font-family:'DM Serif Display',serif;font-size:22px;font-style:italic;color:${fg}">?</span>`
+    : `<span style="font-size:11px;font-weight:600;text-transform:capitalize;color:${fg}">${label}</span>`;
+  return `<div class="bar-h" style="width:${width}px;background:${hex}">${inner}</div>`;
+}
+
+const STEPS = [
+  {
+    title: 'What is a relation?',
+    model() {
+      return `<div style="display:flex;flex-direction:column;gap:8px;">
+        ${bar(BLUE,'blue',240)}
+        ${bar(GREEN,'green',240)}
+      </div>`;
+    },
+    text: 'A relation tells you how two things are connected. These two bars are the same size. That is a relation — we call it equal.'
+  },
+  {
+    title: 'The unknown',
+    model() {
+      return `<div style="display:flex;flex-direction:column;gap:8px;">
+        ${bar(BLUE,'blue',240)}
+        ${bar(GREEN,'',240,true)}
+      </div>`;
+    },
+    text: 'Sometimes one bar is a mystery. We call it the unknown. Your job is to figure out what it equals.'
+  },
+  {
+    title: 'Part-Whole',
+    model() {
+      return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+        ${bar(TEAL,'whole',240)}
+        <div style="display:flex;gap:4px;">
+          ${bar(BLUE,'part',130)}
+          ${bar(ORANGE,'part',106)}
+        </div>
+      </div>`;
+    },
+    text: 'This shows a part-whole relation. The two small bars together are the same size as the big bar. If you know two of them, you can always find the third.'
+  },
+  {
+    title: 'Fractions and multiples',
+    model() {
+      const pw = 240, boxW = Math.floor((pw - 12) / 4);
+      const boxes = [
+        `<div class="bar-h" style="width:${boxW}px;background:${ORANGE};"><span style="font-size:10px;font-weight:600;color:#fff">1/4</span></div>`,
+        `<div class="bar-h" style="width:${boxW}px;background:#E2DDD6;"></div>`,
+        `<div class="bar-h" style="width:${boxW}px;background:#E2DDD6;"></div>`,
+        `<div class="bar-h" style="width:${boxW}px;background:#E2DDD6;"></div>`,
+      ].join('');
+      return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+        ${bar(TEAL,'whole',pw)}
+        <div style="display:flex;gap:4px;">${boxes}</div>
+      </div>`;
+    },
+    text: 'This bar has been split into four equal pieces. The filled piece is one fourth of the whole bar. You can also say the whole bar is four times the filled piece. Same picture, two ways to describe it.'
+  },
+  {
+    title: 'How a lesson works',
+    model() {
+      return `<div class="lesson-flow">
+        <div class="flow-pill">Learn it</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-pill">Spot it</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-pill">Name it</div>
+      </div>`;
+    },
+    text: 'Every lesson has three parts. First you learn about a new relation. Then you look at pictures and say whether they show that relation or not. Then you name the relation to find the unknown.'
+  },
+  {
+    title: 'Fluency practice',
+    model() {
+      const circ = 2 * Math.PI * 24;
+      const off = circ * (1 - 22/30);
+      return `<div style="display:flex;align-items:center;gap:20px;">
+        <div style="position:relative;width:56px;height:56px;flex-shrink:0;">
+          <svg width="56" height="56" viewBox="0 0 56 56" style="transform:rotate(-90deg)">
+            <circle fill="none" stroke="#E2DDD6" stroke-width="5" cx="28" cy="28" r="24"/>
+            <circle fill="none" stroke="#2D6A4F" stroke-width="5" stroke-linecap="round"
+              cx="28" cy="28" r="24"
+              stroke-dasharray="${circ.toFixed(1)}"
+              stroke-dashoffset="${off.toFixed(1)}"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+            font-family:'DM Serif Display',serif;font-size:17px;">22</div>
+        </div>
+        <div class="mock-wb">
+          <div class="mock-wb-btn">blue</div>
+          <div class="mock-wb-btn">equals</div>
+          <div class="mock-wb-btn">unknown</div>
+        </div>
+      </div>`;
+    },
+    text: 'After each lesson there is a timed practice. You have 30 seconds. Use the buttons to build the relation as fast as you can. The goal is to get faster every day — not just right, but quick and right.'
+  },
+  {
+    title: 'Your goal and your chart',
+    model() {
+      // Simple SVG semi-log chart mock
+      return `<svg width="240" height="110" viewBox="0 0 240 110" style="overflow:visible;">
+        <!-- y-axis -->
+        <line x1="30" y1="8" x2="30" y2="95" stroke="#9B9591" stroke-width="1.5"/>
+        <!-- x-axis -->
+        <line x1="30" y1="95" x2="225" y2="95" stroke="#9B9591" stroke-width="1.5"/>
+        <!-- dashed aim line -->
+        <line x1="30" y1="80" x2="200" y2="18" stroke="#2D6A4F" stroke-width="1.5"
+          stroke-dasharray="5,4"/>
+        <!-- star at top right of aim line -->
+        <text x="205" y="22" font-size="14" fill="#2D6A4F">★</text>
+        <text x="210" y="14" font-size="10" fill="#2D6A4F" font-family="DM Sans,sans-serif"
+          font-weight="600">Goal</text>
+        <!-- data line -->
+        <polyline points="50,82 90,74 130,66 170,57" fill="none"
+          stroke="#1B6CA8" stroke-width="2" stroke-linejoin="round"/>
+        <!-- dots -->
+        <circle cx="50" cy="82" r="4" fill="#1B6CA8"/>
+        <circle cx="90" cy="74" r="4" fill="#1B6CA8"/>
+        <circle cx="130" cy="66" r="4" fill="#1B6CA8"/>
+        <circle cx="170" cy="57" r="4" fill="#1B6CA8"/>
+        <!-- y-axis label -->
+        <text x="4" y="55" font-size="9" fill="#9B9591" font-family="DM Sans,sans-serif"
+          writing-mode="vertical-rl" transform="rotate(-90,14,55)">Score</text>
+      </svg>`;
+    },
+    text: 'Every time you practice, your score goes on a chart. The dashed line shows where you need to be to reach your goal. When your score hits the goal, you pass off that skill and move to the next one. You can watch yourself get better, one session at a time.'
+  }
+];
+
+let tutStep = 0;
+
+function tutRender() {
+  const s = STEPS[tutStep];
+  document.getElementById('tut-counter').textContent = `${tutStep + 1} of ${STEPS.length}`;
+  document.getElementById('tut-title').textContent = s.title;
+  document.getElementById('tut-model').innerHTML = s.model();
+  document.getElementById('tut-text').textContent = s.text;
+
+  // Dots
+  const dots = document.getElementById('tut-dots');
+  dots.innerHTML = STEPS.map((_, i) => {
+    const cls = i < tutStep ? 'tut-dot done' : i === tutStep ? 'tut-dot active' : 'tut-dot';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  // Button label
+  const btn = document.getElementById('tut-next');
+  if (tutStep === STEPS.length - 1) {
+    btn.textContent = 'Start Learning';
+    btn.onclick = () => document.getElementById('curriculum').scrollIntoView({behavior:'smooth'});
+  } else {
+    btn.textContent = 'Next →';
+    btn.onclick = tutNext;
+  }
+}
+
+function tutNext() {
+  if (tutStep < STEPS.length - 1) {
+    tutStep++;
+    tutRender();
+  }
+}
+
+tutRender();
 </script>
 </body>
 </html>
