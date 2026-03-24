@@ -11,23 +11,24 @@
     --text-primary:#1E1530;--text-secondary:#584C72;--text-muted:#9589B8;
     --accent:#6845A8;--accent-light:#EEE6FF;
     --accent-blue:#2B5DC7;--accent-blue-light:#E8EEFF;
+    --accent-orange:#D4600A;--accent-orange-light:#FBF0E4;
     --radius:12px;--radius-lg:20px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'DM Sans',sans-serif;background-color:var(--bg);color:var(--text-primary);
-    min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px 24px;
+    min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:0 24px 32px;
     background-image:url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='2' width='10' height='3' fill='%236845A8' fill-opacity='0.18'/%3E%3Crect x='2' y='7' width='5' height='3' fill='%236845A8' fill-opacity='0.13'/%3E%3Crect x='8' y='7' width='4' height='3' fill='%232B5DC7' fill-opacity='0.13'/%3E%3Crect x='30' y='20' width='3' height='3' fill='%232B5DC7' fill-opacity='0.16'/%3E%3Crect x='14' y='38' width='8' height='3' fill='%236845A8' fill-opacity='0.11'/%3E%3Crect x='14' y='43' width='4' height='3' fill='%236845A8' fill-opacity='0.09'/%3E%3Crect x='19' y='43' width='3' height='3' fill='%232B5DC7' fill-opacity='0.09'/%3E%3Crect x='38' y='4' width='4' height='4' fill='%232B5DC7' fill-opacity='0.11'/%3E%3Crect x='2' y='36' width='3' height='3' fill='%232B5DC7' fill-opacity='0.1'/%3E%3Crect x='34' y='32' width='9' height='3' fill='%236845A8' fill-opacity='0.14'/%3E%3Crect x='34' y='37' width='5' height='3' fill='%232B5DC7' fill-opacity='0.1'/%3E%3C/svg%3E");
     background-size:96px 96px;}
-  .app{width:100%;max-width:520px;display:flex;flex-direction:column;gap:20px;}
-  h1{font-family:'DM Serif Display',serif;font-size:32px;letter-spacing:-0.5px;}
-  .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
-    color:var(--text-muted);margin-bottom:8px;}
+  .app{width:100%;max-width:660px;display:flex;flex-direction:column;gap:22px;}
+  h1{font-family:'DM Serif Display',serif;font-size:36px;letter-spacing:-0.5px;}
+  .section-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
+    color:var(--text-muted);margin-bottom:10px;}
   .divider{height:1px;background:var(--border);}
 
   /* ── Unit accordion button ─────────────────────────────────────────────── */
   .unit{display:flex;flex-direction:column;gap:0;}
 
-  .unit-btn{display:flex;align-items:center;gap:14px;padding:16px 18px;
+  .unit-btn{display:flex;align-items:center;gap:16px;padding:18px 22px;
     background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
     cursor:pointer;transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04);
     text-align:left;width:100%;font-family:'DM Sans',sans-serif;}
@@ -35,14 +36,14 @@
   .unit-btn.open{border-radius:var(--radius-lg) var(--radius-lg) 0 0;
     border-bottom-color:transparent;background:var(--accent-light);border-color:var(--accent);}
 
-  .unit-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;
-    justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;
+  .unit-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;
+    justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;
     background:var(--accent-light);color:var(--accent);}
   .unit-icon.empty{background:#EDE8F8;color:var(--text-muted);}
 
   .unit-text{flex:1;}
-  .unit-text strong{display:block;font-size:15px;font-weight:700;color:var(--text-primary);}
-  .unit-text span{font-size:12px;color:var(--text-muted);}
+  .unit-text strong{display:block;font-size:16px;font-weight:700;color:var(--text-primary);}
+  .unit-text span{font-size:13px;color:var(--text-muted);}
   .unit-btn.open .unit-text strong{color:var(--accent);}
 
   .unit-chevron{font-size:12px;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
@@ -61,23 +62,23 @@
   /* ── Nested accordion (sub-section within a unit) ─────────────────────── */
   .sub-section{display:flex;flex-direction:column;gap:0;}
 
-  .sub-btn{display:flex;align-items:center;gap:12px;padding:13px 18px 13px 24px;
+  .sub-btn{display:flex;align-items:center;gap:14px;padding:15px 22px 15px 28px;
     background:var(--surface);border:none;border-top:1px solid var(--border);
     cursor:pointer;transition:all 0.15s;text-align:left;width:100%;
     font-family:'DM Sans',sans-serif;}
   .sub-btn:hover{background:var(--accent-light);}
   .sub-btn.open{background:var(--accent-light);}
 
-  .sub-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;
-    justify-content:center;font-size:13px;flex-shrink:0;}
+  .sub-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;
+    justify-content:center;font-size:14px;flex-shrink:0;}
   .sub-icon.lesson{background:var(--accent-light);color:var(--accent);}
   .sub-icon.fluency{background:var(--accent-blue-light);color:var(--accent-blue);}
   .sub-icon.chart{background:var(--accent-light);color:var(--accent);}
   .sub-icon.empty{background:#EDE8F8;color:var(--text-muted);}
 
   .sub-text{flex:1;}
-  .sub-text strong{display:block;font-size:14px;font-weight:600;color:var(--text-primary);}
-  .sub-text span{font-size:11px;color:var(--text-muted);}
+  .sub-text strong{display:block;font-size:15px;font-weight:600;color:var(--text-primary);}
+  .sub-text span{font-size:12px;color:var(--text-muted);}
   .sub-btn.open .sub-text strong{color:var(--accent);}
 
   .sub-chevron{font-size:11px;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
@@ -87,105 +88,117 @@
   .sub-body.open{display:flex;}
 
   /* ── Leaf items (lessons, fluency links) ──────────────────────────────── */
-  a.leaf{display:flex;align-items:center;gap:12px;padding:11px 18px 11px 40px;
+  a.leaf{display:flex;align-items:center;gap:14px;padding:14px 22px 14px 44px;
     border-top:1px solid var(--border);text-decoration:none;color:var(--text-primary);
-    transition:all 0.12s;font-size:14px;}
+    transition:all 0.12s;font-size:15px;}
   a.leaf:hover{background:var(--accent-light);color:var(--accent);}
 
-  .leaf-icon{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;
-    justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+  .leaf-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;
+    justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
   .leaf-icon.lesson{background:var(--accent-light);color:var(--accent);}
-  .leaf-icon.fluency{background:var(--accent-blue-light);color:var(--accent-blue);font-size:10px;letter-spacing:0.5px;}
+  .leaf-icon.fluency{background:var(--accent-blue-light);color:var(--accent-blue);font-size:11px;letter-spacing:0.5px;}
 
-  .leaf-text strong{display:block;font-size:13px;font-weight:600;}
-  .leaf-text span{font-size:11px;color:var(--text-muted);}
+  .leaf-text strong{display:block;font-size:15px;font-weight:600;}
+  .leaf-text span{font-size:12px;color:var(--text-muted);}
 
   /* ── Direct leaf (no sub-section, sits in unit-body) ─────────────────── */
-  a.direct-leaf{display:flex;align-items:center;gap:14px;padding:14px 18px;
+  a.direct-leaf{display:flex;align-items:center;gap:16px;padding:16px 22px;
     border-top:1px solid var(--border);text-decoration:none;color:var(--text-primary);
     transition:all 0.15s;}
   a.direct-leaf:hover{background:var(--accent-light);color:var(--accent);}
-  .direct-leaf .item-icon{width:32px;height:32px;border-radius:7px;display:flex;
-    align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .direct-leaf .item-icon{width:36px;height:36px;border-radius:8px;display:flex;
+    align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
   .ic{background:var(--accent-light);}
-  .direct-leaf .item-text strong{display:block;font-size:14px;font-weight:600;}
-  .direct-leaf .item-text span{font-size:12px;color:var(--text-muted);}
+  .direct-leaf .item-text strong{display:block;font-size:15px;font-weight:600;}
+  .direct-leaf .item-text span{font-size:13px;color:var(--text-muted);}
 
   /* ── Empty placeholder sub-button (coming soon) ───────────────────────── */
   .sub-btn.empty-sub{opacity:0.55;cursor:default;}
   .sub-btn.empty-sub:hover{background:var(--surface);}
 
   /* ══════════════════════════════════════════════════════════════════════════
-     SECTION 1 — HERO STYLES
+     SECTION 1 — BANNER STYLES
   ══════════════════════════════════════════════════════════════════════════ */
 
-  /* Hero */
-  .hero{width:100%;min-height:75vh;display:flex;align-items:center;
-    justify-content:center;padding:40px 0 56px;}
-  .hero-inner{width:100%;display:flex;align-items:center;gap:48px;}
+  /* Full-bleed banner */
+  .banner{width:calc(100% + 48px);margin:0 -24px;
+    padding:72px 56px 60px;
+    background:linear-gradient(145deg,#150934 0%,#2E1666 40%,#5B38A0 80%,#6845A8 100%);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;margin-bottom:48px;}
+  /* Orange accent bar at base */
+  .banner::after{content:'';position:absolute;bottom:0;left:0;right:0;height:6px;
+    background:linear-gradient(90deg,transparent 5%,#C55208 20%,#F0922B 50%,#C55208 80%,transparent 95%);}
+  /* Subtle pixel echo inside banner */
+  .banner::before{content:'';position:absolute;inset:0;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='2' width='10' height='3' fill='%23ffffff' fill-opacity='0.04'/%3E%3Crect x='2' y='7' width='5' height='3' fill='%23ffffff' fill-opacity='0.03'/%3E%3Crect x='8' y='7' width='4' height='3' fill='%23ffffff' fill-opacity='0.03'/%3E%3Crect x='34' y='32' width='9' height='3' fill='%23ffffff' fill-opacity='0.04'/%3E%3Crect x='34' y='37' width='5' height='3' fill='%23ffffff' fill-opacity='0.03'/%3E%3C/svg%3E");
+    background-size:96px 96px;}
 
-  .hero-text{flex:1;display:flex;flex-direction:column;gap:24px;min-width:0;}
-  .hero-eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;
-    color:var(--accent);}
-  .hero-title{font-family:'DM Serif Display',serif;
-    font-size:clamp(36px,5.5vw,64px);line-height:1.08;letter-spacing:-1.5px;
-    color:var(--text-primary);}
-  .hero-title em{font-style:italic;color:var(--accent);}
-  .hero-sub{font-size:17px;line-height:1.75;color:var(--text-secondary);max-width:420px;}
-  .hero-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .banner-inner{width:100%;max-width:900px;display:flex;align-items:center;gap:52px;}
 
-  .btn-primary{padding:14px 32px;background:var(--accent);color:#fff;border:none;
+  .banner-text{flex:1;display:flex;flex-direction:column;gap:22px;min-width:0;}
+  .banner-eyebrow{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:3px;
+    color:rgba(255,255,255,0.5);}
+  .banner-title{font-family:'DM Serif Display',serif;
+    font-size:clamp(44px,6vw,80px);line-height:1.04;letter-spacing:-2px;color:#fff;}
+  .banner-title em{font-style:italic;color:#F0922B;}
+  .banner-sub{font-size:18px;line-height:1.7;color:rgba(255,255,255,0.68);max-width:440px;}
+  .banner-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+
+  .btn-primary{padding:15px 36px;background:var(--accent-orange);color:#fff;border:none;
     border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:16px;
     font-weight:600;cursor:pointer;transition:background 0.15s,transform 0.1s;}
-  .btn-primary:hover{background:#512F8A;transform:translateY(-1px);}
+  .btn-primary:hover{background:#B85009;transform:translateY(-1px);}
   .btn-primary:active{transform:none;}
-  .btn-ghost{padding:13px 22px;background:none;color:var(--text-secondary);
-    border:1px solid var(--border);border-radius:var(--radius);
+  .btn-ghost{padding:14px 24px;background:none;color:rgba(255,255,255,0.72);
+    border:1px solid rgba(255,255,255,0.28);border-radius:var(--radius);
     font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;
     transition:all 0.15s;}
-  .btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+  .btn-ghost:hover{border-color:rgba(255,255,255,0.65);color:#fff;background:rgba(255,255,255,0.08);}
 
-  /* Hero visual card */
-  .hero-visual{flex:0 0 320px;background:var(--surface);border:1px solid var(--border);
+  /* Hero visual card (inside banner) */
+  .hero-visual{flex:0 0 320px;background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.16);
     border-radius:var(--radius-lg);padding:28px;
-    box-shadow:0 4px 32px rgba(30,10,55,0.08);display:flex;flex-direction:column;gap:16px;}
+    backdrop-filter:blur(4px);
+    display:flex;flex-direction:column;gap:16px;}
   .hv-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;
-    color:var(--text-muted);min-height:16px;}
+    color:rgba(255,255,255,0.45);min-height:16px;}
   .hv-model{min-height:92px;display:flex;align-items:center;
     opacity:1;transition:opacity 0.3s;}
   .hv-model.fade{opacity:0;}
   .hv-dots{display:flex;gap:5px;}
-  .hv-dot{width:6px;height:6px;border-radius:50%;background:var(--border);
+  .hv-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2);
     transition:background 0.2s;}
-  .hv-dot.active{background:var(--accent);}
+  .hv-dot.active{background:#F0922B;}
 
   /* Feature cards */
-  .features{width:100%;display:grid;grid-template-columns:repeat(3,1fr);
-    gap:16px;padding-bottom:56px;}
+  .features{width:100%;max-width:900px;display:grid;grid-template-columns:repeat(3,1fr);
+    gap:18px;padding-bottom:56px;}
   .feat-card{background:var(--surface);border:1px solid var(--border);
-    border-radius:var(--radius-lg);padding:28px 24px;
-    display:flex;flex-direction:column;gap:10px;}
-  .feat-number{font-family:'DM Serif Display',serif;font-size:36px;
+    border-radius:var(--radius-lg);padding:32px 28px;
+    display:flex;flex-direction:column;gap:12px;}
+  .feat-number{font-family:'DM Serif Display',serif;font-size:42px;
     color:var(--accent);line-height:1;letter-spacing:-0.5px;}
-  .feat-title{font-size:14px;font-weight:700;color:var(--text-primary);}
-  .feat-desc{font-size:13px;line-height:1.65;color:var(--text-secondary);}
+  .feat-title{font-size:15px;font-weight:700;color:var(--text-primary);}
+  .feat-desc{font-size:14px;line-height:1.7;color:var(--text-secondary);}
 
   /* Tutorial wrapper */
-  .tutorial-wrap{width:100%;max-width:640px;display:flex;
-    flex-direction:column;gap:12px;padding-bottom:56px;}
-  .section-eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;
+  .tutorial-wrap{width:100%;max-width:800px;display:flex;
+    flex-direction:column;gap:14px;padding-bottom:56px;}
+  .section-eyebrow{font-size:12px;font-weight:600;text-transform:uppercase;
     letter-spacing:2px;color:var(--text-muted);}
 
   /* Tutorial card */
   .tutorial-card{background:var(--surface);border:1px solid var(--border);
-    border-radius:var(--radius-lg);padding:32px 32px 28px;
-    box-shadow:0 2px 16px rgba(30,10,55,0.07);display:flex;flex-direction:column;gap:20px;}
-  .tut-counter{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
+    border-radius:var(--radius-lg);padding:40px 40px 36px;
+    box-shadow:0 2px 16px rgba(30,10,55,0.07);display:flex;flex-direction:column;gap:24px;}
+  .tut-counter{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
     color:var(--text-muted);}
-  .tut-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text-primary);}
+  .tut-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text-primary);}
   .tut-model{display:flex;align-items:center;justify-content:center;
-    min-height:100px;padding:8px 0;}
-  .tut-text{font-size:15px;line-height:1.75;color:var(--text-secondary);}
+    min-height:130px;padding:12px 0;}
+  .tut-text{font-size:16px;line-height:1.8;color:var(--text-secondary);}
 
   /* Progress dots */
   .tut-dots{display:flex;gap:6px;align-items:center;}
@@ -196,7 +209,7 @@
 
   /* Next button */
   .tut-footer{display:flex;align-items:center;justify-content:space-between;}
-  .tut-next{padding:11px 28px;border-radius:var(--radius);border:none;
+  .tut-next{padding:13px 32px;border-radius:var(--radius);border:none;
     background:var(--accent);color:white;font-family:'DM Sans',sans-serif;
     font-size:15px;font-weight:600;cursor:pointer;transition:background 0.15s;}
   .tut-next:hover{background:#512F8A;}
@@ -207,7 +220,7 @@
 
   /* Lesson flow pills */
   .lesson-flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .flow-pill{padding:8px 18px;border-radius:99px;font-size:13px;font-weight:600;
+  .flow-pill{padding:8px 20px;border-radius:99px;font-size:14px;font-weight:600;
     background:var(--accent-light);color:var(--accent);border:1px solid #C4ADEE;}
   .flow-arrow{font-size:18px;color:var(--text-muted);}
 
@@ -222,16 +235,16 @@
   /* Section divider */
   .section-divider{display:flex;align-items:center;gap:16px;margin:8px 0;}
   .section-divider hr{flex:1;border:none;border-top:1px solid var(--border);}
-  .section-divider span{font-size:11px;font-weight:600;text-transform:uppercase;
+  .section-divider span{font-size:12px;font-weight:600;text-transform:uppercase;
     letter-spacing:1px;color:var(--text-muted);white-space:nowrap;}
 
   /* Responsive */
-  @media(max-width:680px){
-    .hero-inner{flex-direction:column;gap:28px;}
+  @media(max-width:760px){
+    .banner{padding:52px 28px 44px;}
+    .banner-inner{flex-direction:column;gap:32px;}
     .hero-visual{flex:none;width:100%;}
-    .hero-title{font-size:36px;letter-spacing:-1px;}
-    .features{grid-template-columns:1fr;}
-    .hero{min-height:auto;padding:24px 0 40px;}
+    .banner-title{font-size:44px;letter-spacing:-1.5px;}
+    .features{grid-template-columns:1fr;max-width:100%;}
   }
 </style>
 </head>
@@ -239,17 +252,17 @@
 <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     SECTION 1 — HERO
+     SECTION 1 — BANNER
 ════════════════════════════════════════════════════════════════════════════ -->
-<section class="hero">
-  <div class="hero-inner">
+<div class="banner">
+  <div class="banner-inner">
 
     <!-- Left: headline + CTA -->
-    <div class="hero-text">
-      <div class="hero-eyebrow">Math Reasoning Curriculum</div>
-      <h1 class="hero-title">Learn to see<br><em>the relation.</em></h1>
-      <p class="hero-sub">Build the thinking skills behind every math problem. Name what you see, find the unknown, solve any word problem.</p>
-      <div class="hero-actions">
+    <div class="banner-text">
+      <div class="banner-eyebrow">Math Reasoning Curriculum</div>
+      <h1 class="banner-title">Learn to see<br><em>the relation.</em></h1>
+      <p class="banner-sub">Build the thinking skills behind every math problem. Name what you see, find the unknown, solve any word problem.</p>
+      <div class="banner-actions">
         <button class="btn-primary" onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})">Start Learning</button>
         <button class="btn-ghost" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">How it works ↓</button>
       </div>
@@ -263,7 +276,7 @@
     </div>
 
   </div>
-</section>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      SECTION 2 — FEATURE CARDS
@@ -311,7 +324,7 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════
      CURRICULUM DIVIDER
 ════════════════════════════════════════════════════════════════════════════ -->
-<div style="width:100%;max-width:600px;">
+<div style="width:100%;max-width:660px;">
   <div class="section-divider">
     <hr><span>Curriculum</span><hr>
   </div>
@@ -444,7 +457,7 @@
       </div>
 
       <a href="bar_model_draw.html" class="direct-leaf" target="_blank">
-        <div class="item-icon" style="background:#E8EEFF;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✎</div>
+        <div class="item-icon" style="background:#E8EEFF;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">✎</div>
         <div class="item-text"><strong>Bar Model Drawing Tool</strong><span>Draw and label bar models</span></div>
       </a>
 
@@ -486,7 +499,7 @@
       </div>
 
       <a href="bar_model_draw.html" class="direct-leaf" target="_blank">
-        <div class="item-icon" style="background:#E8EEFF;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✎</div>
+        <div class="item-icon" style="background:#E8EEFF;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">✎</div>
         <div class="item-text"><strong>Bar Model Drawing Tool</strong><span>Draw and label bar models</span></div>
       </a>
 
@@ -513,7 +526,7 @@
     <div class="section-label">Tools</div>
     <div style="display:flex;flex-direction:column;gap:8px;">
       <a href="bar_model_draw.html" class="direct-leaf" style="border:1px solid var(--border);border-radius:var(--radius-lg);border-top:1px solid var(--border);">
-        <div class="item-icon" style="background:#E8EEFF;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✎</div>
+        <div class="item-icon" style="background:#E8EEFF;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">✎</div>
         <div class="item-text"><strong>Bar Model Drawing Tool</strong><span>Draw and label bar models</span></div>
       </a>
     </div>
