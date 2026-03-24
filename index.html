@@ -113,38 +113,75 @@
   .sub-btn.empty-sub:hover{background:var(--surface);}
 
   /* ══════════════════════════════════════════════════════════════════════════
-     SECTION 1 — LANDING PAGE STYLES
+     SECTION 1 — HERO STYLES
   ══════════════════════════════════════════════════════════════════════════ */
 
-  .landing{width:100%;max-width:1100px;display:flex;flex-direction:column;gap:32px;
-    margin-bottom:48px;}
+  /* Hero */
+  .hero{width:100%;min-height:75vh;display:flex;align-items:center;
+    justify-content:center;padding:40px 0 56px;}
+  .hero-inner{width:100%;display:flex;align-items:center;gap:48px;}
 
-  /* Header */
-  .landing-header{display:flex;flex-direction:column;gap:6px;}
-  .landing-title{font-family:'DM Serif Display',serif;font-size:40px;letter-spacing:-1px;
+  .hero-text{flex:1;display:flex;flex-direction:column;gap:24px;min-width:0;}
+  .hero-eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;
+    color:var(--accent);}
+  .hero-title{font-family:'DM Serif Display',serif;
+    font-size:clamp(36px,5.5vw,64px);line-height:1.08;letter-spacing:-1.5px;
     color:var(--text-primary);}
-  .landing-tagline{font-size:18px;font-weight:400;color:var(--text-secondary);}
+  .hero-title em{font-style:italic;color:var(--accent);}
+  .hero-sub{font-size:17px;line-height:1.75;color:var(--text-secondary);max-width:420px;}
+  .hero-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
 
-  /* Intro paragraphs */
-  .intro-blocks{display:flex;flex-direction:column;gap:20px;}
-  .intro-block{}
-  .intro-block h3{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:6px;
-    color:var(--text-primary);}
-  .intro-block p{font-size:15px;line-height:1.75;color:var(--text-secondary);}
+  .btn-primary{padding:14px 32px;background:var(--accent);color:#fff;border:none;
+    border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:16px;
+    font-weight:600;cursor:pointer;transition:background 0.15s,transform 0.1s;}
+  .btn-primary:hover{background:#255C43;transform:translateY(-1px);}
+  .btn-primary:active{transform:none;}
+  .btn-ghost{padding:13px 22px;background:none;color:var(--text-secondary);
+    border:1px solid var(--border);border-radius:var(--radius);
+    font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;
+    transition:all 0.15s;}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+
+  /* Hero visual card */
+  .hero-visual{flex:0 0 320px;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:28px;
+    box-shadow:0 4px 32px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:16px;}
+  .hv-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;
+    color:var(--text-muted);min-height:16px;}
+  .hv-model{min-height:92px;display:flex;align-items:center;
+    opacity:1;transition:opacity 0.3s;}
+  .hv-model.fade{opacity:0;}
+  .hv-dots{display:flex;gap:5px;}
+  .hv-dot{width:6px;height:6px;border-radius:50%;background:var(--border);
+    transition:background 0.2s;}
+  .hv-dot.active{background:var(--accent);}
+
+  /* Feature cards */
+  .features{width:100%;display:grid;grid-template-columns:repeat(3,1fr);
+    gap:16px;padding-bottom:56px;}
+  .feat-card{background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-lg);padding:28px 24px;
+    display:flex;flex-direction:column;gap:10px;}
+  .feat-number{font-family:'DM Serif Display',serif;font-size:38px;
+    color:var(--accent);line-height:1;}
+  .feat-title{font-size:14px;font-weight:700;color:var(--text-primary);}
+  .feat-desc{font-size:13px;line-height:1.65;color:var(--text-secondary);}
+
+  /* Tutorial wrapper */
+  .tutorial-wrap{width:100%;max-width:640px;display:flex;
+    flex-direction:column;gap:12px;padding-bottom:56px;}
+  .section-eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;
+    letter-spacing:2px;color:var(--text-muted);}
 
   /* Tutorial card */
   .tutorial-card{background:var(--surface);border:1px solid var(--border);
     border-radius:var(--radius-lg);padding:32px 32px 28px;
     box-shadow:0 2px 12px rgba(0,0,0,0.06);display:flex;flex-direction:column;gap:20px;}
-
   .tut-counter{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
     color:var(--text-muted);}
-
   .tut-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text-primary);}
-
   .tut-model{display:flex;align-items:center;justify-content:center;
     min-height:100px;padding:8px 0;}
-
   .tut-text{font-size:15px;line-height:1.75;color:var(--text-secondary);}
 
   /* Progress dots */
@@ -162,7 +199,7 @@
   .tut-next:hover{background:#255C43;}
 
   /* Bar model helpers */
-  .bar-h{height:62px;border-radius:6px;display:flex;align-items:center;
+  .bar-h{height:56px;border-radius:6px;display:flex;align-items:center;
     justify-content:center;flex-shrink:0;}
 
   /* Lesson flow pills */
@@ -179,84 +216,99 @@
     background:var(--surface);font-family:'DM Sans',sans-serif;font-size:12px;
     font-weight:600;color:var(--text-primary);text-align:center;}
 
-  /* Start Learning button */
-  .start-learning-btn{width:100%;padding:16px;border-radius:var(--radius);border:none;
-    background:var(--accent);color:white;font-family:'DM Sans',sans-serif;
-    font-size:17px;font-weight:600;cursor:pointer;transition:background 0.15s;
-    letter-spacing:0.2px;}
-  .start-learning-btn:hover{background:#255C43;}
-
   /* Section divider */
   .section-divider{display:flex;align-items:center;gap:16px;margin:8px 0;}
   .section-divider hr{flex:1;border:none;border-top:1px solid var(--border);}
   .section-divider span{font-size:11px;font-weight:600;text-transform:uppercase;
     letter-spacing:1px;color:var(--text-muted);white-space:nowrap;}
+
+  /* Responsive */
+  @media(max-width:680px){
+    .hero-inner{flex-direction:column;gap:28px;}
+    .hero-visual{flex:none;width:100%;}
+    .hero-title{font-size:36px;letter-spacing:-1px;}
+    .features{grid-template-columns:1fr;}
+    .hero{min-height:auto;padding:24px 0 40px;}
+  }
 </style>
 </head>
 <body>
 <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     SECTION 1 — LANDING PAGE
+     SECTION 1 — HERO
 ════════════════════════════════════════════════════════════════════════════ -->
-<div class="landing">
+<section class="hero">
+  <div class="hero-inner">
 
-  <!-- 1. Header -->
-  <div class="landing-header">
-    <div class="landing-title">Relation Naming</div>
-    <div class="landing-tagline">Learn to Reason Abstractly!</div>
-  </div>
-
-  <!-- 2. Introduction text -->
-  <div class="intro-blocks">
-
-    <div class="intro-block">
-      <h3>Welcome</h3>
-      <p>Most math is just problem solving. Good problem solving is something that isn't taught that much. Some people are really good at working with numbers, some people have a hard time with those, too. Either way, problem solving can help make math less frustrating for everyone!</p>
+    <!-- Left: headline + CTA -->
+    <div class="hero-text">
+      <div class="hero-eyebrow">Math Reasoning Curriculum</div>
+      <h1 class="hero-title">Learn to see<br><em>the relation.</em></h1>
+      <p class="hero-sub">Build the thinking skills behind every math problem. Name what you see, find the unknown, solve any word problem.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})">Start Learning</button>
+        <button class="btn-ghost" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">How it works ↓</button>
+      </div>
     </div>
 
-    <div class="intro-block">
-      <h3>How it works</h3>
-      <p>You will look at different shapes and say how they are related to each other. This may seem easy, or it may seem hard. The words you will use to talk about these shapes are the same kinds of words that show up in word problems. Talking about these shapes will also help you talk about numbers! This website will take you through 5 Units. You will be able to solve word problems and write equations all without doing any number math. By the end, doing math with numbers will be a breeze.</p>
-    </div>
-
-    <div class="intro-block">
-      <h3>Your Goal</h3>
-      <p>Each skill has a goal. When you reach it, you move on. Your progress is shown on a chart so you can see yourself getting better. Your goal shows you exactly what you are working towards. Once you complete Units 1–3, you will start solving word problems. First you'll solve without numbers, then with numbers. Along the way you may need help with some other skills — we'll let you know. Your first step is to go through the tutorial! Happy problem solving!</p>
+    <!-- Right: animated bar model preview -->
+    <div class="hero-visual">
+      <div class="hv-label" id="hvLabel"></div>
+      <div class="hv-model" id="hvModel"></div>
+      <div class="hv-dots" id="hvDots"></div>
     </div>
 
   </div>
+</section>
 
-  <!-- 3. Tutorial slideshow -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SECTION 2 — FEATURE CARDS
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="features">
+  <div class="feat-card">
+    <div class="feat-number">4</div>
+    <div class="feat-title">Structured Units</div>
+    <div class="feat-desc">Progress from simple relations all the way to complex word problems, step by step.</div>
+  </div>
+  <div class="feat-card">
+    <div class="feat-number">⚡</div>
+    <div class="feat-title">Fluency Drills</div>
+    <div class="feat-desc">Timed practice after every lesson. Get faster, get sharper, and watch your chart climb.</div>
+  </div>
+  <div class="feat-card">
+    <div class="feat-number">★</div>
+    <div class="feat-title">Real Word Problems</div>
+    <div class="feat-desc">Graduate to solving actual word problems — first without numbers, then with them.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SECTION 3 — TUTORIAL
+════════════════════════════════════════════════════════════════════════════ -->
+<div class="tutorial-wrap" id="how-it-works">
+
+  <div class="section-eyebrow">How it works</div>
+
   <div class="tutorial-card" id="tutorial">
-
     <div style="display:flex;flex-direction:column;gap:4px;">
       <div class="tut-counter" id="tut-counter">1 of 7</div>
       <div class="tut-title" id="tut-title">What is a relation?</div>
     </div>
-
     <div class="tut-model" id="tut-model"></div>
-
     <p class="tut-text" id="tut-text"></p>
-
     <div class="tut-footer">
       <div class="tut-dots" id="tut-dots"></div>
       <button class="tut-next" id="tut-next" onclick="tutNext()">Next →</button>
     </div>
-
   </div>
-
-  <!-- 4. Start Learning button -->
-  <button class="start-learning-btn" onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})">
-    Start Learning
-  </button>
 
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     SECTION DIVIDER
+     CURRICULUM DIVIDER
 ════════════════════════════════════════════════════════════════════════════ -->
-<div class="landing" style="gap:0;margin-bottom:0;">
+<div style="width:100%;max-width:600px;">
   <div class="section-divider">
     <hr><span>Curriculum</span><hr>
   </div>
@@ -656,6 +708,71 @@ function tutNext() {
     tutRender();
   }
 }
+
+// ── Hero visual animation ─────────────────────────────────────────────────────
+const HV_SCENES = [
+  {
+    label: 'Equal relation',
+    render() {
+      return `<div style="display:flex;flex-direction:column;gap:8px;">
+        ${bar(BLUE,'blue',220)}${bar(GREEN,'green',220)}</div>`;
+    }
+  },
+  {
+    label: 'Part-whole relation',
+    render() {
+      return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+        ${bar(TEAL,'whole',220)}
+        <div style="display:flex;gap:4px;">${bar(BLUE,'part',120)}${bar(ORANGE,'part',96)}</div>
+      </div>`;
+    }
+  },
+  {
+    label: 'Comparison relation',
+    render() {
+      return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+        ${bar(BLUE,'blue',220)}${bar(ORANGE,'',145,true)}</div>`;
+    }
+  },
+  {
+    label: 'Fractional relation',
+    render() {
+      const bw = Math.floor((220 - 12) / 4);
+      const boxes = [0,1,2,3].map(i =>
+        `<div class="bar-h" style="width:${bw}px;background:${i===0?ORANGE:'#E2DDD6'};">
+          <span style="font-size:10px;font-weight:700;color:${i===0?'#fff':'transparent'}">¼</span>
+        </div>`
+      ).join('');
+      return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+        ${bar(TEAL,'whole',220)}
+        <div style="display:flex;gap:4px;">${boxes}</div></div>`;
+    }
+  }
+];
+
+let hvStep = 0;
+
+function hvRender() {
+  const s = HV_SCENES[hvStep];
+  document.getElementById('hvLabel').textContent = s.label;
+  document.getElementById('hvModel').innerHTML = s.render();
+  document.getElementById('hvDots').innerHTML = HV_SCENES.map((_,i) =>
+    `<div class="hv-dot${i === hvStep ? ' active' : ''}"></div>`
+  ).join('');
+}
+
+function hvNext() {
+  const el = document.getElementById('hvModel');
+  el.classList.add('fade');
+  setTimeout(() => {
+    hvStep = (hvStep + 1) % HV_SCENES.length;
+    hvRender();
+    el.classList.remove('fade');
+  }, 320);
+}
+
+hvRender();
+setInterval(hvNext, 3000);
 
 tutRender();
 </script>
