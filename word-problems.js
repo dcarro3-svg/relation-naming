@@ -1,0 +1,200 @@
+// word-problems.js
+// Shared word problem pool.
+//
+// WP1 — single-step problems  (lesson-unit4 practice phase + fluency-unit4 drill)
+// WP2 — two-step problems     (lesson-unit5 practice phase + fluency-unit5 drill)
+//
+// Include with: <script src="word-problems.js"></script>
+// To add a problem: push a new object to WP1 or WP2 — it will appear in both
+// the lesson and the fluency drill automatically.
+//
+// Single-step schema:
+//   id, step:1, type ('pw'|'cmp'|'eq'|'frac'), difficulty (1-3),
+//   text, labels[], unkLabel, expectedBars, proportions[],
+//   denominator (frac only), correct[], ops[]
+//
+// Two-step schema:
+//   id, step:2, type:'pw+frac', difficulty (1-3),
+//   text, step1Labels[], step2Labels[], bridge,
+//   denominator, unknownStep, step1Proportions[],
+//   correct[], ops[]
+
+const WP1 = [
+  {
+    id: 'wp-001', step: 1, type: 'pw', difficulty: 1,
+    text: 'A jar holds green marbles and purple marbles. All the marbles together fill the jar.',
+    labels: ['jar','green marbles','purple marbles'],
+    unkLabel: 'jar',
+    expectedBars: 3, proportions: [0.45, 0.55],
+    correct: ['green marbles','plus','purple marbles','equals','jar'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-002', step: 1, type: 'pw', difficulty: 1,
+    text: 'A board was split into a left section and a right section. The right section is smaller. Show the whole board and both sections.',
+    labels: ['board','left section','right section'],
+    unkLabel: 'left section',
+    expectedBars: 3, proportions: [0.7, 0.3],
+    correct: ['board','minus','right section','equals','left section'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-003', step: 1, type: 'cmp', difficulty: 2,
+    text: "Sam's score is higher than Maya's score. The gap between them is the difference.",
+    labels: ["Sam's score","Maya's score",'difference'],
+    unkLabel: 'difference',
+    expectedBars: 3, proportions: [0.65, 0.35],
+    correct: ["Sam's score",'minus',"Maya's score",'equals','difference'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-004', step: 1, type: 'eq', difficulty: 1,
+    text: 'Two dogs weigh the same amount. Draw both dogs.',
+    labels: ['dog one','dog two'],
+    unkLabel: 'dog two',
+    expectedBars: 2, proportions: [1.0],
+    correct: ['dog one','equals','dog two'],
+    ops: ['equals','unknown'],
+  },
+  {
+    id: 'wp-005', step: 1, type: 'frac', difficulty: 2,
+    text: 'One third of a garden is planted. Show the whole garden split into three equal parts, with one part planted.',
+    labels: ['garden','planted part'],
+    unkLabel: 'planted part',
+    expectedBars: 2, denominator: 3, proportions: [1/3],
+    correct: ['one','third','of','garden','equals','planted part'],
+    ops: ['one','half','third','fourth','of','equals','unknown'],
+  },
+  {
+    id: 'wp-006', step: 1, type: 'pw', difficulty: 1,
+    text: 'A shelf holds red books and blue books. There are more red books than blue books. The red and blue together fill the whole shelf.',
+    labels: ['shelf','red books','blue books'],
+    unkLabel: 'shelf',
+    expectedBars: 3, proportions: [0.6, 0.4],
+    correct: ['red books','plus','blue books','equals','shelf'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-007', step: 1, type: 'cmp', difficulty: 2,
+    text: 'The tall building is taller than the short building. Draw both buildings and show the height difference.',
+    labels: ['tall building','short building','height difference'],
+    unkLabel: 'height difference',
+    expectedBars: 3, proportions: [0.7, 0.3],
+    correct: ['tall building','minus','short building','equals','height difference'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-008', step: 1, type: 'frac', difficulty: 3,
+    text: 'One quarter of the field is covered in snow. Draw the whole field with four equal parts — one covered in snow.',
+    labels: ['field','snow'],
+    unkLabel: 'snow',
+    expectedBars: 2, denominator: 4, proportions: [1/4],
+    correct: ['one','fourth','of','field','equals','snow'],
+    ops: ['one','half','third','fourth','of','equals','unknown'],
+  },
+  {
+    id: 'wp-009', step: 1, type: 'pw', difficulty: 1,
+    text: 'Tom read some pages yesterday and some pages today. Together they equal the whole chapter.',
+    labels: ['chapter','yesterday','today'],
+    unkLabel: 'chapter',
+    expectedBars: 3, proportions: [0.55, 0.45],
+    correct: ['yesterday','plus','today','equals','chapter'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-010', step: 1, type: 'cmp', difficulty: 2,
+    text: 'The long ribbon is longer than the short ribbon. Show both and the difference.',
+    labels: ['long ribbon','short ribbon','difference'],
+    unkLabel: 'difference',
+    expectedBars: 3, proportions: [0.6, 0.4],
+    correct: ['long ribbon','minus','short ribbon','equals','difference'],
+    ops: ['plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-011', step: 1, type: 'eq', difficulty: 1,
+    text: 'Two boxes have the same number of crayons.',
+    labels: ['box A','box B'],
+    unkLabel: 'box B',
+    expectedBars: 2, proportions: [1.0],
+    correct: ['box A','equals','box B'],
+    ops: ['equals','unknown'],
+  },
+  {
+    id: 'wp-012', step: 1, type: 'frac', difficulty: 2,
+    text: 'One half of the pizza was eaten. Draw the whole pizza and the eaten half.',
+    labels: ['pizza','eaten part'],
+    unkLabel: 'eaten part',
+    expectedBars: 2, denominator: 2, proportions: [0.5],
+    correct: ['one','half','of','pizza','equals','eaten part'],
+    ops: ['one','half','third','fourth','of','equals','unknown'],
+  },
+];
+
+const WP2 = [
+  {
+    id: 'wp-101', step: 2, type: 'pw+frac', difficulty: 3,
+    text: 'A jar holds red marbles and blue marbles. The whole jar is then split equally in half — one half is the unknown.',
+    step1Labels: ['whole jar','red marbles','blue marbles'],
+    step2Labels: ['whole jar','one half'],
+    bridge: 'whole jar',
+    denominator: 2, unknownStep: 2,
+    step1Proportions: [0.45, 0.55],
+    correct: ['one','half','of','whole jar','equals','unknown'],
+    ops: ['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-102', step: 2, type: 'pw+frac', difficulty: 3,
+    text: 'A bag has green chips and purple chips. The whole bag is divided into three equal portions. One portion is the unknown.',
+    step1Labels: ['whole bag','green chips','purple chips'],
+    step2Labels: ['whole bag','one portion'],
+    bridge: 'whole bag',
+    denominator: 3, unknownStep: 2,
+    step1Proportions: [0.4, 0.6],
+    correct: ['one','third','of','whole bag','equals','unknown'],
+    ops: ['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-103', step: 2, type: 'pw+frac', difficulty: 3,
+    text: 'A road has a paved section and an unpaved section. The whole road is split into four equal segments. One segment is the unknown.',
+    step1Labels: ['whole road','paved section','unpaved section'],
+    step2Labels: ['whole road','one segment'],
+    bridge: 'whole road',
+    denominator: 4, unknownStep: 2,
+    step1Proportions: [0.6, 0.4],
+    correct: ['one','fourth','of','whole road','equals','unknown'],
+    ops: ['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-104', step: 2, type: 'pw+frac', difficulty: 3,
+    text: 'A shelf holds fiction books and science books. The entire shelf is split equally in half. One half is unknown.',
+    step1Labels: ['whole shelf','fiction books','science books'],
+    step2Labels: ['whole shelf','one half'],
+    bridge: 'whole shelf',
+    denominator: 2, unknownStep: 2,
+    step1Proportions: [0.5, 0.5],
+    correct: ['one','half','of','whole shelf','equals','unknown'],
+    ops: ['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-105', step: 2, type: 'pw+frac', difficulty: 3,
+    text: 'A park has a grass area and a path area. The whole park is divided into three equal zones. One zone is the unknown.',
+    step1Labels: ['whole park','grass area','path area'],
+    step2Labels: ['whole park','one zone'],
+    bridge: 'whole park',
+    denominator: 3, unknownStep: 2,
+    step1Proportions: [0.55, 0.45],
+    correct: ['one','third','of','whole park','equals','unknown'],
+    ops: ['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+  {
+    id: 'wp-106', step: 2, type: 'pw+frac', difficulty: 3,
+    text: 'A collection has old and new items. The whole collection is split into four equal groups. One group is the unknown.',
+    step1Labels: ['whole collection','old items','new items'],
+    step2Labels: ['whole collection','one group'],
+    bridge: 'whole collection',
+    denominator: 4, unknownStep: 2,
+    step1Proportions: [0.35, 0.65],
+    correct: ['one','fourth','of','whole collection','equals','unknown'],
+    ops: ['one','half','third','fourth','of','plus','minus','equals','unknown'],
+  },
+];

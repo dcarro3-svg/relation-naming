@@ -124,6 +124,7 @@
   <div id="mainContent"></div>
   <div id="responseArea"></div>
 </div>
+<script src="word-problems.js"></script>
 <script>
 // ── Config ────────────────────────────────────────────────────────────────────
 const CFG = {
@@ -236,7 +237,7 @@ function renderStaticComplex(p) {
 
 
 // ── Problems ───────────────────────────────────────────────────────────────────
-const PROBLEMS5 = [
+const PROBLEMS5_INSTRUCT = [
   {
     id:0,phase:'instruct',
     text:`Sam collects red and blue tokens. His whole collection is then split equally into two groups to share with friends. One group is unknown.`,
@@ -276,82 +277,10 @@ const PROBLEMS5 = [
     audio:`Small stones and large stones make the whole pile — part-whole, step one. Then the pile is split into four equal portions — fractional, step two. One fourth of whole pile equals unknown.`,
     explanation:`The bridge (whole pile) is the output of step one and the input for step two.`,
   },
-  {
-    id:3,phase:'practice',
-    text:`A jar holds red marbles and blue marbles. The whole jar is then split equally in half — one half is the unknown.`,
-    step1Labels:['whole jar','red marbles','blue marbles'],
-    step2Labels:['whole jar','one half'],
-    bridge:'whole jar',
-    denominator:2,
-    unknownStep:2,
-    correct:['one','half','of','whole jar','equals','unknown'],
-    step1Proportions:[0.45,0.55],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-  {
-    id:4,phase:'practice',
-    text:`A bag has green chips and purple chips. The whole bag is divided into three equal portions. One portion is the unknown.`,
-    step1Labels:['whole bag','green chips','purple chips'],
-    step2Labels:['whole bag','one portion'],
-    bridge:'whole bag',
-    denominator:3,
-    unknownStep:2,
-    correct:['one','third','of','whole bag','equals','unknown'],
-    step1Proportions:[0.4,0.6],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-  {
-    id:5,phase:'practice',
-    text:`A road has a paved section and an unpaved section. The whole road is split into four equal segments. One segment is the unknown.`,
-    step1Labels:['whole road','paved section','unpaved section'],
-    step2Labels:['whole road','one segment'],
-    bridge:'whole road',
-    denominator:4,
-    unknownStep:2,
-    correct:['one','fourth','of','whole road','equals','unknown'],
-    step1Proportions:[0.6,0.4],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-  {
-    id:6,phase:'practice',
-    text:`A shelf holds fiction books and science books. The entire shelf is split equally in half. One half is unknown.`,
-    step1Labels:['whole shelf','fiction books','science books'],
-    step2Labels:['whole shelf','one half'],
-    bridge:'whole shelf',
-    denominator:2,
-    unknownStep:2,
-    correct:['one','half','of','whole shelf','equals','unknown'],
-    step1Proportions:[0.5,0.5],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-  {
-    id:7,phase:'practice',
-    text:`A park has a grass area and a path area. The whole park is divided into three equal zones. One zone is the unknown.`,
-    step1Labels:['whole park','grass area','path area'],
-    step2Labels:['whole park','one zone'],
-    bridge:'whole park',
-    denominator:3,
-    unknownStep:2,
-    correct:['one','third','of','whole park','equals','unknown'],
-    step1Proportions:[0.55,0.45],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-  {
-    id:8,phase:'practice',
-    text:`A collection has old and new items. The whole collection is split into four equal groups. One group is the unknown.`,
-    step1Labels:['whole collection','old items','new items'],
-    step2Labels:['whole collection','one group'],
-    bridge:'whole collection',
-    denominator:4,
-    unknownStep:2,
-    correct:['one','fourth','of','whole collection','equals','unknown'],
-    step1Proportions:[0.35,0.65],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
 ];
 
-const INSTRUCT_ITEMS = PROBLEMS5.filter(p=>p.phase==='instruct');
-const PRACTICE_ITEMS = PROBLEMS5.filter(p=>p.phase==='practice');
+const INSTRUCT_ITEMS = PROBLEMS5_INSTRUCT;
+const PRACTICE_ITEMS = WP2;
 
 // ── State ─────────────────────────────────────────────────────────────────────
 const S = {
@@ -360,7 +289,7 @@ const S = {
   practiceStep:0,
   practicePhase:'draw',
   totalInstruct:3,
-  totalPractice:6,
+  totalPractice:WP2.length,
   responses:[],
   assembled:[],
   drawFeedback:null,

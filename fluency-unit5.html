@@ -93,6 +93,7 @@
   </div>
   <div id="main"></div>
 </div>
+<script src="word-problems.js"></script>
 <script>
 // ── Config ────────────────────────────────────────────────────────────────────
 const CFG={id:9,storageKey:'fluency_unit5_sessions',chartHref:'chart.html',lessonHref:'lesson-unit5.html'};
@@ -110,62 +111,7 @@ function fracName(n){return FRAC_NAMES[n-2]||`${n}th`;}
 const BH=62,GAP=6,SNAP=10,CVW=380;
 
 // ── Problems ───────────────────────────────────────────────────────────────────
-const PROBLEMS5=[
-  {
-    id:3,phase:'practice',
-    text:`A jar holds red marbles and blue marbles. The whole jar is then split equally in half — one half is the unknown.`,
-    step1Labels:['whole jar','red marbles','blue marbles'],
-    step2Labels:['whole jar','one half'],
-    bridge:'whole jar',denominator:2,
-    correct:['one','half','of','whole jar','equals','unknown'],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-  {
-    id:4,phase:'practice',
-    text:`A bag has green chips and purple chips. The whole bag is divided into three equal portions. One portion is the unknown.`,
-    step1Labels:['whole bag','green chips','purple chips'],
-    step2Labels:['whole bag','one portion'],
-    bridge:'whole bag',denominator:3,
-    correct:['one','third','of','whole bag','equals','unknown'],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-  {
-    id:5,phase:'practice',
-    text:`A road has a paved section and an unpaved section. The whole road is split into four equal segments. One segment is the unknown.`,
-    step1Labels:['whole road','paved section','unpaved section'],
-    step2Labels:['whole road','one segment'],
-    bridge:'whole road',denominator:4,
-    correct:['one','fourth','of','whole road','equals','unknown'],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-  {
-    id:6,phase:'practice',
-    text:`A shelf holds fiction books and science books. The entire shelf is split equally in half. One half is unknown.`,
-    step1Labels:['whole shelf','fiction books','science books'],
-    step2Labels:['whole shelf','one half'],
-    bridge:'whole shelf',denominator:2,
-    correct:['one','half','of','whole shelf','equals','unknown'],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-  {
-    id:7,phase:'practice',
-    text:`A park has a grass area and a path area. The whole park is divided into three equal zones. One zone is the unknown.`,
-    step1Labels:['whole park','grass area','path area'],
-    step2Labels:['whole park','one zone'],
-    bridge:'whole park',denominator:3,
-    correct:['one','third','of','whole park','equals','unknown'],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-  {
-    id:8,phase:'practice',
-    text:`A collection has old and new items. The whole collection is split into four equal groups. One group is the unknown.`,
-    step1Labels:['whole collection','old items','new items'],
-    step2Labels:['whole collection','one group'],
-    bridge:'whole collection',denominator:4,
-    correct:['one','fourth','of','whole collection','equals','unknown'],
-    ops:['one','half','third','fourth','of','plus','minus','equals','unknown'],
-  },
-];
+const PROBLEMS5 = WP2;
 
 function pickItem(){return PROBLEMS5[Math.floor(Math.random()*PROBLEMS5.length)];}
 

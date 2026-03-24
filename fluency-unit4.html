@@ -101,6 +101,7 @@
   </div>
   <div id="main"></div>
 </div>
+<script src="word-problems.js"></script>
 <script>
 // ── Config ───────────────────────────────────────────────────────────────────
 const CFG = {id:8, storageKey:'fluency_unit4_sessions', chartHref:'chart.html', lessonHref:'lesson-unit4.html'};
@@ -118,92 +119,7 @@ function fracName(n){return FRAC_NAMES[n-2]||`${n}th`;}
 const BH=62, GAP=6, SNAP=10, CVW=420;
 
 // ── Fluency problem pool ─────────────────────────────────────────────────────
-const POOL = [
-  {
-    text: 'A jar holds green marbles and purple marbles. All the marbles together fill the jar.',
-    type: 'pw', labels: ['jar','green marbles','purple marbles'],
-    expectedBars: 3, proportions: [0.45, 0.55],
-    correct: ['green marbles','plus','purple marbles','equals','jar'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    text: 'A board was split into a left section and a right section. The right section is smaller.',
-    type: 'pw', labels: ['board','left section','right section'],
-    expectedBars: 3, proportions: [0.7, 0.3],
-    correct: ['board','minus','right section','equals','left section'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    text: "Sam's score is higher than Maya's score. The gap between them is the difference.",
-    type: 'cmp', labels: ["Sam's score","Maya's score",'difference'],
-    expectedBars: 3, proportions: [0.65, 0.35],
-    correct: ["Sam's score",'minus',"Maya's score",'equals','difference'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    text: 'Two dogs weigh the same amount. Draw both dogs.',
-    type: 'eq', labels: ['dog one','dog two'],
-    expectedBars: 2, proportions: [1.0],
-    correct: ['dog one','equals','dog two'],
-    ops: ['equals','unknown'],
-  },
-  {
-    text: 'One third of a garden is planted. Show the whole garden and one planted part.',
-    type: 'frac', labels: ['garden','planted part'],
-    expectedBars: 2, denominator: 3, proportions: [1/3],
-    correct: ['one','third','of','garden','equals','planted part'],
-    ops: ['one','half','third','fourth','of','equals','unknown'],
-  },
-  {
-    text: 'A shelf holds red books and blue books. Together they fill the whole shelf.',
-    type: 'pw', labels: ['shelf','red books','blue books'],
-    expectedBars: 3, proportions: [0.6, 0.4],
-    correct: ['red books','plus','blue books','equals','shelf'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    text: 'The tall building is taller than the short building. Show both and the height difference.',
-    type: 'cmp', labels: ['tall building','short building','height difference'],
-    expectedBars: 3, proportions: [0.7, 0.3],
-    correct: ['tall building','minus','short building','equals','height difference'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    text: 'One quarter of the field is covered in snow. Draw the field split into four parts.',
-    type: 'frac', labels: ['field','snow'],
-    expectedBars: 2, denominator: 4, proportions: [1/4],
-    correct: ['one','fourth','of','field','equals','snow'],
-    ops: ['one','half','third','fourth','of','equals','unknown'],
-  },
-  {
-    text: 'Tom read some pages yesterday and some pages today. Together they equal the whole chapter.',
-    type: 'pw', labels: ['chapter','yesterday','today'],
-    expectedBars: 3, proportions: [0.55, 0.45],
-    correct: ['yesterday','plus','today','equals','chapter'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    text: 'The long ribbon is longer than the short ribbon. Show both and the difference.',
-    type: 'cmp', labels: ['long ribbon','short ribbon','difference'],
-    expectedBars: 3, proportions: [0.6, 0.4],
-    correct: ['long ribbon','minus','short ribbon','equals','difference'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    text: 'Two boxes have the same number of crayons.',
-    type: 'eq', labels: ['box A','box B'],
-    expectedBars: 2, proportions: [1.0],
-    correct: ['box A','equals','box B'],
-    ops: ['equals','unknown'],
-  },
-  {
-    text: 'One half of the pizza was eaten. Draw the whole pizza and the eaten half.',
-    type: 'frac', labels: ['pizza','eaten part'],
-    expectedBars: 2, denominator: 2, proportions: [0.5],
-    correct: ['one','half','of','pizza','equals','eaten part'],
-    ops: ['one','half','third','fourth','of','equals','unknown'],
-  },
-];
+const POOL = WP1;
 
 // ── Drag-and-Draw Canvas State ───────────────────────────────────────────────
 let DC = {

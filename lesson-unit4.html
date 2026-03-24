@@ -106,6 +106,7 @@
   <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   <div id="main"></div>
 </div>
+<script src="word-problems.js"></script>
 <script>
 // ── Config ───────────────────────────────────────────────────────────────────
 const CFG = {
@@ -189,7 +190,7 @@ function renderStaticCMP(labels, colors, proportions, w) {
 }
 
 // ── Problems database ────────────────────────────────────────────────────────
-const PROBLEMS = [
+const PROBLEMS_INSTRUCT = [
   {
     id: 0, phase: 'instruct',
     text: `Tom has some stickers. He has red stickers and blue stickers. Together, all the stickers make up his whole collection.`,
@@ -223,100 +224,10 @@ const PROBLEMS = [
     proportions: [0.6, 0.4],
     correct: ["Ben's jump",'plus','difference','equals',"Ana's jump"],
   },
-  {
-    id: 3, phase: 'practice',
-    text: `A jar holds green marbles and purple marbles. All the marbles together fill the jar.`,
-    type: 'pw',
-    labels: ['jar','green marbles','purple marbles'],
-    unkLabel: 'jar',
-    expectedBars: 3,
-    proportions: [0.45, 0.55],
-    correct: ['green marbles','plus','purple marbles','equals','jar'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    id: 4, phase: 'practice',
-    text: `A board was split into a left section and a right section. The right section is smaller. Show the whole board and both sections.`,
-    type: 'pw',
-    labels: ['board','left section','right section'],
-    unkLabel: 'left section',
-    expectedBars: 3,
-    proportions: [0.7, 0.3],
-    correct: ['board','minus','right section','equals','left section'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    id: 5, phase: 'practice',
-    text: `Sam's score is higher than Maya's score. The gap between them is the difference.`,
-    type: 'cmp',
-    labels: ["Sam's score","Maya's score",'difference'],
-    unkLabel: 'difference',
-    expectedBars: 3,
-    proportions: [0.65, 0.35],
-    correct: ["Sam's score",'minus',"Maya's score",'equals','difference'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    id: 6, phase: 'practice',
-    text: `Two dogs weigh the same amount. Draw both dogs.`,
-    type: 'eq',
-    labels: ['dog one','dog two'],
-    unkLabel: 'dog two',
-    expectedBars: 2,
-    proportions: [1.0],
-    correct: ['dog one','equals','dog two'],
-    ops: ['equals','unknown'],
-  },
-  {
-    id: 7, phase: 'practice',
-    text: `One third of a garden is planted. Show the whole garden split into three equal parts, with one part planted.`,
-    type: 'frac',
-    labels: ['garden','planted part'],
-    unkLabel: 'planted part',
-    expectedBars: 2,
-    denominator: 3,
-    proportions: [1/3],
-    correct: ['one','third','of','garden','equals','planted part'],
-    ops: ['one','half','third','fourth','of','equals','unknown'],
-  },
-  {
-    id: 8, phase: 'practice',
-    text: `A shelf holds red books and blue books. There are more red books than blue books. The red and blue together fill the whole shelf.`,
-    type: 'pw',
-    labels: ['shelf','red books','blue books'],
-    unkLabel: 'shelf',
-    expectedBars: 3,
-    proportions: [0.6, 0.4],
-    correct: ['red books','plus','blue books','equals','shelf'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    id: 9, phase: 'practice',
-    text: `The tall building is taller than the short building. Draw both buildings and show the height difference.`,
-    type: 'cmp',
-    labels: ['tall building','short building','height difference'],
-    unkLabel: 'height difference',
-    expectedBars: 3,
-    proportions: [0.7, 0.3],
-    correct: ['tall building','minus','short building','equals','height difference'],
-    ops: ['plus','minus','equals','unknown'],
-  },
-  {
-    id: 10, phase: 'practice',
-    text: `One quarter of the field is covered in snow. Draw the whole field with four equal parts — one covered in snow.`,
-    type: 'frac',
-    labels: ['field','snow'],
-    unkLabel: 'snow',
-    expectedBars: 2,
-    denominator: 4,
-    proportions: [1/4],
-    correct: ['one','fourth','of','field','equals','snow'],
-    ops: ['one','half','third','fourth','of','equals','unknown'],
-  },
 ];
 
-const INSTRUCT_PROBLEMS = PROBLEMS.filter(p => p.phase === 'instruct');
-const PRACTICE_PROBLEMS = PROBLEMS.filter(p => p.phase === 'practice');
+const INSTRUCT_PROBLEMS = PROBLEMS_INSTRUCT;
+const PRACTICE_PROBLEMS = WP1;
 
 // ── State ────────────────────────────────────────────────────────────────────
 const S = {
@@ -325,7 +236,7 @@ const S = {
   practiceStep: 0,
   practicePhase: 'draw',
   totalInstruct: 3,
-  totalPractice: 8,
+  totalPractice: WP1.length,
   responses: [],
   instructAnswered: false,
   instructSelectedAnswer: null,
