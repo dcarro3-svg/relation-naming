@@ -111,68 +111,7 @@
   /* ── Empty placeholder sub-button (coming soon) ───────────────────────── */
   .sub-btn.empty-sub{opacity:0.55;cursor:default;}
   .sub-btn.empty-sub:hover{background:var(--surface);}
-/* ── HERO LAYOUT ───────────────────────────────────────── */
-.hero{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:48px;
-  align-items:center;
-}
 
-.hero-left{
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-}
-
-.hero-right{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-@media (max-width:700px){
-  .hero{
-    grid-template-columns:1fr;
-    gap:28px;
-  }
-}
-
-/* ── DEMO CARD ───────────────────────────────────────── */
-.demo-card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--radius-lg);
-  padding:24px;
-  width:100%;
-  max-width:280px;
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-  cursor:pointer;
-  transition:all 0.2s ease;
-  box-shadow:0 2px 10px rgba(0,0,0,0.05);
-}
-
-.demo-card:hover{
-  border-color:var(--accent);
-  background:var(--accent-light);
-  transform:translateY(-2px);
-}
-
-.demo-title{
-  font-size:11px;
-  font-weight:600;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  color:var(--text-muted);
-}
-
-.demo-text{
-  font-size:14px;
-  color:var(--text-secondary);
-  line-height:1.5;
-}
   /* ══════════════════════════════════════════════════════════════════════════
      SECTION 1 — LANDING PAGE STYLES
   ══════════════════════════════════════════════════════════════════════════ */
@@ -260,52 +199,59 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════
      SECTION 1 — LANDING PAGE
 ════════════════════════════════════════════════════════════════════════════ -->
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     SECTION 1 — HERO (REPLACES LANDING PAGE)
-════════════════════════════════════════════════════════════════════════════ -->
 <div class="landing">
 
-  <div class="hero">
+  <!-- 1. Header -->
+  <div class="landing-header">
+    <div class="landing-title">Relation Naming</div>
+    <div class="landing-tagline">Learn to Reason Abstractly!</div>
+  </div>
 
-    <!-- LEFT -->
-    <div class="hero-left">
-      <div class="landing-title">Think in Math, Not Just Numbers</div>
+  <!-- 2. Introduction text -->
+  <div class="intro-blocks">
 
-      <div class="landing-tagline">
-        Learn how quantities relate — the skill behind every word problem.
-      </div>
-
-      <p style="font-size:16px; color:var(--text-secondary); max-width:460px;">
-        <strong style="color:var(--accent);">Math is relationships.</strong>
-        This app teaches you how to see them.
-      </p>
-
-      <button class="start-learning-btn"
-        onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})">
-        Start Unit One →
-      </button>
+    <div class="intro-block">
+      <h3>Welcome</h3>
+      <p>Most math is just problem solving. Good problem solving is something that isn't taught that much. Some people are really good at working with numbers, some people have a hard time with those, too. Either way, problem solving can help make math less frustrating for everyone!</p>
     </div>
 
-    <!-- RIGHT (DEMO) -->
-    <div class="hero-right">
-      <div class="demo-card" onclick="toggleDemo()">
+    <div class="intro-block">
+      <h3>How it works</h3>
+      <p>You will look at different shapes and say how they are related to each other. This may seem easy, or it may seem hard. The words you will use to talk about these shapes are the same kinds of words that show up in word problems. Talking about these shapes will also help you talk about numbers! This website will take you through 5 Units. You will be able to solve word problems and write equations all without doing any number math. By the end, doing math with numbers will be a breeze.</p>
+    </div>
 
-        <div class="demo-title">Try it</div>
-
-        <div id="demo-model" style="display:flex;flex-direction:column;gap:8px;"></div>
-
-        <div id="demo-text" class="demo-text">
-          These two bars are the same size. Click to reveal the relation.
-        </div>
-
-      </div>
+    <div class="intro-block">
+      <h3>Your Goal</h3>
+      <p>Each skill has a goal. When you reach it, you move on. Your progress is shown on a chart so you can see yourself getting better. Your goal shows you exactly what you are working towards. Once you complete Units 1–3, you will start solving word problems. First you'll solve without numbers, then with numbers. Along the way you may need help with some other skills — we'll let you know. Your first step is to go through the tutorial! Happy problem solving!</p>
     </div>
 
   </div>
 
+  <!-- 3. Tutorial slideshow -->
+  <div class="tutorial-card" id="tutorial">
+
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="tut-counter" id="tut-counter">1 of 7</div>
+      <div class="tut-title" id="tut-title">What is a relation?</div>
+    </div>
+
+    <div class="tut-model" id="tut-model"></div>
+
+    <p class="tut-text" id="tut-text"></p>
+
+    <div class="tut-footer">
+      <div class="tut-dots" id="tut-dots"></div>
+      <button class="tut-next" id="tut-next" onclick="tutNext()">Next →</button>
+    </div>
+
+  </div>
+
+  <!-- 4. Start Learning button -->
+  <button class="start-learning-btn" onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})">
+    Start Learning
+  </button>
+
 </div>
-
-
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      SECTION DIVIDER
@@ -689,36 +635,7 @@ function tutNext() {
 }
 
 tutRender();
-// ── HERO DEMO ───────────────────────────────────────────
-let demoRevealed = false;
-
-function renderDemo() {
-  const model = document.getElementById('demo-model');
-
-  if (!demoRevealed) {
-    model.innerHTML = `
-      ${bar(BLUE,'blue',200)}
-      ${bar(GREEN,'green',200)}
-    `;
-  } else {
-    model.innerHTML = `
-      ${bar(BLUE,'blue',200)}
-      ${bar(GREEN,'equal',200)}
-    `;
-  }
-}
-
-function toggleDemo() {
-  demoRevealed = true;
-
-  document.getElementById('demo-text').textContent =
-    'They are equal. A relation tells you how two things are connected.';
-
-  renderDemo();
-}
-
-// initial render
-renderDemo();
 </script>
 </body>
 </html>
+
