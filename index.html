@@ -7,14 +7,17 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
   :root{
-    --bg:#FAF7F2;--surface:#FFFDF8;--border:#E8DDD0;
-    --text-primary:#1C1A16;--text-secondary:#6E635A;--text-muted:#9E9288;
-    --accent:#4A7C62;--accent-light:#EDF5EF;
+    --bg:#F7F3FF;--surface:#FEFCFF;--border:#DDD3F5;
+    --text-primary:#1E1530;--text-secondary:#584C72;--text-muted:#9589B8;
+    --accent:#6845A8;--accent-light:#EEE6FF;
+    --accent-blue:#2B5DC7;--accent-blue-light:#E8EEFF;
     --radius:12px;--radius-lg:20px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);
-    min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px 24px;}
+  body{font-family:'DM Sans',sans-serif;background-color:var(--bg);color:var(--text-primary);
+    min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px 24px;
+    background-image:url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='2' width='10' height='3' fill='%236845A8' fill-opacity='0.18'/%3E%3Crect x='2' y='7' width='5' height='3' fill='%236845A8' fill-opacity='0.13'/%3E%3Crect x='8' y='7' width='4' height='3' fill='%232B5DC7' fill-opacity='0.13'/%3E%3Crect x='30' y='20' width='3' height='3' fill='%232B5DC7' fill-opacity='0.16'/%3E%3Crect x='14' y='38' width='8' height='3' fill='%236845A8' fill-opacity='0.11'/%3E%3Crect x='14' y='43' width='4' height='3' fill='%236845A8' fill-opacity='0.09'/%3E%3Crect x='19' y='43' width='3' height='3' fill='%232B5DC7' fill-opacity='0.09'/%3E%3Crect x='38' y='4' width='4' height='4' fill='%232B5DC7' fill-opacity='0.11'/%3E%3Crect x='2' y='36' width='3' height='3' fill='%232B5DC7' fill-opacity='0.1'/%3E%3Crect x='34' y='32' width='9' height='3' fill='%236845A8' fill-opacity='0.14'/%3E%3Crect x='34' y='37' width='5' height='3' fill='%232B5DC7' fill-opacity='0.1'/%3E%3C/svg%3E");
+    background-size:96px 96px;}
   .app{width:100%;max-width:520px;display:flex;flex-direction:column;gap:20px;}
   h1{font-family:'DM Serif Display',serif;font-size:32px;letter-spacing:-0.5px;}
   .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
@@ -35,7 +38,7 @@
   .unit-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;
     justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;
     background:var(--accent-light);color:var(--accent);}
-  .unit-icon.empty{background:#F5F1EB;color:var(--text-muted);}
+  .unit-icon.empty{background:#EDE8F8;color:var(--text-muted);}
 
   .unit-text{flex:1;}
   .unit-text strong{display:block;font-size:15px;font-weight:700;color:var(--text-primary);}
@@ -63,14 +66,14 @@
     cursor:pointer;transition:all 0.15s;text-align:left;width:100%;
     font-family:'DM Sans',sans-serif;}
   .sub-btn:hover{background:var(--accent-light);}
-  .sub-btn.open{background:#F0F7F3;}
+  .sub-btn.open{background:var(--accent-light);}
 
   .sub-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;
     justify-content:center;font-size:13px;flex-shrink:0;}
   .sub-icon.lesson{background:var(--accent-light);color:var(--accent);}
-  .sub-icon.fluency{background:#FBF0E4;color:#A8621A;}
-  .sub-icon.chart{background:#F0EAF8;color:#6C5FC7;}
-  .sub-icon.empty{background:#F5F1EB;color:var(--text-muted);}
+  .sub-icon.fluency{background:var(--accent-blue-light);color:var(--accent-blue);}
+  .sub-icon.chart{background:var(--accent-light);color:var(--accent);}
+  .sub-icon.empty{background:#EDE8F8;color:var(--text-muted);}
 
   .sub-text{flex:1;}
   .sub-text strong{display:block;font-size:14px;font-weight:600;color:var(--text-primary);}
@@ -80,7 +83,7 @@
   .sub-chevron{font-size:11px;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
   .sub-btn.open .sub-chevron{transform:rotate(180deg);color:var(--accent);}
 
-  .sub-body{display:none;flex-direction:column;gap:0;background:#FAFAF8;}
+  .sub-body{display:none;flex-direction:column;gap:0;background:#F9F6FF;}
   .sub-body.open{display:flex;}
 
   /* ── Leaf items (lessons, fluency links) ──────────────────────────────── */
@@ -92,7 +95,7 @@
   .leaf-icon{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;
     justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
   .leaf-icon.lesson{background:var(--accent-light);color:var(--accent);}
-  .leaf-icon.fluency{background:#FBF0E4;color:#A8621A;font-size:10px;letter-spacing:0.5px;}
+  .leaf-icon.fluency{background:var(--accent-blue-light);color:var(--accent-blue);font-size:10px;letter-spacing:0.5px;}
 
   .leaf-text strong{display:block;font-size:13px;font-weight:600;}
   .leaf-text span{font-size:11px;color:var(--text-muted);}
@@ -104,7 +107,7 @@
   a.direct-leaf:hover{background:var(--accent-light);color:var(--accent);}
   .direct-leaf .item-icon{width:32px;height:32px;border-radius:7px;display:flex;
     align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-  .ic{background:#F0EAF8;}
+  .ic{background:var(--accent-light);}
   .direct-leaf .item-text strong{display:block;font-size:14px;font-weight:600;}
   .direct-leaf .item-text span{font-size:12px;color:var(--text-muted);}
 
@@ -134,7 +137,7 @@
   .btn-primary{padding:14px 32px;background:var(--accent);color:#fff;border:none;
     border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:16px;
     font-weight:600;cursor:pointer;transition:background 0.15s,transform 0.1s;}
-  .btn-primary:hover{background:#255C43;transform:translateY(-1px);}
+  .btn-primary:hover{background:#512F8A;transform:translateY(-1px);}
   .btn-primary:active{transform:none;}
   .btn-ghost{padding:13px 22px;background:none;color:var(--text-secondary);
     border:1px solid var(--border);border-radius:var(--radius);
@@ -145,7 +148,7 @@
   /* Hero visual card */
   .hero-visual{flex:0 0 320px;background:var(--surface);border:1px solid var(--border);
     border-radius:var(--radius-lg);padding:28px;
-    box-shadow:0 4px 32px rgba(44,28,12,0.08);display:flex;flex-direction:column;gap:16px;}
+    box-shadow:0 4px 32px rgba(30,10,55,0.08);display:flex;flex-direction:column;gap:16px;}
   .hv-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;
     color:var(--text-muted);min-height:16px;}
   .hv-model{min-height:92px;display:flex;align-items:center;
@@ -176,7 +179,7 @@
   /* Tutorial card */
   .tutorial-card{background:var(--surface);border:1px solid var(--border);
     border-radius:var(--radius-lg);padding:32px 32px 28px;
-    box-shadow:0 2px 16px rgba(44,28,12,0.07);display:flex;flex-direction:column;gap:20px;}
+    box-shadow:0 2px 16px rgba(30,10,55,0.07);display:flex;flex-direction:column;gap:20px;}
   .tut-counter{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
     color:var(--text-muted);}
   .tut-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text-primary);}
@@ -196,7 +199,7 @@
   .tut-next{padding:11px 28px;border-radius:var(--radius);border:none;
     background:var(--accent);color:white;font-family:'DM Sans',sans-serif;
     font-size:15px;font-weight:600;cursor:pointer;transition:background 0.15s;}
-  .tut-next:hover{background:#255C43;}
+  .tut-next:hover{background:#512F8A;}
 
   /* Bar model helpers */
   .bar-h{height:56px;border-radius:6px;display:flex;align-items:center;
@@ -205,7 +208,7 @@
   /* Lesson flow pills */
   .lesson-flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .flow-pill{padding:8px 18px;border-radius:99px;font-size:13px;font-weight:600;
-    background:var(--accent-light);color:var(--accent);border:1px solid #B8DAC8;}
+    background:var(--accent-light);color:var(--accent);border:1px solid #C4ADEE;}
   .flow-arrow{font-size:18px;color:var(--text-muted);}
 
   /* Word bank mock */
@@ -441,7 +444,7 @@
       </div>
 
       <a href="bar_model_draw.html" class="direct-leaf" target="_blank">
-        <div class="item-icon" style="background:#E8F4FD;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✎</div>
+        <div class="item-icon" style="background:#E8EEFF;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✎</div>
         <div class="item-text"><strong>Bar Model Drawing Tool</strong><span>Draw and label bar models</span></div>
       </a>
 
@@ -483,7 +486,7 @@
       </div>
 
       <a href="bar_model_draw.html" class="direct-leaf" target="_blank">
-        <div class="item-icon" style="background:#E8F4FD;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✎</div>
+        <div class="item-icon" style="background:#E8EEFF;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✎</div>
         <div class="item-text"><strong>Bar Model Drawing Tool</strong><span>Draw and label bar models</span></div>
       </a>
 
@@ -497,7 +500,7 @@
     <div class="section-label">Progress</div>
     <div style="display:flex;flex-direction:column;gap:8px;">
       <a href="chart.html" class="direct-leaf" style="border:1px solid var(--border);border-radius:var(--radius-lg);border-top:1px solid var(--border);">
-        <div class="item-icon ic"><svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#6C5FC7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,10 5,6 9,8 15,2"/><circle cx="15" cy="2" r="1.5" fill="#6C5FC7" stroke="none"/></svg></div>
+        <div class="item-icon ic"><svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#6845A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1,10 5,6 9,8 15,2"/><circle cx="15" cy="2" r="1.5" fill="#6845A8" stroke="none"/></svg></div>
         <div class="item-text"><strong>Progress Chart</strong><span>All lessons</span></div>
       </a>
     </div>
@@ -510,7 +513,7 @@
     <div class="section-label">Tools</div>
     <div style="display:flex;flex-direction:column;gap:8px;">
       <a href="bar_model_draw.html" class="direct-leaf" style="border:1px solid var(--border);border-radius:var(--radius-lg);border-top:1px solid var(--border);">
-        <div class="item-icon" style="background:#E8F4FD;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✎</div>
+        <div class="item-icon" style="background:#E8EEFF;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✎</div>
         <div class="item-text"><strong>Bar Model Drawing Tool</strong><span>Draw and label bar models</span></div>
       </a>
     </div>
