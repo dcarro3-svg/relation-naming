@@ -125,9 +125,9 @@
 
   /* Full-bleed banner */
   .banner{width:calc(100% + 48px);margin:0 -24px;
-    padding:72px 56px 60px;
+    padding:72px 56px 60px 330px;
     background:linear-gradient(145deg,#150934 0%,#2E1666 40%,#5B38A0 80%,#6845A8 100%);
-    display:flex;align-items:center;justify-content:center;
+    display:flex;align-items:center;justify-content:flex-start;
     position:relative;overflow:hidden;margin-bottom:48px;}
   /* Orange accent bar at base */
   .banner::after{content:'';position:absolute;bottom:0;left:0;right:0;height:6px;
@@ -273,7 +273,7 @@
   .mascot{image-rendering:pixelated;display:block;}
 
   @media(max-width:760px){
-    .banner{padding:52px 28px 44px;}
+    .banner{padding:52px 28px 44px;justify-content:center;}
     .banner-inner{flex-direction:column;gap:32px;}
     .hero-visual{flex:none;width:100%;}
     .banner-title{font-size:44px;letter-spacing:-1.5px;}
@@ -311,9 +311,9 @@
 
   </div>
 
-  <!-- Crow mascot — embedded in banner, lower-left -->
-  <img src="Icons/crow typing.png" class="mascot" alt=""
-    style="position:absolute;left:0;bottom:6px;width:280px;height:auto;">
+  <!-- Pigeon mascot — embedded in banner, lower-left -->
+  <img src="Icons/pigeon.png" class="mascot" alt=""
+    style="position:absolute;left:0;bottom:6px;width:310px;height:auto;">
 
 </div>
 
