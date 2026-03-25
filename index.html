@@ -241,7 +241,31 @@
   .section-divider span{font-size:12px;font-weight:600;text-transform:uppercase;
     letter-spacing:1px;color:var(--text-muted);white-space:nowrap;}
 
+  /* ── Two-column main layout ─────────────────────────────────────────────── */
+  .main-layout{width:100%;max-width:1280px;display:flex;gap:56px;align-items:flex-start;
+    padding:0 40px 80px;}
+  .main-left{flex:1;min-width:0;display:flex;flex-direction:column;gap:22px;}
+  .main-right{flex:0 0 440px;display:flex;flex-direction:column;padding-top:8px;}
+
+  /* Bigger tutorial in right column */
+  .main-right .section-eyebrow{font-size:14px;margin-bottom:12px;}
+  .main-right .tutorial-card{padding:48px 44px 42px;}
+  .main-right .tut-title{font-size:30px;}
+  .main-right .tut-text{font-size:17px;line-height:1.8;}
+  .main-right .tut-model{min-height:170px;}
+  .main-right .tut-next{padding:15px 40px;font-size:16px;}
+
+  /* Bigger progress & tools */
+  .section-label{font-size:14px;letter-spacing:1.5px;margin-bottom:14px;}
+  a.direct-leaf{padding:20px 24px;}
+  a.direct-leaf .item-text strong{font-size:17px;}
+  a.direct-leaf .item-text span{font-size:14px;}
+
   /* Responsive */
+  @media(max-width:960px){
+    .main-layout{flex-direction:column-reverse;padding:0 24px 64px;gap:32px;}
+    .main-right{flex:none;width:100%;}
+  }
   @media(max-width:760px){
     .banner{padding:52px 28px 44px;}
     .banner-inner{flex-direction:column;gap:32px;}
@@ -302,41 +326,14 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     SECTION 3 — TUTORIAL
-════════════════════════════════════════════════════════════════════════════ -->
-<div class="tutorial-wrap" id="how-it-works">
+<div class="main-layout">
 
-  <div class="section-eyebrow">How it works</div>
+  <!-- ── Left: curriculum ─────────────────────────────────────────────────── -->
+  <div class="main-left">
 
-  <div class="tutorial-card" id="tutorial">
-    <div style="display:flex;flex-direction:column;gap:4px;">
-      <div class="tut-counter" id="tut-counter">1 of 7</div>
-      <div class="tut-title" id="tut-title">What is a relation?</div>
-    </div>
-    <div class="tut-model" id="tut-model"></div>
-    <p class="tut-text" id="tut-text"></p>
-    <div class="tut-footer">
-      <div class="tut-dots" id="tut-dots"></div>
-      <button class="tut-next" id="tut-next" onclick="tutNext()">Next →</button>
-    </div>
-  </div>
+    <div class="section-divider"><hr><span>Curriculum</span><hr></div>
 
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     CURRICULUM DIVIDER
-════════════════════════════════════════════════════════════════════════════ -->
-<div style="width:100%;max-width:660px;">
-  <div class="section-divider">
-    <hr><span>Curriculum</span><hr>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     SECTION 2 — CURRICULUM NAVIGATION
-════════════════════════════════════════════════════════════════════════════ -->
-<div class="app" id="curriculum" style="padding-top:24px;padding-bottom:48px;">
+    <div id="curriculum">
   <h1>Relation Naming</h1>
 
   <!-- ═══ UNIT ONE ═══════════════════════════════════════════════════════════ -->
@@ -535,7 +532,35 @@
     </div>
   </div>
 
-</div><!-- /#curriculum -->
+    </div><!-- /#curriculum -->
+
+  </div><!-- /.main-left -->
+
+  <!-- ── Right: tutorial slideshow ─────────────────────────────────────────── -->
+  <div class="main-right">
+
+    <div class="tutorial-wrap" id="how-it-works">
+
+      <div class="section-eyebrow">How it works</div>
+
+      <div class="tutorial-card" id="tutorial">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div class="tut-counter" id="tut-counter">1 of 7</div>
+          <div class="tut-title" id="tut-title">What is a relation?</div>
+        </div>
+        <div class="tut-model" id="tut-model"></div>
+        <p class="tut-text" id="tut-text"></p>
+        <div class="tut-footer">
+          <div class="tut-dots" id="tut-dots"></div>
+          <button class="tut-next" id="tut-next" onclick="tutNext()">Next →</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /.main-right -->
+
+</div><!-- /.main-layout -->
 
 </div><!-- /outer wrapper -->
 
