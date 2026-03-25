@@ -101,6 +101,16 @@
   .dismissed-token:hover{opacity:0.6;}
 
   @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes dotPop{0%{opacity:0;transform:scale(0)}70%{opacity:1;transform:scale(2)}100%{opacity:1;transform:scale(1)}}
+  .new-dot{animation:dotPop 0.7s ease 0.5s both;transform-box:fill-box;transform-origin:center;}
+
+  /* ── Keep Going prompt (shown when arriving from fluency and goal not met) ── */
+  .keep-going-banner{background:#EEE6FF;border:2px solid var(--accent);border-radius:var(--radius-lg);
+    padding:20px 24px;display:flex;align-items:center;gap:16px;animation:fadeUp 0.4s ease;}
+  .keep-going-banner img{width:56px;height:auto;image-rendering:pixelated;flex-shrink:0;}
+  .keep-going-banner-text{flex:1;}
+  .keep-going-banner-text strong{display:block;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+  .keep-going-banner-text span{font-size:13px;color:var(--text-secondary);}
 </style>
 </head>
 <body>
@@ -282,7 +292,7 @@ function buildAimLines(lessonData, xAt, H, PT, PB, W, PR, viewMode) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // TODAY'S SESSIONS CHART — one mini SVG per lesson
 // ═══════════════════════════════════════════════════════════════════════════════
-function buildTodaySection(lessonData) {
+function buildTodaySection(lessonData, newLessonId) {
   const todayStr = todayDateStr();
   const state = loadTodayState();
 
@@ -299,10 +309,10 @@ function buildTodaySection(lessonData) {
 
   if (!todayLessons.length) return `<div class="empty"><h3>No sessions today yet</h3><p>Complete a fluency session to see today's progress.</p></div>`;
 
-  return `<div class="today-grid">${todayLessons.map(L => buildTodayMini(L, state)).join('')}</div>`;
+  return `<div class="today-grid">${todayLessons.map(L => buildTodayMini(L, state, L.id === newLessonId)).join('')}</div>`;
 }
 
-function buildTodayMini(L, state) {
+function buildTodayMini(L, state, isNew) {
   const lessonStateKey = `lesson_${L.id}`;
   const ls = state[lessonStateKey] || {};
 
@@ -353,7 +363,7 @@ function buildTodayMini(L, state) {
   }
 
   // Normal mini-chart — also shown when keepgoing is set
-  const svg = buildTodayMiniSVG(L, sessions, todayGoal, firstTodayCpm);
+  const svg = buildTodayMiniSVG(L, sessions, todayGoal, firstTodayCpm, isNew);
   const goalLabel = todayGoal !== null ? `Goal: ${Math.round(todayGoal)}/min` : '';
   const doneBtn = keepgoing ? `<button class="token-btn" style="margin-top:10px;width:100%" onclick="dismissToken(${L.id}, ${hasPassoff}, ${latestCpm})">Done for today</button>` : '';
   return `<div class="today-mini">
@@ -367,7 +377,7 @@ function buildTodayMini(L, state) {
   </div>`;
 }
 
-function buildTodayMiniSVG(L, sessions, todayGoal, firstTodayCpm) {
+function buildTodayMiniSVG(L, sessions, todayGoal, firstTodayCpm, isNew) {
   const W = 320, H = 200;
   const PT = 16, PB = 28, PL = 44, PR = 16;
   const CW = W - PL - PR;
@@ -426,8 +436,9 @@ function buildTodayMiniSVG(L, sessions, todayGoal, firstTodayCpm) {
     // Solid line connecting corrects
     pathD += i === 0 ? `M${x.toFixed(1)},${cy.toFixed(1)}` : ` L${x.toFixed(1)},${cy.toFixed(1)}`;
 
-    // Correct dot
-    dataPoints += `<circle cx="${x.toFixed(1)}" cy="${cy.toFixed(1)}" r="4" fill="${color}" stroke="white" stroke-width="1.5"/>`;
+    // Correct dot — mark last dot with animation class when this is a new session
+    const isNewDot = isNew && i === sessions.length - 1;
+    dataPoints += `<circle ${isNewDot?'class="new-dot"':''} cx="${x.toFixed(1)}" cy="${cy.toFixed(1)}" r="4" fill="${color}" stroke="white" stroke-width="1.5"/>`;
     dataPoints += `<text x="${x.toFixed(1)}" y="${(cy-8).toFixed(1)}" text-anchor="middle" font-size="9" fill="${color}" font-family="DM Sans,sans-serif">${s.cpm||0}</text>`;
 
     // Error X
@@ -475,8 +486,8 @@ function undismiss(lessonId) {
   renderToday();
 }
 
-function renderToday() {
-  document.getElementById('todaySection').innerHTML = buildTodaySection(cachedLessonData);
+function renderToday(newLessonId) {
+  document.getElementById('todaySection').innerHTML = buildTodaySection(cachedLessonData, newLessonId);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -775,12 +786,57 @@ function renderChart() {
 }
 
 function init() {
+  // Check if we arrived from a completed fluency session
+  let newLessonId = null;
+  try {
+    const v = localStorage.getItem('chart_new_lesson');
+    if (v) { newLessonId = parseInt(v); localStorage.removeItem('chart_new_lesson'); }
+  } catch(e) {}
+
   cachedLessonData = loadAll();
   document.getElementById('statsRow').innerHTML = buildStats(cachedLessonData);
   renderChart();
-  renderToday();
+  renderToday(newLessonId);
   document.getElementById('legendSection').innerHTML = buildLegend(cachedLessonData);
   document.getElementById('sessionTable').innerHTML = buildTable(cachedLessonData);
+
+  // If arriving from a new session, scroll to today and maybe show keep-going prompt
+  if (newLessonId) {
+    const L = cachedLessonData.find(l => l.id === newLessonId);
+    if (L) {
+      const todayStr = todayDateStr();
+      const todaySessions = L.sessions.filter(s => {
+        const d = new Date(s.date);
+        return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}` === todayStr;
+      });
+      if (todaySessions.length) {
+        const latestCpm = todaySessions[todaySessions.length - 1].cpm || 0;
+        const todayGoal = calcTodayGoal(L);
+        const metGoal = (todayGoal !== null && latestCpm >= todayGoal) || latestCpm >= PASSOFF_AIM;
+
+        // Scroll to today section after a brief pause
+        setTimeout(() => {
+          document.getElementById('todaySection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+
+        // If goal not met, inject a keep-going banner above the today section
+        if (!metGoal && todayGoal !== null) {
+          const gap = Math.round(todayGoal) - latestCpm;
+          const banner = document.createElement('div');
+          banner.className = 'keep-going-banner';
+          banner.innerHTML = `
+            <img src="Icons/pigeon.png" alt="">
+            <div class="keep-going-banner-text">
+              <strong>Keep going!</strong>
+              <span>You're ${gap} correct/min away from today's goal of ${Math.round(todayGoal)}. Practice again to get there.</span>
+            </div>
+            <a class="token-btn primary" href="${L.fluency}">Practice Again →</a>
+          `;
+          document.getElementById('todaySection').prepend(banner);
+        }
+      }
+    }
+  }
 }
 
 init();

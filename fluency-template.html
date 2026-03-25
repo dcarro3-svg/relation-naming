@@ -178,6 +178,23 @@ function sub(){
   nextItem();
 }
 
+// ── Pigeon Transition ─────────────────────────────────────────────────────────
+// Shows pigeon + bubble, saves lesson id for chart.html, then redirects.
+// delayMs: how long to wait before showing (gives score card a moment to breathe).
+function showPigeonTransition(delayMs) {
+  setTimeout(() => {
+    try { localStorage.setItem('chart_new_lesson', String(CFG.id)); } catch(e) {}
+    const overlay = document.createElement('div');
+    overlay.id = 'pigeon-overlay';
+    overlay.innerHTML = `<div class="pig-inner">
+      <div class="pig-bubble">Let's chart your timing!</div>
+      <img src="Icons/pigeon.png" alt="Pigeon">
+    </div>`;
+    document.body.appendChild(overlay);
+    setTimeout(() => { window.location.href = CFG.chartHref; }, 2200);
+  }, delayMs || 0);
+}
+
 function endDrill(){
   clearInterval(S.timer);S.phase='results';setPhase('Results');
   const cpm=S.cor*2,epm=S.err*2;
@@ -185,9 +202,9 @@ function endDrill(){
   render(`<div class="results-card fu"><h2>Session Complete</h2>
     <div class="rate-row"><div class="rate-stat"><div class="rate-num c">${cpm}</div><div class="rate-sub">Correct / min</div></div><div style="font-size:26px;color:var(--text-muted);padding-top:10px">/</div><div class="rate-stat"><div class="rate-num e">${epm}</div><div class="rate-sub">Errors / min</div></div></div>
     <p style="color:var(--text-secondary);font-size:14px;margin-bottom:${S.errors.length?'16px':'0'}">${S.cor} correct and ${S.err} error${S.err!==1?'s':''} in 30 seconds.</p>
-    ${S.errors.length?`<button class="btn-continue" onclick="startCorrections()">Review ${S.errors.length} missed item${S.errors.length!==1?'s':''} →</button>`
-    :`<div class="nav-links"><a class="nav-link" href="${CFG.lessonHref}">Back to Lesson</a><a class="nav-link primary" href="${CFG.chartHref}">View Chart</a><a class="nav-link" onclick="location.reload()">Again</a></div>`}
+    ${S.errors.length?`<button class="btn-continue" onclick="startCorrections()">Review ${S.errors.length} missed item${S.errors.length!==1?'s':''} →</button>`:''}
   </div>`);
+  if (!S.errors.length) showPigeonTransition(1500);
 }
 
 // ── Corrections ───────────────────────────────────────────────────────────────
@@ -221,7 +238,13 @@ function subC(){
 }
 
 function nextC(){S.ci++;showC();}
-function doneC(){setPhase('Complete');render(`<div class="results-card fu"><h2>Review Complete</h2><p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">You worked through all ${S.errors.length} missed item${S.errors.length!==1?'s':''}.</p><div class="nav-links"><a class="nav-link" onclick="location.reload()">Practice Again</a><a class="nav-link primary" href="${CFG.chartHref}">View Chart</a><a class="nav-link" href="${CFG.lessonHref}">Back to Lesson</a></div></div>`);}
+function doneC(){
+  setPhase('Complete');
+  render(`<div class="results-card fu"><h2>Review Complete</h2>
+    <p style="color:var(--text-secondary);font-size:14px;">You worked through all ${S.errors.length} missed item${S.errors.length!==1?'s':''}.</p>
+  </div>`);
+  showPigeonTransition(1200);
+}
 
 showIntro();
 </script>
@@ -280,6 +303,20 @@ showIntro();
   }
   #draw-close:hover { color: var(--accent); }
   #draw-iframe { flex: 1; border: none; width: 100%; }
+
+  /* ── Pigeon Transition Overlay ───────────────────────────────────────── */
+  @keyframes overlayFadeIn { from{opacity:0} to{opacity:1} }
+  @keyframes pigeonSlideUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+  #pigeon-overlay { position:fixed;inset:0;background:rgba(21,9,52,0.88);
+    display:flex;align-items:center;justify-content:center;z-index:9999;
+    animation:overlayFadeIn 0.35s ease forwards; }
+  #pigeon-overlay .pig-inner { display:flex;flex-direction:column;align-items:center;gap:0;
+    animation:pigeonSlideUp 0.5s ease 0.1s both; }
+  #pigeon-overlay .pig-bubble { background:#FBF0E4;border:3px solid #D4600A;border-radius:12px;
+    padding:14px 28px;font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;
+    color:#1E1530;white-space:nowrap;margin-bottom:14px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.18); }
+  #pigeon-overlay img { width:220px;height:auto;image-rendering:pixelated; }
 </style>
 
 <button id="draw-btn" onclick="toggleDrawer()" title="Bar Model Drawing Tool">
