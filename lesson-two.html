@@ -46,6 +46,9 @@
   .instruct-text.neutral{background:var(--surface);border-color:var(--border);}
   .instruct-text.bridge{background:#EEE6FF;border-color:#C4ADEE;}
   .instruct-text.positive{background:var(--accent-light);border-color:#C4ADEE;}
+  .crow-note{display:flex;align-items:center;gap:10px;margin-bottom:10px;animation:fadeUp 0.2s ease;}
+  .crow-note img{width:38px;height:38px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;}
+  .crow-note span{font-size:13px;font-weight:600;color:var(--text-primary);font-style:italic;}
 
   /* Letter-by-letter animation */
   .typed-text .char{opacity:0;animation:charFade 0.04s forwards;}
@@ -384,6 +387,19 @@ function render(m,r){document.getElementById('mainContent').innerHTML=m;document
 const POSITIVE_MSGS = ['Yes!','Right!','Good!','That\'s it!','Nice work.','Exactly.'];
 function randPos() { return POSITIVE_MSGS[Math.floor(Math.random()*POSITIVE_MSGS.length)]; }
 
+const CROW_LINES = [
+  'Look at the bars again.',
+  'Not quite. What does the picture show?',
+  'That wasn\'t it. Try again.',
+  'Look more carefully.',
+  'Read the bars, not the answer.',
+  'Think about what you see.',
+  'Almost. Look again.',
+  'Not that one.',
+];
+function crowLine() { return CROW_LINES[Math.floor(Math.random()*CROW_LINES.length)]; }
+function crowNote() { return `<div class="crow-note"><img src="Icons/crow typing.png" alt="Crow"><span>${crowLine()}</span></div>`; }
+
 function showInstruct(step) {
   if (step >= INSTRUCT.length) { afterInstruct(); return; }
   S.instructStep = step;
@@ -408,11 +424,12 @@ function showInstructItem() {
   const question = typeof def.question === 'function' ? def.question(m) : def.question;
   const opts = S.currentOpts;
   const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
+  const crowHtml = S.instructItemErrors > 0 ? crowNote() : '';
 
   if (mode === 'T') {
     // Test: model + question + buttons immediately, no instruction text
     render(
-      `${modelHtml}<div class="question-prompt">${question}</div>`,
+      `${crowHtml}${modelHtml}<div class="question-prompt">${question}</div>`,
       `<div id="instructBtns">${buildInstructWB(opts, null, 'submitInstruct')}</div>`
     );
     speak(question);
@@ -426,7 +443,7 @@ function showInstructItem() {
   const cls = mode === 'D' ? 'instruct-text' : 'instruct-text neutral';
 
   render(
-    `${modelHtml}
+    `${crowHtml}${modelHtml}
      <div class="${cls}" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
      <div class="question-prompt" id="questionBox" style="display:none">${question}</div>`,
     `<div id="instructBtns" style="display:none"></div>`
@@ -529,7 +546,7 @@ function showInstructFUError() {
   }
 
   render(
-    `${modelHtml}
+    `${crowNote()}${modelHtml}
      <div class="instruct-text correction" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
      <div class="question-prompt" id="questionBox" style="display:none">${fuQ}</div>`,
     `<div id="instructBtns" style="display:none"></div>`
