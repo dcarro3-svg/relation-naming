@@ -96,7 +96,7 @@
 <body>
 <div class="app">
   <div class="header">
-    <span class="lesson-label">Word Problems — Fluency</span>
+    <span class="lesson-label">Simple Relations — Fluency</span>
     <span class="phase-label" id="phaseLabel">Practice</span>
   </div>
   <div id="main"></div>
@@ -104,288 +104,97 @@
 <script src="word-problems.js"></script>
 <script>
 // ── Config ───────────────────────────────────────────────────────────────────
-const CFG = {id:8, storageKey:'fluency_unit4_sessions', chartHref:'chart.html', lessonHref:'lesson-unit4.html'};
+const CFG={id:8,storageKey:'fluency_unit4_sessions',chartHref:'chart.html',lessonHref:'lesson-unit4.html'};
 
 // ── Storage ──────────────────────────────────────────────────────────────────
 function loadSessions(){try{const r=localStorage.getItem(CFG.storageKey);return r?JSON.parse(r):[];}catch(e){return[];}}
 function saveSession(s){try{const e=loadSessions();e.push(s);localStorage.setItem(CFG.storageKey,JSON.stringify(e));}catch(e){}}
 
 // ── Utilities ────────────────────────────────────────────────────────────────
-const COLORS=[{name:'blue',hex:'#1B6CA8'},{name:'orange',hex:'#D4600A'},{name:'green',hex:'#2D6A4F'},{name:'red',hex:'#C0392B'},{name:'purple',hex:'#6C3483'}];
-function tc(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return(0.299*r+0.587*g+0.114*b)/255>0.55?'#1A1714':'#FFFFFF';}
 function shuffle(a){const arr=[...a];for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
 const FRAC_NAMES=['half','third','fourth','fifth'];
 function fracName(n){return FRAC_NAMES[n-2]||`${n}th`;}
-const BH=62, GAP=6, SNAP=10, CVW=420;
+const DUR=60,CIRC=2*Math.PI*24;
 
 // ── Fluency problem pool ─────────────────────────────────────────────────────
-const POOL = WP1;
+const POOL=WP1;
 
-// ── Drag-and-Draw Canvas State ───────────────────────────────────────────────
-let DC = {
-  bars: [],
-  drawing: false,
-  drawStart: 0,
-  ghostX: 0,
-  ghostW: 0,
-  draggingBarId: null,
-  dragOffsetX: 0,
-  colorIdx: 0,
-  nextId: 0,
-  labelPending: null,
-};
-
-function resetDC() {
-  DC = { bars: [], drawing: false, drawStart: 0, ghostX: 0, ghostW: 0, draggingBarId: null, dragOffsetX: 0, colorIdx: 0, nextId: 0, labelPending: null };
-}
-
-// ── Canvas helpers ───────────────────────────────────────────────────────────
-function snap(v){return Math.round(v/SNAP)*SNAP;}
-
-function snapAligned(w,startX){
-  const rEdge=startX+w;
-  for(const b of DC.bars){
-    if(Math.abs(rEdge-b.x)<8)return b.x-startX;
-    if(Math.abs(rEdge-(b.x+b.w))<8)return(b.x+b.w)-startX;
-  }
-  return snap(w);
-}
-
-function canvasH(){return Math.max((DC.bars.length+(DC.drawing?1:0))*(BH+GAP)+8,140);}
-
-function barDiv(b,i){
-  const col=COLORS[b.colorIdx];
-  const textColor=tc(col.hex);
-  const y=i*(BH+GAP);
-  const isSelected=b.id===DC.labelPending||b.selected;
-  const border=isSelected?`3px solid ${col.hex}`:'none';
-  const label=b.label
-    ?`<span style="font-size:11px;font-weight:600;color:${textColor};text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${b.w-12}px">${b.label}</span>`
-    :`<span style="font-size:11px;color:${textColor};opacity:0.6;font-style:italic">unlabeled</span>`;
-  return`<div id="bar_${b.id}" data-barid="${b.id}" style="position:absolute;left:${b.x}px;top:${y}px;width:${b.w}px;height:${BH}px;background:${col.hex};border-radius:6px;border:${border};display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;box-sizing:border-box" onmousedown="dcBarDown(event,${b.id})" onclick="dcSelectBar(${b.id})">${label}</div>`;
-}
-
-function ghostDiv(){
-  if(!DC.drawing||DC.ghostW<10)return'';
-  const col=COLORS[DC.colorIdx];
-  const y=DC.bars.length*(BH+GAP);
-  return`<div style="position:absolute;left:${DC.ghostX}px;top:${y}px;width:${DC.ghostW}px;height:${BH}px;background:${col.hex};opacity:0.45;border-radius:6px;pointer-events:none"></div>`;
-}
-
-function guides(){
-  if(!DC.drawing||DC.ghostW<10)return'';
-  let html='';
-  const gLeft=DC.ghostX,gRight=DC.ghostX+DC.ghostW;
-  DC.bars.forEach((b,i)=>{
-    const y=i*(BH+GAP);
-    [b.x,b.x+b.w].forEach(edge=>{
-      if(Math.abs(gLeft-edge)<8||Math.abs(gRight-edge)<8){
-        html+=`<div style="position:absolute;left:${edge}px;top:0;bottom:-20px;border-left:2px dashed var(--accent);opacity:0.5;pointer-events:none"></div>`;
-      }
-    });
-  });
-  return html;
-}
-
-function dcHtml(){
-  const barsHtml=DC.bars.map((b,i)=>barDiv(b,i)).join('');
-  return`<div id="dcCanvas" style="position:relative;width:${CVW}px;height:${canvasH()}px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:visible;cursor:crosshair"
-    onmousedown="dcDown(event)"
-    onmousemove="dcMove(event)"
-    onmouseup="dcUp(event)"
-    onmouseleave="dcUp(event)"
-  >${barsHtml}${ghostDiv()}${guides()}</div>`;
-}
-
-// ── Canvas event handlers ────────────────────────────────────────────────────
-function dcDown(e){
-  if(e.target.dataset.barid)return;
-  const rect=document.getElementById('dcCanvas').getBoundingClientRect();
-  const x=snap(e.clientX-rect.left);
-  DC.drawing=true;DC.drawStart=x;DC.ghostX=x;DC.ghostW=0;
-  redrawCanvas();
-}
-
-function dcMove(e){
-  if(DC.draggingBarId!==null){
-    const rect=document.getElementById('dcCanvas').getBoundingClientRect();
-    let newX=snap(e.clientX-rect.left-DC.dragOffsetX);
-    newX=Math.max(0,Math.min(newX,CVW-40));
-    const b=DC.bars.find(b=>b.id===DC.draggingBarId);
-    if(b)b.x=newX;
-    redrawCanvas();return;
-  }
-  if(!DC.drawing)return;
-  const rect=document.getElementById('dcCanvas').getBoundingClientRect();
-  const x=snap(e.clientX-rect.left);
-  const rawW=x-DC.drawStart;
-  if(rawW>0){DC.ghostX=DC.drawStart;DC.ghostW=snapAligned(rawW,DC.drawStart);}
-  else{DC.ghostX=snap(x);DC.ghostW=snap(DC.drawStart-x);}
-  DC.ghostW=Math.max(0,Math.min(DC.ghostW,CVW-DC.ghostX));
-  redrawCanvas();
-}
-
-function dcUp(e){
-  if(DC.draggingBarId!==null){DC.draggingBarId=null;return;}
-  if(!DC.drawing)return;
-  DC.drawing=false;
-  if(DC.ghostW>=40){
-    const id=DC.nextId++;
-    DC.bars.push({id,colorIdx:DC.colorIdx,x:DC.ghostX,w:DC.ghostW,label:'',selected:false});
-    DC.labelPending=id;
-  }
-  DC.ghostW=0;
-  redrawCanvas();
-}
-
-function dcBarDown(e,id){
-  e.stopPropagation();
-  const rect=document.getElementById('dcCanvas').getBoundingClientRect();
-  const b=DC.bars.find(b=>b.id===id);
-  if(!b)return;
-  DC.draggingBarId=id;
-  DC.dragOffsetX=e.clientX-rect.left-b.x;
-}
-
-function dcSelectBar(id){DC.labelPending=id;redrawCanvas();}
-
-function dcUndo(){DC.bars.pop();DC.labelPending=null;redrawCanvas();}
-function dcReset(){DC.bars=[];DC.labelPending=null;DC.nextId=0;redrawCanvas();}
-function dcSetColor(idx){DC.colorIdx=idx;redrawCanvas();}
-
-function dcAssignLabel(label){
-  if(DC.labelPending!==null){
-    const b=DC.bars.find(b=>b.id===DC.labelPending);
-    if(b)b.label=label;
-    DC.labelPending=null;
-  }
-  redrawCanvas();
-}
-
-function colorPalette(){
-  return`<div style="display:flex;gap:6px;align-items:center">
-    ${COLORS.map((c,i)=>`<div onclick="dcSetColor(${i})" style="width:24px;height:24px;border-radius:50%;background:${c.hex};cursor:pointer;outline:${i===DC.colorIdx?'3px solid var(--text-primary)':'2px solid transparent'};outline-offset:2px;transition:outline 0.1s"></div>`).join('')}
-    <span style="font-size:10px;color:var(--text-muted);margin-left:2px">Color</span>
-  </div>`;
-}
-
-function labelPanel(labels){
-  if(DC.labelPending===null)return'';
-  const usedLabels=new Set(DC.bars.filter(b=>b.id!==DC.labelPending&&b.label).map(b=>b.label));
-  const available=labels.filter(l=>!usedLabels.has(l));
-  if(available.length===0)return'';
-  return`<div style="margin-top:6px;padding:8px 10px;background:var(--accent-light);border:1px solid #B8DAC8;border-radius:var(--radius)">
-    <div style="font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px">Assign label</div>
-    <div style="display:flex;flex-wrap:wrap;gap:4px">
-      ${available.map(l=>`<button onclick="dcAssignLabel('${l.replace(/'/g,"\\'")}')` +
-        `" style="padding:5px 10px;border-radius:var(--radius);border:1px solid var(--accent);background:white;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer">${l}</button>`).join('')}
-    </div>
-  </div>`;
-}
-
-// ── Redraw only the canvas area ──────────────────────────────────────────────
-function redrawCanvas(){
-  const container=document.getElementById('canvasContainer');
-  if(!container)return;
-  const p=S.item;
-  const doneDisabled=DC.bars.length<2?'disabled':'';
-  container.innerHTML=`
-    <div class="toolbar">
-      ${colorPalette()}
-      <button class="btn-secondary" onclick="dcUndo()">Undo</button>
-      <button class="btn-secondary" onclick="dcReset()">Reset</button>
-    </div>
-    ${dcHtml()}
-    ${p?labelPanel(p.labels):''}
-    <button class="btn-sub" style="margin-top:8px;width:100%" onclick="submitDraw()" ${doneDisabled}>Done Drawing →</button>
-  `;
-}
-
-// ── Model check (fluency — bar count + rough proportions, no label requirement) ──
-function checkModelFluency(problem){
-  if(DC.bars.length!==problem.expectedBars){
-    return{ok:false,fb:`Need ${problem.expectedBars} bars.`};
+// ── Model check (3-pass: bar count, labels, proportions) ─────────────────────
+function checkModel(bars,problem){
+  const nf=bars.filter(b=>!b.faded);
+  if(nf.length!==problem.expectedBars)return{ok:false,fb:`Need ${problem.expectedBars} bars.`};
+  const lbls=nf.map(b=>(b.label||'').toLowerCase());
+  for(const exp of problem.labels.map(l=>l.toLowerCase())){
+    if(!lbls.some(l=>l.includes(exp)))return{ok:false,fb:`Label each bar. Missing: ${exp}`};
   }
   if(problem.type==='pw'||problem.type==='cmp'){
-    const sorted=[...DC.bars].sort((a,b)=>b.w-a.w);
-    const totalW=sorted[0].w;
-    const partBars=sorted.slice(1);
-    const partWidths=partBars.map(b=>b.w/totalW);
-    const sortedParts=[...partWidths].sort((a,b)=>b-a);
-    const sortedExp=[...problem.proportions].sort((a,b)=>b-a);
-    for(let i=0;i<Math.min(sortedParts.length,sortedExp.length);i++){
-      if(Math.abs(sortedParts[i]-sortedExp[i])>0.35){
-        return{ok:false,fb:`Bar sizes don't match the problem. Adjust proportions.`};
-      }
-    }
-    const partSum=partWidths.reduce((a,b)=>a+b,0);
-    if(Math.abs(partSum-1.0)>0.30){
-      return{ok:false,fb:`Parts should together match the whole bar width.`};
+    const s=[...nf].sort((a,b)=>b.w-a.w);
+    const pw=s.slice(1).map(b=>b.w/s[0].w);
+    const sp=[...pw].sort((a,b)=>b-a);
+    const se=[...problem.proportions].sort((a,b)=>b-a);
+    for(let i=0;i<Math.min(sp.length,se.length);i++)
+      if(Math.abs(sp[i]-se[i])>0.35)return{ok:false,fb:`Bar sizes don't match. Adjust proportions.`};
+    if(Math.abs(pw.reduce((a,b)=>a+b,0)-1.0)>0.30)return{ok:false,fb:`Parts should match the whole bar.`};
+  }
+  if(problem.type==='mul'){
+    const s=[...nf].sort((a,b)=>b.w-a.w);
+    if(s.length>=2){
+      const ratio=s[0].w/s[1].w,exp=problem.proportions[0];
+      if(Math.abs(ratio-exp)>exp*0.35)return{ok:false,fb:`Adjust bar sizes — one should be about ${exp}× the other.`};
     }
   }
   return{ok:true,fb:null};
 }
 
-// ── Relation strip ───────────────────────────────────────────────────────────
-let assembled=[];
-
-function addT(w){assembled.push(w);drawNamePhase();}
-function back(){assembled.pop();drawNamePhase();}
-
-function wbHtml(item){
-  const opBtns=item.ops.map(o=>`<button class="word-btn" onclick="addT('${o}')">${o}</button>`).join('');
-  const labelBtns=item.labels.map(l=>`<button class="word-btn" onclick="addT('${l.replace(/'/g,"\\'")}')">` +
-    `${l}</button>`).join('');
-  return`<div class="word-bank">
-    <div class="wb-group">${labelBtns}</div>
-    <div class="wb-div"></div>
-    <div class="wb-group">${opBtns}</div>
-  </div>`;
-}
-
-function stripHtml(){
-  const toks=assembled.length
-    ?assembled.map(t=>`<span class="token${t==='unknown'?' unk':''}">${t}</span>`).join('')
-    :`<span class="strip-ph">Build the relation...</span>`;
-  return`<div class="relation-strip">${toks}</div>
-    <div class="strip-row">
-      <button class="btn-back" onclick="back()">← Back</button>
-      <button class="btn-sub" onclick="sub()" ${assembled.length<2?'disabled':''}>Submit</button>
-    </div>`;
-}
-
+// ── Equation check ────────────────────────────────────────────────────────────
 function check(tokens,item){
-  const s=tokens.join(' ');
-  const cor=item.correct.join(' ');
+  const s=tokens.join(' '),cor=item.correct.join(' ');
   if(s===cor)return{ok:true,fb:null};
   const hasAll=item.correct.every(t=>tokens.includes(t));
   if(hasAll)return{ok:false,fb:`Almost — check the order. Try: ${cor}`};
   return{ok:false,fb:`Try: ${cor}`};
 }
 
-// ── Timer ────────────────────────────────────────────────────────────────────
-const DUR=60, CIRC=2*Math.PI*24;
+// ── Timer ─────────────────────────────────────────────────────────────────────
 function tRing(t){
   const off=CIRC*(1-t/DUR);
   return`<div class="timer-ring"><svg width="56" height="56" viewBox="0 0 56 56"><circle class="bg" cx="28" cy="28" r="24"/><circle class="fg${t<=12?' urgent':''}" cx="28" cy="28" r="24" stroke-dasharray="${CIRC.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg><div class="timer-label">${t}</div></div>`;
 }
 
-// ── State ────────────────────────────────────────────────────────────────────
-const S={phase:'intro',t:DUR,timer:null,cor:0,err:0,item:null,drawnOk:false,start:null,errors:[],ci:0,cItem:null,cAsm:[],cFb:null,drillPhase:'draw'};
+// ── State ─────────────────────────────────────────────────────────────────────
+const S={phase:'intro',t:DUR,timer:null,cor:0,err:0,item:null,start:null,errors:[],ci:0,cItem:null,cAsm:[],cFb:null,iframeReady:false,pendingLoad:null};
 function render(h){document.getElementById('main').innerHTML=h;}
 function setPhase(l){document.getElementById('phaseLabel').textContent=l;}
 
-// ── Generate item from pool ──────────────────────────────────────────────────
+// ── Generate item ─────────────────────────────────────────────────────────────
 function genItem(){return POOL[Math.floor(Math.random()*POOL.length)];}
 
-// ── Drill ────────────────────────────────────────────────────────────────────
+// ── postMessage listener ───────────────────────────────────────────────────────
+window.addEventListener('message',e=>{
+  const iframe=document.getElementById('draw-iframe');
+  if(!iframe||e.source!==iframe.contentWindow)return;
+  if(e.data.type==='wp:ready'){
+    S.iframeReady=true;
+    if(S.pendingLoad){iframe.contentWindow.postMessage(S.pendingLoad,'*');S.pendingLoad=null;}
+  } else if(e.data.type==='wp:submit'){
+    if(S.phase!=='drill')return;
+    const mc=checkModel(e.data.bars||[],S.item);
+    if(!mc.ok){S.err++;S.errors.push({item:S.item,fb:mc.fb});}
+    else{
+      const rc=check(e.data.equation||[],S.item);
+      if(rc.ok){S.cor++;}else{S.err++;S.errors.push({item:S.item,fb:rc.fb||`Try: ${S.item.correct.join(' ')}`});}
+    }
+    nextItem();
+  }
+});
+
+// ── Drill ─────────────────────────────────────────────────────────────────────
 function showIntro(){
   S.phase='intro';setPhase('Practice');
   render(`<div class="intro-card fu">
-    <h2>Word Problems — Fluency</h2>
+    <h2>Simple Relations — Fluency</h2>
     <p>You will see word problems for <strong>60 seconds</strong>.</p>
-    <p>For each problem: draw a bar model, then name the relation using the word bank.</p>
-    <p>Labels are optional during fluency — focus on bar count and proportions.</p>
+    <p>For each problem: draw a bar model using the drawing tool, then build the equation. All five simple relation types may appear.</p>
     <p style="color:var(--accent);font-weight:600">Go as fast as you accurately can.</p>
     <button class="start-btn" onclick="startDrill()">Start</button>
   </div>`);
@@ -400,82 +209,21 @@ function startDrill(){
 
 function nextItem(){
   S.item=genItem();
-  S.drillPhase='draw';
-  resetDC();
-  assembled=[];
-  S.drawnOk=false;
+  S.iframeReady=false;
+  S.pendingLoad={type:'wp:load',problem:S.item};
   drawDrawPhase();
 }
 
 function drawDrawPhase(){
   const p=S.item;
-  const doneDisabled=DC.bars.length<2?'disabled':'';
   render(`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">${tRing(S.t)}</div>
     <div class="fu">
       <div class="problem-text">${p.text}</div>
+      ${p.question?`<div style="background:#F0EAF8;border:1px solid #C9B8E8;border-radius:var(--radius);padding:8px 12px;font-size:13px;font-weight:600;color:#6C3483;margin-bottom:8px">? ${p.question}</div>`:''}
       <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Labels: ${p.labels.join(', ')}</div>
-      <div id="canvasContainer">
-        <div class="toolbar">
-          ${colorPalette()}
-          <button class="btn-secondary" onclick="dcUndo()">Undo</button>
-          <button class="btn-secondary" onclick="dcReset()">Reset</button>
-        </div>
-        ${dcHtml()}
-        ${labelPanel(p.labels)}
-        <button class="btn-sub" style="margin-top:8px;width:100%" onclick="submitDraw()" ${doneDisabled}>Done Drawing →</button>
-      </div>
-      <div id="drawFeedback"></div>
+      <iframe id="draw-iframe" src="bar_model_draw.html" title="Bar Model Drawing Tool"
+        style="width:100%;height:340px;border:1px solid var(--border);border-radius:var(--radius-lg)"></iframe>
     </div>`);
-}
-
-function drawNamePhase(){
-  const p=S.item;
-  const container=document.getElementById('nameContainer');
-  if(!container)return;
-  container.innerHTML=wbHtml(p)+stripHtml();
-}
-
-function submitDraw(){
-  if(S.phase!=='drill')return;
-  const p=S.item;
-  const result=checkModelFluency(p);
-  if(!result.ok){
-    const fb=document.getElementById('drawFeedback');
-    if(fb)fb.innerHTML=`<div style="margin-top:6px;padding:8px 12px;background:var(--accent-warm-light);border:1px solid #E8C99A;border-radius:var(--radius);font-size:13px;color:#7A4A1E">${result.fb}</div>`;
-    return;
-  }
-  S.drawnOk=true;
-  S.drillPhase='name';
-  assembled=[];
-  render(`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">${tRing(S.t)}</div>
-    <div class="fu">
-      <div class="problem-text">${p.text}</div>
-      <div class="drill-layout">
-        <div class="model-area">${snapshotModel()}</div>
-        <div id="nameContainer">${wbHtml(p)}${stripHtml()}</div>
-      </div>
-    </div>`);
-}
-
-function snapshotModel(){
-  const h=Math.max(DC.bars.length*(BH+GAP)+8,80);
-  const barsHtml=DC.bars.map((b,i)=>{
-    const col=COLORS[b.colorIdx];
-    const y=i*(BH+GAP);
-    const textColor=tc(col.hex);
-    const lbl=b.label||'';
-    return`<div style="position:absolute;left:${b.x}px;top:${y}px;width:${b.w}px;height:${BH}px;background:${col.hex};border-radius:6px;display:flex;align-items:center;justify-content:center">
-      <span style="font-size:10px;font-weight:600;color:${textColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${b.w-10}px">${lbl}</span>
-    </div>`;
-  }).join('');
-  return`<div style="position:relative;width:100%;height:${h}px;overflow:hidden">${barsHtml}</div>`;
-}
-
-function sub(){
-  if(S.phase!=='drill')return;
-  const{ok,fb}=check(assembled,S.item);
-  if(ok){S.cor++;}else{S.err++;S.errors.push({item:S.item,fb});}
-  nextItem();
 }
 
 function updateT(){

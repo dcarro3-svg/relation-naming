@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Word Problems — Lesson Nine</title>
+<title>Compound Relations — Lesson Nine</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
   :root{--bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;--text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;--accent:#2D6A4F;--accent-light:#EAF4EF;--accent-warm:#C17D3C;--accent-warm-light:#FBF0E4;--error:#C0392B;--radius:12px;--radius-lg:20px;}
@@ -112,7 +112,7 @@
 
   /* ── Drawing Tool Drawer (Word Problem Mode) ──────────────────────── */
   #draw-btn {
-    position: fixed; bottom: 28px; right: 28px;
+    position: fixed; top: 28px; right: 28px;
     width: 56px; height: 56px; border-radius: 50%;
     background: var(--accent); border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
@@ -169,7 +169,7 @@
 <body>
 <div class="app">
   <div class="header">
-    <span class="lesson-label">Word Problems</span>
+    <span class="lesson-label">Compound Relations</span>
     <span class="phase-label" id="phaseLabel">Introduction</span>
     <button class="tts-toggle on" id="ttsToggle" onclick="toggleTTS()" title="Toggle audio">
       <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
@@ -181,7 +181,7 @@
 </div>
 
 <!-- Bar Model Drawing Tool Drawer -->
-<button id="draw-btn" onclick="toggleDrawer()" title="Bar Model Drawing Tool" style="display:none;">
+<button id="draw-btn" onclick="toggleDrawer()" title="Bar Model Drawing Tool">
   <img src="Icons/fountain pen.png" alt="Draw">
 </button>
 
@@ -504,6 +504,7 @@ function showDrawPhase(p) {
     `<div class="problem-card">
        <div class="problem-label">Practice ${S.practiceStep+1} of ${S.totalPractice}</div>
        <div class="problem-text">${p.text}</div>
+       ${p.question ? `<div style="background:#F0EAF8;border:1px solid #C9B8E8;border-radius:var(--radius);padding:10px 14px;font-size:14px;font-weight:600;color:#6C3483;margin-top:10px">? ${p.question}</div>` : ''}
      </div>
      <div style="padding:20px;text-align:center;color:#9B9591;font-size:14px;">Open the drawing tool on the right →</div>`,
     ``
@@ -524,7 +525,9 @@ function showNamePhase(p) {
   setProgress(38 + (S.practiceStep / S.totalPractice) * 32 + 16 / S.totalPractice);
 
   const step1Summary = `${p.step1Labels[1]} + ${p.step1Labels[2]} = ${p.bridge}`;
-  const step2Summary = `${p.bridge} ÷ ${p.denominator} equal parts`;
+  const step2Summary = p.denominator > 0
+    ? `${p.bridge} ÷ ${p.denominator} equal parts`
+    : `${p.step2Labels[1]} + ${p.step2Labels[2] || '…'} = ${p.bridge}`;
 
   const labels = p.step1Labels.concat(p.step2Labels.filter(l=>!p.step1Labels.includes(l)));
   const ops = p.ops || ['one','half','third','fourth','of','plus','minus','equals','unknown'];
@@ -589,17 +592,23 @@ function submitRelation5() {
     }
   } else {
     let fb;
-    const spokenFrac = FRAC_NAMES.find(f=>S.assembled.includes(f));
-    if (spokenFrac && spokenFrac !== fracName(p.denominator)) {
-      fb = `Count the equal parts in step two — there are ${p.denominator}. Use "${fracName(p.denominator)}".`;
-    } else if (!S.assembled.includes('of')) {
-      fb = `The fractional relation uses "of": one ${fracName(p.denominator)} of ${p.bridge} equals unknown.`;
+    if (p.denominator > 0) {
+      const spokenFrac = FRAC_NAMES.find(f=>S.assembled.includes(f));
+      if (spokenFrac && spokenFrac !== fracName(p.denominator)) {
+        fb = `Count the equal parts in step two — there are ${p.denominator}. Use "${fracName(p.denominator)}".`;
+      } else if (!S.assembled.includes('of')) {
+        fb = `The fractional relation uses "of": one ${fracName(p.denominator)} of ${p.bridge} equals unknown.`;
+      } else {
+        fb = `Try again. The correct relation is: ${cor}`;
+      }
     } else {
       fb = `Try again. The correct relation is: ${cor}`;
     }
     S.assembled=[];
     const step1Summary = `${p.step1Labels[1]} + ${p.step1Labels[2]} = ${p.bridge}`;
-    const step2Summary = `${p.bridge} ÷ ${p.denominator} equal parts`;
+    const step2Summary = p.denominator > 0
+      ? `${p.bridge} ÷ ${p.denominator} equal parts`
+      : `${p.step2Labels[1]} + ${p.step2Labels[2] || '…'} = ${p.bridge}`;
     const ops = p.ops || ['one','half','third','fourth','of','plus','minus','equals','unknown'];
     const labelBtns = p.step1Labels.concat(p.step2Labels.filter(l=>!p.step1Labels.includes(l)))
       .map(l=>`<button class="wb-btn" style="padding:7px 12px;font-size:13px" onclick="addToken5('${l.replace(/'/g,"\\'")}')">${l}</button>`).join('');
@@ -612,8 +621,8 @@ function submitRelation5() {
        </div>
        <div class="model-summary">
          <strong>Your model:</strong><br>
-         Step 1 (Part-Whole): ${step1Summary}<br>
-         Step 2 (Fractional): ${step2Summary}
+         Step 1: ${step1Summary}<br>
+         Step 2: ${step2Summary}
        </div>
        <div class="feedback-card error">${fb}</div>`,
       `<div>
@@ -643,8 +652,8 @@ function showComplete() {
   render(
     `<div class="completion">
        <div style="font-size:48px">✓</div>
-       <h2>Word Problems Complete</h2>
-       <p>You built two-step bar models from word problems and named the fractional relation for the unknown. That is the full skill — from words to model to relation.</p>
+       <h2>Compound Relations Complete</h2>
+       <p>You built two-step bar models for compound and complex word problems and named the relations. That is the full skill — from words to model to relation.</p>
        <div class="nav-links">
          <a class="nav-link" href="${CFG.fluencyHref}">Fluency drill</a>
          <a class="nav-link primary" href="${CFG.nextHref}">${CFG.nextLabel}</a>
@@ -676,7 +685,6 @@ function openDrawerForProblem(problem) {
 
   drawer.classList.add('wp-mode');
   mainContent.classList.add('wp-panel-open');
-  btn.style.display = 'none';
 
   drawerOpen = false;
   toggleDrawer();
@@ -796,8 +804,6 @@ function nextPracticeStep() {
   drawer.classList.remove('open', 'wp-mode');
   const mainContent = document.getElementById('mainContent');
   mainContent.classList.remove('wp-panel-open');
-  const btn = document.getElementById('draw-btn');
-  btn.style.display = 'none';
 
   S.practiceStep++;
   if (S.practiceStep >= S.totalPractice) {

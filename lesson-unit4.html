@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Word Problems — Lesson Eight</title>
+<title>Simple Relations — Lesson Eight</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
   :root{--bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;--text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;--accent:#2D6A4F;--accent-light:#EAF4EF;--accent-warm:#C17D3C;--accent-warm-light:#FBF0E4;--error:#C0392B;--radius:12px;--radius-lg:20px;}
@@ -94,7 +94,7 @@
 
   /* ── Drawing Tool Drawer (Word Problem Mode) ──────────────────────── */
   #draw-btn {
-    position: fixed; bottom: 28px; right: 28px;
+    position: fixed; top: 28px; right: 28px;
     width: 56px; height: 56px; border-radius: 50%;
     background: var(--accent); border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
@@ -154,7 +154,7 @@
 <body>
 <div class="app">
   <div class="header">
-    <span class="lesson-label">Word Problems</span>
+    <span class="lesson-label">Simple Relations</span>
     <span class="phase-label" id="phaseLabel">Introduction</span>
     <span class="step-counter" id="stepCounter"></span>
     <button class="tts-toggle on" id="ttsToggle" onclick="toggleTTS()" title="Toggle audio">
@@ -166,7 +166,7 @@
 </div>
 
 <!-- Bar Model Drawing Tool Drawer -->
-<button id="draw-btn" onclick="toggleDrawer()" title="Bar Model Drawing Tool" style="display:none;">
+<button id="draw-btn" onclick="toggleDrawer()" title="Bar Model Drawing Tool">
   <img src="Icons/fountain pen.png" alt="Draw">
 </button>
 
@@ -401,10 +401,10 @@ function showIntro() {
   setPhase('Introduction');
   updateProgress();
   render(`<div class="card">
-    <h2>Word Problems — Lesson Eight</h2>
-    <p>In this lesson you will read word problems and build bar models to show the relationships between quantities.</p>
+    <h2>Simple Relations — Lesson Eight</h2>
+    <p>In this lesson you will read word problems and build bar models showing simple relations — equal, part-whole, comparison, fractional, and multiplicative.</p>
     <p>First you will see three worked examples with pre-built models. Then you will draw your own models and name the relations.</p>
-    <p style="color:var(--accent);font-weight:600">Read each problem carefully before drawing.</p>
+    <p style="color:var(--accent);font-weight:600">Read each problem and the question carefully before drawing.</p>
     <button class="btn-start" onclick="startInstruct()">Ready</button>
   </div>`);
 }
@@ -542,6 +542,7 @@ function renderPracticeItem() {
     render(`<div class="card" style="animation:fadeUp 0.3s ease">
       <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Draw the bar model</div>
       <div class="problem-text">${p.text}</div>
+      ${p.question ? `<div style="background:#F0EAF8;border:1px solid #C9B8E8;border-radius:var(--radius);padding:10px 14px;font-size:14px;font-weight:600;color:#6C3483;margin-bottom:10px">? ${p.question}</div>` : ''}
       <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">Labels to use: <strong>${p.labels.join(', ')}</strong></div>
       <div style="padding:20px;text-align:center;color:var(--text-muted);font-size:14px;">Open the drawing tool on the right →</div>
     </div>`);
@@ -588,8 +589,6 @@ function nextPracticeStep() {
   drawer.classList.remove('open', 'wp-mode');
   const app = document.querySelector('.app');
   app.classList.remove('wp-panel-open');
-  const btn = document.getElementById('draw-btn');
-  btn.style.display = 'none';
 
   S.practiceStep++;
   if (S.practiceStep >= S.totalPractice) {
@@ -609,8 +608,8 @@ function showComplete() {
   const total = S.responses.length;
   render(`<div class="completion">
     <div style="font-size:44px">✓</div>
-    <h2>Lesson Eight Complete</h2>
-    <p>You drew bar models and named relations for word problems.</p>
+    <h2>Simple Relations Complete</h2>
+    <p>You drew bar models and named relations for all five simple relation types — equal, part-whole, comparison, fractional, and multiplicative.</p>
     <p style="color:var(--accent);font-weight:600">${correct} of ${total} correct</p>
     <div class="nav-links">
       <a class="nav-link" href="${CFG.fluencyHref}">Fluency Practice</a>
@@ -641,7 +640,6 @@ function openDrawerForProblem(problem) {
 
   drawer.classList.add('wp-mode');
   app.classList.add('wp-panel-open');
-  btn.style.display = 'none';
 
   drawerOpen = false;
   toggleDrawer();
@@ -725,6 +723,18 @@ function checkModel(bars, problem) {
     const partSum = partWidths.reduce((a, b) => a + b, 0);
     if (Math.abs(partSum - 1.0) > 0.30) {
       return {ok: false, reason: `Parts should together match the whole bar width.`};
+    }
+  }
+
+  if (problem.type === 'mul') {
+    const sorted = [...nonFadedBars].sort((a, b) => b.w - a.w);
+    if (sorted.length >= 2) {
+      const ratio = sorted[0].w / sorted[1].w;
+      const expectedRatio = problem.proportions[0];
+      if (Math.abs(ratio - expectedRatio) > expectedRatio * 0.35) {
+        const ratioWord = expectedRatio === 2 ? 'twice' : expectedRatio === 3 ? 'three times' : expectedRatio === 4 ? 'four times' : `${expectedRatio}×`;
+        return {ok: false, reason: `Adjust bar sizes — one should be about ${ratioWord} the length of the other.`};
+      }
     }
   }
 
