@@ -99,7 +99,8 @@
     justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
   .leaf-icon.lesson{background:var(--accent-light);color:var(--accent);}
   .leaf-icon.fluency{background:var(--accent-blue-light);color:var(--accent-blue);font-size:11px;letter-spacing:0.5px;}
-  .unit-icon img,.leaf-icon img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated;}
+  .unit-icon img{width:100%;height:100%;object-fit:fill;image-rendering:pixelated;}
+  .leaf-icon img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated;}
 
   .leaf-text strong{display:block;font-size:15px;font-weight:600;}
   .leaf-text span{font-size:12px;color:var(--text-muted);}
@@ -125,7 +126,7 @@
 
   /* Full-bleed banner */
   .banner{width:calc(100% + 48px);margin:0 -24px;
-    padding:72px 56px 60px 330px;
+    padding:72px 56px 60px 800px;
     background:linear-gradient(145deg,#150934 0%,#2E1666 40%,#5B38A0 80%,#6845A8 100%);
     display:flex;align-items:center;justify-content:flex-start;
     position:relative;overflow:hidden;margin-bottom:48px;}
@@ -312,12 +313,12 @@
   </div>
 
   <!-- Octopus — top-right of banner -->
-  <img src="Icons/octopus.png" class="mascot" alt="" style="position:absolute;right:0;top:0;width:200px;height:auto;">
+  <img src="Icons/octopus.png" class="mascot" alt="" style="position:absolute;right:0;top:0;width:500px;height:auto;">
 
   <!-- Mascots — embedded in banner, lower-left -->
   <div style="position:absolute;left:0;bottom:6px;display:flex;align-items:flex-end;gap:0;">
-    <img src="Icons/study rat.png" class="mascot" alt="" style="width:155px;height:auto;">
-    <img src="Icons/packrat.png" class="mascot" alt="" style="width:155px;height:auto;">
+    <img src="Icons/study rat.png" class="mascot" alt="" style="width:388px;height:auto;">
+    <img src="Icons/packrat.png" class="mascot" alt="" style="width:388px;height:auto;">
   </div>
 
 </div>
