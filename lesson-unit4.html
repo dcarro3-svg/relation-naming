@@ -582,6 +582,15 @@ function submitRelation() {
 }
 
 function nextPracticeStep() {
+  // Close the drawer
+  drawerOpen = false;
+  const drawer = document.getElementById('draw-drawer');
+  drawer.classList.remove('open', 'wp-mode');
+  const app = document.querySelector('.app');
+  app.classList.remove('wp-panel-open');
+  const btn = document.getElementById('draw-btn');
+  btn.style.display = 'none';
+
   S.practiceStep++;
   if (S.practiceStep >= S.totalPractice) {
     showComplete();
@@ -700,39 +709,22 @@ function evaluateWordProblem(bars, equation) {
 }
 
 function showWordProbFeedback(modelOk, equationOk, hint, problem) {
+  const mainEl = document.getElementById('main');
   let feedbackHtml = '';
   let buttonHtml = '';
 
   if (modelOk && equationOk) {
-    feedbackHtml = `<div class="feedback-card ok">✓ Correct — ${problem.correct.join(' ')}</div>`;
-    buttonHtml = `<button class="btn-continue" onclick="nextPracticeStep()">Next problem →</button>`;
+    feedbackHtml = `<div class="feedback-card ok" style="margin-top:10px">✓ Correct — ${problem.correct.join(' ')}</div>`;
+    buttonHtml = `<button class="btn-continue" style="margin-top:10px" onclick="nextPracticeStep()">${S.practiceStep < S.totalPractice - 1 ? 'Next problem →' : 'Finish →'}</button>`;
   } else if (!modelOk) {
-    feedbackHtml = `<div class="feedback-card err">${hint || 'Check your bar model.'}</div>`;
-    buttonHtml = `<button class="btn-continue" onclick="retryDraw()">Try again</button>`;
+    feedbackHtml = `<div class="feedback-card err" style="margin-top:10px">${hint || 'Check your bar model.'}</div>`;
+    buttonHtml = `<button class="btn-continue" style="margin-top:10px" onclick="retryDraw()">Try again</button>`;
   } else {
-    feedbackHtml = `<div class="feedback-card err">Model looks right — check your equation.${hint ? `<br><small>${hint}</small>` : ''}</div>`;
-    buttonHtml = `<button class="btn-continue" onclick="retryEquation()">Try again</button>`;
+    feedbackHtml = `<div class="feedback-card err" style="margin-top:10px">Model looks right — check your equation.${hint ? ` <small>${hint}</small>` : ''}</div>`;
+    buttonHtml = `<button class="btn-continue" style="margin-top:10px" onclick="retryEquation()">Try again</button>`;
   }
 
-  const mainEl = document.getElementById('main');
-  const currentHTML = mainEl.innerHTML;
-  const feedbackIdx = currentHTML.indexOf('<div class="feedback-card');
-  if (feedbackIdx >= 0) {
-    mainEl.innerHTML = currentHTML.substring(0, feedbackIdx) + feedbackHtml + currentHTML.substring(currentHTML.indexOf('</div>', feedbackIdx) + 6);
-  } else {
-    mainEl.innerHTML += feedbackHtml;
-  }
-
-  const buttonArea = document.querySelector('.strip-row') || mainEl.parentElement;
-  if (buttonArea) {
-    const btnEl = buttonArea.querySelector('.btn-continue');
-    if (btnEl) btnEl.remove();
-  }
-  if (mainEl.querySelector('.strip-row')) {
-    mainEl.querySelector('.strip-row').innerHTML = buttonHtml;
-  } else {
-    mainEl.innerHTML += `<div class="strip-row">${buttonHtml}</div>`;
-  }
+  mainEl.innerHTML += feedbackHtml + `<div style="margin-top:10px">${buttonHtml}</div>`;
 }
 
 function retryDraw() {
