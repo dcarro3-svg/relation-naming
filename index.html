@@ -309,7 +309,7 @@
   <!-- Study rat with interactive greeting bubble -->
   <div id="study-rat-container" style="position:absolute;right:0;bottom:6px;width:500px;height:auto;cursor:pointer;">
     <img src="Icons/study rat.png" class="mascot" alt="Study rat" style="width:100%;height:auto;transform:scaleX(-1);">
-    <div id="study-rat-bubble" style="position:absolute;top:-50px;right:10px;background:#FBF0E4;border:2px solid #D4600A;border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1530;white-space:nowrap;opacity:0;pointer-events:none;transform:scale(0.95);transition:opacity 0.2s,transform 0.2s;image-rendering:pixelated;font-weight:700;letter-spacing:0.5px;z-index:10;"></div>
+    <div id="study-rat-bubble" style="position:absolute;top:50%;left:-20px;transform:translateY(-50%) scale(0.95);background:#FBF0E4;border:2px solid #D4600A;border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1530;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.2s;image-rendering:pixelated;font-weight:700;letter-spacing:0.5px;z-index:10;"></div>
   </div>
 
   <!-- Mascots — embedded in banner, lower-left -->
@@ -820,9 +820,11 @@ tutRender();
 /* ── Study Rat Greeting Bubble ──────────────────────────────────────────── */
 const RAT_GREETINGS = [
   'Good to see you again!', 'Ready to problem solve?', 'Let\'s get to work.',
-  'We missed you!', 'Hello!', 'Hi there!', 'Ready to learn?', 'Let\'s draw!',
-  'You got this!', 'Great job!', 'Keep going!', 'Nice work!', 'Well done!',
-  'Awesome!', 'Fantastic!'
+  'We missed you!', 'You\'re doing amazing!', 'Keep up the great work!',
+  'Learning looks good on you!', 'Let\'s solve some problems together!',
+  'Time to sharpen those skills!', 'Ready for a new challenge?',
+  'Every problem makes you stronger!', 'You\'ve got this in the bag!',
+  'Let\'s make today count!', 'Ready to be awesome?', 'Proud of your progress!'
 ];
 
 const ratContainer = document.getElementById('study-rat-container');
@@ -833,12 +835,12 @@ if (ratContainer && ratBubble) {
     const greeting = RAT_GREETINGS[Math.floor(Math.random() * RAT_GREETINGS.length)];
     ratBubble.textContent = greeting;
     ratBubble.style.opacity = '1';
-    ratBubble.style.transform = 'scale(1)';
+    ratBubble.style.transform = 'translateY(-50%) scale(1)';
   });
 
   ratContainer.addEventListener('mouseleave', () => {
     ratBubble.style.opacity = '0';
-    ratBubble.style.transform = 'scale(0.95)';
+    ratBubble.style.transform = 'translateY(-50%) scale(0.95)';
   });
 }
 </script>
