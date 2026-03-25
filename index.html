@@ -17,8 +17,8 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'DM Sans',sans-serif;background-color:var(--bg);color:var(--text-primary);
     min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:0 24px 32px;
-    background-image:url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='2' width='10' height='3' fill='%236845A8' fill-opacity='0.18'/%3E%3Crect x='2' y='7' width='5' height='3' fill='%236845A8' fill-opacity='0.13'/%3E%3Crect x='8' y='7' width='4' height='3' fill='%232B5DC7' fill-opacity='0.13'/%3E%3Crect x='30' y='20' width='3' height='3' fill='%232B5DC7' fill-opacity='0.16'/%3E%3Crect x='14' y='38' width='8' height='3' fill='%236845A8' fill-opacity='0.11'/%3E%3Crect x='14' y='43' width='4' height='3' fill='%236845A8' fill-opacity='0.09'/%3E%3Crect x='19' y='43' width='3' height='3' fill='%232B5DC7' fill-opacity='0.09'/%3E%3Crect x='38' y='4' width='4' height='4' fill='%232B5DC7' fill-opacity='0.11'/%3E%3Crect x='2' y='36' width='3' height='3' fill='%232B5DC7' fill-opacity='0.1'/%3E%3Crect x='34' y='32' width='9' height='3' fill='%236845A8' fill-opacity='0.14'/%3E%3Crect x='34' y='37' width='5' height='3' fill='%232B5DC7' fill-opacity='0.1'/%3E%3C/svg%3E");
-    background-size:96px 96px;}
+    background-image:url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='2' width='14' height='5' fill='%236845A8' fill-opacity='0.28'/%3E%3Crect x='2' y='9' width='7' height='5' fill='%236845A8' fill-opacity='0.22'/%3E%3Crect x='11' y='9' width='5' height='5' fill='%232B5DC7' fill-opacity='0.30'/%3E%3Crect x='40' y='4' width='10' height='5' fill='%232B5DC7' fill-opacity='0.34'/%3E%3Crect x='40' y='11' width='6' height='5' fill='%232B5DC7' fill-opacity='0.24'/%3E%3Crect x='48' y='11' width='4' height='5' fill='%236845A8' fill-opacity='0.20'/%3E%3Crect x='4' y='48' width='12' height='5' fill='%236845A8' fill-opacity='0.24'/%3E%3Crect x='4' y='55' width='6' height='5' fill='%232B5DC7' fill-opacity='0.28'/%3E%3Crect x='12' y='55' width='4' height='5' fill='%236845A8' fill-opacity='0.18'/%3E%3Crect x='44' y='32' width='8' height='5' fill='%232B5DC7' fill-opacity='0.30'/%3E%3Crect x='50' y='39' width='5' height='5' fill='%232B5DC7' fill-opacity='0.20'/%3E%3Crect x='28' y='22' width='5' height='5' fill='%232B5DC7' fill-opacity='0.24'/%3E%3Crect x='18' y='44' width='10' height='5' fill='%236845A8' fill-opacity='0.22'/%3E%3Crect x='52' y='44' width='6' height='5' fill='%232B5DC7' fill-opacity='0.28'/%3E%3C/svg%3E");
+    background-size:128px 128px;}
   .app{width:100%;max-width:660px;display:flex;flex-direction:column;gap:22px;}
   h1{font-family:'DM Serif Display',serif;font-size:36px;letter-spacing:-0.5px;}
   .section-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
@@ -130,10 +130,10 @@
   /* Orange accent bar at base */
   .banner::after{content:'';position:absolute;bottom:0;left:0;right:0;height:6px;
     background:linear-gradient(90deg,transparent 5%,#C55208 20%,#F0922B 50%,#C55208 80%,transparent 95%);}
-  /* Subtle pixel echo inside banner */
+  /* Pixel echo inside banner */
   .banner::before{content:'';position:absolute;inset:0;pointer-events:none;
-    background-image:url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='2' width='10' height='3' fill='%23ffffff' fill-opacity='0.04'/%3E%3Crect x='2' y='7' width='5' height='3' fill='%23ffffff' fill-opacity='0.03'/%3E%3Crect x='8' y='7' width='4' height='3' fill='%23ffffff' fill-opacity='0.03'/%3E%3Crect x='34' y='32' width='9' height='3' fill='%23ffffff' fill-opacity='0.04'/%3E%3Crect x='34' y='37' width='5' height='3' fill='%23ffffff' fill-opacity='0.03'/%3E%3C/svg%3E");
-    background-size:96px 96px;}
+    background-image:url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='2' width='14' height='5' fill='%23ffffff' fill-opacity='0.09'/%3E%3Crect x='2' y='9' width='7' height='5' fill='%23ffffff' fill-opacity='0.06'/%3E%3Crect x='11' y='9' width='5' height='5' fill='%234A8FE8' fill-opacity='0.18'/%3E%3Crect x='40' y='4' width='10' height='5' fill='%234A8FE8' fill-opacity='0.20'/%3E%3Crect x='40' y='11' width='6' height='5' fill='%23ffffff' fill-opacity='0.07'/%3E%3Crect x='4' y='48' width='12' height='5' fill='%23ffffff' fill-opacity='0.09'/%3E%3Crect x='4' y='55' width='6' height='5' fill='%234A8FE8' fill-opacity='0.16'/%3E%3Crect x='44' y='32' width='8' height='5' fill='%234A8FE8' fill-opacity='0.18'/%3E%3Crect x='28' y='22' width='5' height='5' fill='%23ffffff' fill-opacity='0.06'/%3E%3Crect x='52' y='44' width='6' height='5' fill='%234A8FE8' fill-opacity='0.14'/%3E%3C/svg%3E");
+    background-size:128px 128px;}
 
   .banner-inner{width:100%;max-width:900px;display:flex;align-items:center;gap:52px;}
 
@@ -148,14 +148,16 @@
 
   .btn-primary{padding:15px 36px;background:var(--accent-orange);color:#fff;border:none;
     border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:16px;
-    font-weight:600;cursor:pointer;transition:background 0.15s,transform 0.1s;}
-  .btn-primary:hover{background:#B85009;transform:translateY(-1px);}
-  .btn-primary:active{transform:none;}
+    font-weight:600;cursor:pointer;transition:background 0.15s,transform 0.1s,box-shadow 0.15s;}
+  .btn-primary:hover{background:#B85009;transform:translateY(-1px);
+    box-shadow:0 0 0 2px #F0922B,0 0 14px 4px rgba(240,146,43,0.65),0 0 32px 10px rgba(240,146,43,0.30);}
+  .btn-primary:active{transform:none;box-shadow:none;}
   .btn-ghost{padding:14px 24px;background:none;color:rgba(255,255,255,0.72);
     border:1px solid rgba(255,255,255,0.28);border-radius:var(--radius);
     font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;
     transition:all 0.15s;}
-  .btn-ghost:hover{border-color:rgba(255,255,255,0.65);color:#fff;background:rgba(255,255,255,0.08);}
+  .btn-ghost:hover{border-color:#F0922B;color:#fff;background:rgba(255,255,255,0.08);
+    box-shadow:0 0 0 2px #F0922B,0 0 14px 4px rgba(240,146,43,0.50),0 0 32px 10px rgba(240,146,43,0.22);}
 
   /* Hero visual card (inside banner) */
   .hero-visual{flex:0 0 320px;background:rgba(255,255,255,0.08);
