@@ -126,7 +126,7 @@
 
   /* Full-bleed banner */
   .banner{width:calc(100% + 48px);margin:0 -24px;
-    padding:72px 56px 60px 800px;
+    padding:72px 56px 60px 610px;
     background:linear-gradient(145deg,#150934 0%,#2E1666 40%,#5B38A0 80%,#6845A8 100%);
     display:flex;align-items:center;justify-content:flex-start;
     position:relative;overflow:hidden;margin-bottom:48px;}
@@ -295,7 +295,7 @@
     <!-- Left: headline + CTA -->
     <div class="banner-text">
       <div class="banner-eyebrow">Math Reasoning Curriculum</div>
-      <h1 class="banner-title">Learn to see<br><em>the relation.</em></h1>
+      <h1 class="banner-title" style="font-size:clamp(40px,5.5vw,96px);letter-spacing:-1px;white-space:nowrap;">Learn to Reason Abstractly</h1>
       <p class="banner-sub">Build the thinking skills behind every math problem. Name what you see, find the unknown, solve any word problem.</p>
       <div class="banner-actions">
         <button class="btn-primary" onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})">Start Learning</button>
@@ -303,12 +303,6 @@
       </div>
     </div>
 
-    <!-- Right: animated bar model preview -->
-    <div class="hero-visual">
-      <div class="hv-label" id="hvLabel"></div>
-      <div class="hv-model" id="hvModel"></div>
-      <div class="hv-dots" id="hvDots"></div>
-    </div>
 
   </div>
 
@@ -316,10 +310,7 @@
   <img src="Icons/octopus.png" class="mascot" alt="" style="position:absolute;right:0;top:0;width:500px;height:auto;">
 
   <!-- Mascots — embedded in banner, lower-left -->
-  <div style="position:absolute;left:0;bottom:6px;display:flex;align-items:flex-end;gap:0;">
-    <img src="Icons/study rat.png" class="mascot" alt="" style="width:388px;height:auto;">
-    <img src="Icons/packrat.png" class="mascot" alt="" style="width:388px;height:auto;">
-  </div>
+  <img src="Icons/study rat.png" class="mascot" alt="" style="position:absolute;left:0;bottom:6px;width:582px;height:auto;">
 
 </div>
 
@@ -834,8 +825,10 @@ function hvNext() {
   }, 320);
 }
 
-hvRender();
-setInterval(hvNext, 3000);
+if (document.getElementById('hvLabel')) {
+  hvRender();
+  setInterval(hvNext, 3000);
+}
 
 tutRender();
 </script>
