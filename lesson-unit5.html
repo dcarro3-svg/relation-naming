@@ -701,15 +701,9 @@ function openDrawerForProblem(problem) {
 function evaluateWordProblem(bars, equation) {
   const problem = PRACTICE_ITEMS[S.practiceStep];
 
-  // Pass 1: Bar count
-  const nonFadedBars = bars.filter(b => !b.faded);
-  if (nonFadedBars.length !== problem.expectedBars) {
-    showWordProbFeedback(false, false, `Draw ${problem.expectedBars} bars.`, problem);
-    return;
-  }
-
-  // Pass 2: Label coverage (simplified for two-step problems)
-  const modelOk = true;  // Full implementation would validate all labels
+  // Model evaluation: check bar count, labels, proportions
+  const modelCheck = checkModel(bars, problem);
+  const modelOk = modelCheck.ok;
 
   // Equation check
   const equationStr = equation.join(' ').toLowerCase();
@@ -721,7 +715,7 @@ function evaluateWordProblem(bars, equation) {
     showWordProbFeedback(true, true, null, problem);
   } else if (!modelOk) {
     S.responses.push({ok: false});
-    showWordProbFeedback(false, false, `Check your bar model.`, problem);
+    showWordProbFeedback(false, false, modelCheck.reason, problem);
   } else {
     S.wpErrors++;
     if (S.wpErrors >= 2) {
@@ -731,6 +725,37 @@ function evaluateWordProblem(bars, equation) {
       showWordProbFeedback(false, true, null, problem);
     }
   }
+}
+
+function checkModel(bars, problem) {
+  // Pass 1: Bar count
+  const nonFadedBars = bars.filter(b => !b.faded);
+  const expectedBars = 2; // WP2 problems have whole + parts
+  if (nonFadedBars.length !== expectedBars) {
+    return {ok: false, reason: `Draw ${expectedBars} bars for the two steps.`};
+  }
+
+  // Pass 2: Proportions (adapted from fluency-unit4.html checkModelFluency)
+  // For WP2, just check basic proportions
+  const sorted = [...nonFadedBars].sort((a, b) => b.w - a.w);
+  const totalW = sorted[0].w;
+  const partBars = sorted.slice(1);
+  const partWidths = partBars.map(b => b.w / totalW);
+  const sortedParts = [...partWidths].sort((a, b) => b - a);
+  const sortedExp = [...problem.step1Proportions].sort((a, b) => b - a);
+
+  for (let i = 0; i < Math.min(sortedParts.length, sortedExp.length); i++) {
+    if (Math.abs(sortedParts[i] - sortedExp[i]) > 0.35) {
+      return {ok: false, reason: `Bar sizes don't match the problem. Adjust proportions.`};
+    }
+  }
+
+  const partSum = partWidths.reduce((a, b) => a + b, 0);
+  if (Math.abs(partSum - 1.0) > 0.30) {
+    return {ok: false, reason: `Parts should together match the whole bar width.`};
+  }
+
+  return {ok: true, reason: null};
 }
 
 function showWordProbFeedback(modelOk, equationOk, hint, problem) {
