@@ -68,11 +68,120 @@
     box-sizing: border-box;
     text-align: center;
   }
+
+  /* ── Equation Builder (Word Problem Mode) ──────────────────────────── */
+  #eq-builder {
+    display: none;
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  #eq-builder.active {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .eq-bar-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .eq-bar-buttons button {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid #999;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .eq-bar-buttons button:hover {
+    background: #e8f4f8;
+    border-color: #6845A8;
+  }
+  .eq-op-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .eq-op-buttons button {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid #999;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .eq-op-buttons button:hover {
+    background: #fff3e0;
+    border-color: #D4600A;
+  }
+  .eq-strip {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    min-height: 30px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    flex-wrap: wrap;
+  }
+  .eq-token {
+    background: #EEE6FF;
+    border: 1px solid #C4ADEE;
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: #6845A8;
+  }
+  .eq-controls {
+    display: flex;
+    gap: 8px;
+  }
+  .eq-controls button {
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid #999;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .eq-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .eq-controls button:hover:not(:disabled) {
+    background: #e8f4f8;
+    border-color: #6845A8;
+  }
+  #eq-submit-btn {
+    background: #6845A8;
+    color: white;
+    border-color: #6845A8;
+  }
+  #eq-submit-btn:hover:not(:disabled) {
+    background: #512F8A;
+  }
 </style>
 </head>
 <body>
 
 <h2>Bar Model Drawing Tool</h2>
+
+<div id="eq-builder">
+  <div class="eq-bar-buttons" id="eq-bar-buttons"></div>
+  <div class="eq-op-buttons" id="eq-op-buttons"></div>
+  <div class="eq-strip" id="eq-strip"><span style="color:#999;font-style:italic;font-size:12px;">Click bars or buttons to build equation</span></div>
+  <div class="eq-controls">
+    <button id="eq-back-btn">← Back</button>
+    <button id="eq-submit-btn" disabled>Submit</button>
+  </div>
+</div>
 
 <div id="toolbar">
   <label>Color:
@@ -621,6 +730,140 @@ document.addEventListener("keydown", e => {
   }
   if (e.key === "Escape") {
     clearSelection(); redraw();
+  }
+});
+
+/* ───────── Equation Builder (Word Problem Mode) ───────── */
+let currentProblem = null;
+let assembledEq = [];
+
+function appendToken(token) {
+  assembledEq.push(token);
+  renderEqStrip();
+  updateEqSubmitBtn();
+}
+
+function backToken() {
+  assembledEq.pop();
+  renderEqStrip();
+  updateEqSubmitBtn();
+}
+
+function renderEqStrip() {
+  const stripEl = document.getElementById('eq-strip');
+  if (assembledEq.length === 0) {
+    stripEl.innerHTML = '<span style="color:#999;font-style:italic;font-size:12px;">Click bars or buttons to build equation</span>';
+  } else {
+    stripEl.innerHTML = assembledEq.map(t => `<span class="eq-token">${t}</span>`).join('');
+  }
+}
+
+function updateEqSubmitBtn() {
+  const btn = document.getElementById('eq-submit-btn');
+  btn.disabled = assembledEq.length < 2;
+}
+
+function submitEquation() {
+  if (assembledEq.length < 2) return;
+  const simpleBars = bars.map(b => ({
+    label: b.label || null,
+    w: b.w,
+    h: b.h,
+    x: b.x,
+    y: b.y,
+    faded: b.faded,
+    locked: b.locked
+  }));
+  window.parent.postMessage({
+    type: 'wp:submit',
+    bars: simpleBars,
+    equation: assembledEq
+  }, '*');
+}
+
+function loadProblem(problem) {
+  currentProblem = problem;
+  assembledEq = [];
+  document.getElementById('eq-builder').classList.add('active');
+
+  // Generate bar buttons from problem labels
+  const barBtnsEl = document.getElementById('eq-bar-buttons');
+  barBtnsEl.innerHTML = problem.labels.map(label =>
+    `<button onclick="appendToken('${label}')">${label}</button>`
+  ).join('');
+
+  // Generate op buttons from problem.ops
+  const opBtnsEl = document.getElementById('eq-op-buttons');
+  opBtnsEl.innerHTML = problem.ops.map(op =>
+    `<button onclick="appendToken('${op}')">${op}</button>`
+  ).join('');
+
+  // Also add unknown button
+  const unknownBtn = document.createElement('button');
+  unknownBtn.textContent = '?';
+  unknownBtn.onclick = () => appendToken('unknown');
+  opBtnsEl.appendChild(unknownBtn);
+
+  renderEqStrip();
+  updateEqSubmitBtn();
+
+  // Adjust canvas height to fit eq-builder
+  const eqBuilder = document.getElementById('eq-builder');
+  const eqHeight = eqBuilder.offsetHeight;
+  canvas.height = Math.max(300, window.innerHeight - eqHeight - 200);
+  redraw();
+}
+
+function resetCanvas() {
+  bars = [];
+  guides = [];
+  assembledEq = [];
+  selectedObjects = [];
+  activeBar = null;
+  currentProblem = null;
+  document.getElementById('eq-builder').classList.remove('active');
+  renderEqStrip();
+  updateEqSubmitBtn();
+  redraw();
+}
+
+// postMessage listener for word problem mode
+window.addEventListener('message', e => {
+  if (e.data.type === 'wp:load') {
+    loadProblem(e.data.problem);
+  } else if (e.data.type === 'wp:reset') {
+    resetCanvas();
+  }
+});
+
+// Signal to parent that iframe is ready
+document.addEventListener('DOMContentLoaded', () => {
+  window.parent.postMessage({ type: 'wp:ready' }, '*');
+});
+
+// Add equation builder button event listeners
+document.getElementById('eq-back-btn').addEventListener('click', () => {
+  if (assembledEq.length > 0) backToken();
+});
+
+document.getElementById('eq-submit-btn').addEventListener('click', () => {
+  submitEquation();
+});
+
+// Add click handler to canvas for tapping bars
+canvas.addEventListener('click', e => {
+  if (!currentProblem) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // Find which bar was clicked
+  for (let i = bars.length - 1; i >= 0; i--) {
+    const b = bars[i];
+    if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h && b.label) {
+      appendToken(b.label);
+      break;
+    }
   }
 });
 
