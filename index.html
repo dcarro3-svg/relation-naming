@@ -309,7 +309,7 @@
   <!-- Study rat with interactive greeting bubble -->
   <div id="study-rat-container" style="position:absolute;right:0;bottom:6px;width:500px;height:auto;cursor:pointer;">
     <img src="Icons/study rat.png" class="mascot" alt="Study rat" style="width:100%;height:auto;transform:scaleX(-1);">
-    <div id="study-rat-bubble" style="position:absolute;top:-80px;right:40px;background:#FBF0E4;border:2px solid #D4600A;border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1530;white-space:nowrap;opacity:0;pointer-events:none;transform:scale(0.95);transition:opacity 0.2s,transform 0.2s;image-rendering:pixelated;font-weight:700;letter-spacing:0.5px;"></div>
+    <div id="study-rat-bubble" style="position:absolute;top:-50px;right:10px;background:#FBF0E4;border:2px solid #D4600A;border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#1E1530;white-space:nowrap;opacity:0;pointer-events:none;transform:scale(0.95);transition:opacity 0.2s,transform 0.2s;image-rendering:pixelated;font-weight:700;letter-spacing:0.5px;z-index:10;"></div>
   </div>
 
   <!-- Mascots — embedded in banner, lower-left -->
@@ -819,9 +819,10 @@ tutRender();
 
 /* ── Study Rat Greeting Bubble ──────────────────────────────────────────── */
 const RAT_GREETINGS = [
-  'Hello!', 'Hi there!', 'Ready to learn?', 'Let\'s draw!', 'Study hard!',
+  'Good to see you again!', 'Ready to problem solve?', 'Let\'s get to work.',
+  'We missed you!', 'Hello!', 'Hi there!', 'Ready to learn?', 'Let\'s draw!',
   'You got this!', 'Great job!', 'Keep going!', 'Nice work!', 'Well done!',
-  'Awesome!', 'Fantastic!', 'Perfect!', 'Try again!', 'Almost there!'
+  'Awesome!', 'Fantastic!'
 ];
 
 const ratContainer = document.getElementById('study-rat-container');
