@@ -7,7 +7,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
   :root{
-    --bg:#F7F3FF;--surface:#FEFCFF;--border:#DDD3F5;
+    --bg:#DDD0F5;--surface:#EDE5FF;--border:#C4ADEE;
     --text-primary:#1E1530;--text-secondary:#584C72;--text-muted:#9589B8;
     --accent:#6845A8;--accent-light:#EEE6FF;
     --accent-blue:#2B5DC7;--accent-blue-light:#E8EEFF;
@@ -32,7 +32,8 @@
     background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
     cursor:pointer;transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04);
     text-align:left;width:100%;font-family:'DM Sans',sans-serif;}
-  .unit-btn:hover{border-color:var(--accent);background:var(--accent-light);}
+  .unit-btn:hover{border-color:var(--accent);background:var(--accent-light);
+    box-shadow:0 0 0 2px #F0922B,0 0 12px 3px rgba(240,146,43,0.50),0 0 28px 8px rgba(240,146,43,0.22);}
   .unit-btn.open{border-radius:var(--radius-lg) var(--radius-lg) 0 0;
     border-bottom-color:transparent;background:var(--accent-light);border-color:var(--accent);}
 
@@ -66,7 +67,8 @@
     background:var(--surface);border:none;border-top:1px solid var(--border);
     cursor:pointer;transition:all 0.15s;text-align:left;width:100%;
     font-family:'DM Sans',sans-serif;}
-  .sub-btn:hover{background:var(--accent-light);}
+  .sub-btn:hover{background:var(--accent-light);
+    box-shadow:0 0 0 2px #F0922B,0 0 10px 3px rgba(240,146,43,0.42),0 0 24px 6px rgba(240,146,43,0.18);}
   .sub-btn.open{background:var(--accent-light);}
 
   .sub-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;
@@ -214,8 +216,9 @@
   .tut-footer{display:flex;align-items:center;justify-content:space-between;}
   .tut-next{padding:13px 32px;border-radius:var(--radius);border:none;
     background:var(--accent);color:white;font-family:'DM Sans',sans-serif;
-    font-size:15px;font-weight:600;cursor:pointer;transition:background 0.15s;}
-  .tut-next:hover{background:#512F8A;}
+    font-size:15px;font-weight:600;cursor:pointer;transition:background 0.15s,box-shadow 0.15s;}
+  .tut-next:hover{background:#512F8A;
+    box-shadow:0 0 0 2px #F0922B,0 0 14px 4px rgba(240,146,43,0.55),0 0 32px 10px rgba(240,146,43,0.28);}
 
   /* Bar model helpers */
   .bar-h{height:56px;border-radius:6px;display:flex;align-items:center;
