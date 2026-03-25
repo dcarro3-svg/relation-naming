@@ -52,9 +52,9 @@
   @keyframes charFade{to{opacity:1;}}
 
   /* Audio replay button */
-  .audio-indicator{width:32px;height:32px;border-radius:50%;background:var(--accent);
+  .audio-indicator{width:48px;height:48px;border-radius:50%;background:var(--accent);
     display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
-    transition:all 0.15s;border:none;margin-top:2px;}
+    transition:all 0.15s;border:none;margin-top:2px;overflow:visible;padding:0;}
   .audio-indicator:hover{background:#512F8A;transform:scale(1.05);
     box-shadow:0 0 0 2px #F0922B,0 0 10px 3px rgba(240,146,43,0.50),0 0 22px 6px rgba(240,146,43,0.22);}
   .audio-indicator.speaking{background:var(--accent-warm);animation:pulse 1s infinite;}
@@ -192,7 +192,7 @@ function speak(text, onEnd) {
 function replayAudio() { if (currentUtterance && ttsEnabled) speak(currentUtterance.text); }
 function audioBtn() {
   return `<button class="audio-indicator" id="audioBtn" onclick="replayAudio()">
-    <img src="Icons/pigeon.png" alt="Replay" style="width:24px;height:24px;image-rendering:pixelated;">
+    <img src="Icons/pigeon.png" alt="Replay" style="width:52px;height:52px;object-fit:contain;image-rendering:pixelated;">
   </button>`;
 }
 
