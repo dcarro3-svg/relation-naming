@@ -599,7 +599,10 @@
     </div>
 
     <!-- Octopus character below slides -->
-    <img src="Icons/octopus.png" alt="Octopus" style="width:400px;height:auto;image-rendering:pixelated;display:block;margin-top:24px;">
+    <div id="octopus-container" style="position:relative;display:inline-block;cursor:pointer;margin-top:24px;">
+      <img src="Icons/octopus.png" alt="Octopus" style="width:400px;height:auto;image-rendering:pixelated;display:block;">
+      <div id="octopus-bubble" style="position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) scale(0.95);background:#FBF0E4;border:2px solid #D4600A;border-radius:8px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#1E1530;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.2s;image-rendering:pixelated;letter-spacing:0.5px;z-index:10;"></div>
+    </div>
 
   </div><!-- /.main-right -->
 
@@ -672,14 +675,20 @@ function updateDots() {
 
 showSlide(1);
 
-/* ── Study Rat Greeting Bubble ──────────────────────────────────────────── */
+/* ── Study Rat Greeting Bubble (distinguished tone) ─────────────────────── */
 const RAT_GREETINGS = [
-  'Good to see you again!', 'Ready to problem solve?', 'Let\'s get to work.',
-  'We missed you!', 'You\'re doing amazing!', 'Keep up the great work!',
-  'Learning looks good on you!', 'Let\'s solve some problems together!',
-  'Time to sharpen those skills!', 'Ready for a new challenge?',
-  'Every problem makes you stronger!', 'You\'ve got this in the bag!',
-  'Let\'s make today count!', 'Ready to be awesome?', 'Proud of your progress!'
+  'Greetings, how are we this fine day?',
+  'Salutations! Shall we begin?',
+  'Ah, a learner approaches. Splendid.',
+  'Welcome back to your studies.',
+  'The pursuit of knowledge continues.',
+  'Good day. Shall we press onward?',
+  'Ah yes, right on schedule.',
+  'Excellent timing. Let us proceed.',
+  'The curriculum awaits, my friend.',
+  'One must never stop learning.',
+  'Discipline and effort — the finest tools.',
+  'Onward, scholar. Progress awaits.',
 ];
 
 const ratContainer = document.getElementById('study-rat-container');
@@ -692,12 +701,88 @@ if (ratContainer && ratBubble) {
     ratBubble.style.opacity = '1';
     ratBubble.style.transform = 'translateY(-50%) scale(1)';
   });
-
   ratContainer.addEventListener('mouseleave', () => {
     ratBubble.style.opacity = '0';
     ratBubble.style.transform = 'translateY(-50%) scale(0.95)';
   });
 }
+
+/* ── Octopus Greeting Bubble (encouraging tone) ─────────────────────────── */
+const OCT_GREETINGS = [
+  'Good to see you again!', 'Ready to problem solve?', "Let's get to work!",
+  'We missed you!', "You're doing amazing!", 'Keep up the great work!',
+  'Learning looks good on you!', "Let's solve some problems together!",
+  'Time to sharpen those skills!', 'Ready for a new challenge?',
+  'Every problem makes you stronger!', "You've got this in the bag!",
+  "Let's make today count!", 'Ready to be awesome?', 'Proud of your progress!'
+];
+
+const octContainer = document.getElementById('octopus-container');
+const octBubble = document.getElementById('octopus-bubble');
+
+if (octContainer && octBubble) {
+  octContainer.addEventListener('mouseenter', () => {
+    const greeting = OCT_GREETINGS[Math.floor(Math.random() * OCT_GREETINGS.length)];
+    octBubble.textContent = greeting;
+    octBubble.style.opacity = '1';
+    octBubble.style.transform = 'translateX(-50%) scale(1)';
+  });
+  octContainer.addEventListener('mouseleave', () => {
+    octBubble.style.opacity = '0';
+    octBubble.style.transform = 'translateX(-50%) scale(0.95)';
+  });
+}
+
+/* ── Leaf icon progress badges ───────────────────────────────────────────── */
+// Maps each leaf page href to its localStorage key and whether it's a lesson or fluency
+const LEAF_MAP = {
+  'lesson-one.html':      {key:'fluency_l1_sessions',       type:'lesson'},
+  'lesson-two.html':      {key:'fluency_l2_sessions',       type:'lesson'},
+  'lesson-three.html':    {key:'fluency_l3_sessions',       type:'lesson'},
+  'lesson-four.html':     {key:'fluency_l4_sessions',       type:'lesson'},
+  'lesson-five.html':     {key:'fluency_l5_sessions',       type:'lesson'},
+  'lesson-compound.html': {key:'fluency_compound_sessions', type:'lesson'},
+  'lesson-unit4.html':    {key:'fluency_unit4_sessions',    type:'lesson'},
+  'lesson-unit5.html':    {key:'fluency_unit5_sessions',    type:'lesson'},
+  'fluency-l1.html':      {key:'fluency_l1_sessions',       type:'fluency'},
+  'fluency-l2.html':      {key:'fluency_l2_sessions',       type:'fluency'},
+  'fluency-l3.html':      {key:'fluency_l3_sessions',       type:'fluency'},
+  'fluency-l4.html':      {key:'fluency_l4_sessions',       type:'fluency'},
+  'fluency-l5.html':      {key:'fluency_l5_sessions',       type:'fluency'},
+  'fluency-compound.html':{key:'fluency_compound_sessions', type:'fluency'},
+  'fluency-unit4.html':   {key:'fluency_unit4_sessions',    type:'fluency'},
+  'fluency-unit5.html':   {key:'fluency_unit5_sessions',    type:'fluency'},
+};
+const PASSOFF_AIM = 30;
+
+function updateLeafIcons() {
+  document.querySelectorAll('a.leaf').forEach(a => {
+    const info = LEAF_MAP[a.getAttribute('href')];
+    if (!info) return;
+    const img = a.querySelector('.leaf-icon img');
+    if (!img) return;
+    let sessions = [];
+    try { sessions = JSON.parse(localStorage.getItem(info.key)) || []; } catch(e) {}
+
+    if (info.type === 'lesson') {
+      if (sessions.some(s => s.phase === 'instruction')) {
+        img.src = 'Icons/medal.png'; img.style.objectFit = 'contain';
+      } else if (sessions.length > 0) {
+        img.src = 'Icons/question.png'; img.style.objectFit = 'contain';
+      }
+      // else: keep default exclamation
+    } else {
+      const fs = sessions.filter(s => s.phase === 'fluency');
+      if (fs.some(s => (s.cpm || 0) >= PASSOFF_AIM)) {
+        img.src = 'Icons/medal.png'; img.style.objectFit = 'contain';
+      } else if (fs.length > 0) {
+        img.src = 'Icons/question.png'; img.style.objectFit = 'contain';
+      }
+      // else: keep default retro chart
+    }
+  });
+}
+updateLeafIcons();
 </script>
 </body>
 </html>
