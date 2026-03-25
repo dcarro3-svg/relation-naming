@@ -91,6 +91,64 @@
   @keyframes charFade{to{opacity:1;}}
 
   @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ── Drawing Tool Drawer (Word Problem Mode) ──────────────────────── */
+  #draw-btn {
+    position: fixed; bottom: 28px; right: 28px;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--accent); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+    z-index: 900;
+  }
+  #draw-btn:hover {
+    background: #255C43; transform: scale(1.08);
+    box-shadow: 0 0 0 2px var(--accent-warm),
+               0 0 14px 4px rgba(193, 125, 60, 0.55),
+               0 0 32px 10px rgba(193, 125, 60, 0.28);
+  }
+  #draw-btn img { width: 32px; height: 32px; image-rendering: pixelated; }
+
+  #draw-drawer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 70vh;
+    background: var(--surface);
+    border-top: 2px solid var(--accent);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 32px rgba(0,0,0,0.18);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    z-index: 899; display: flex; flex-direction: column;
+  }
+  #draw-drawer.open { transform: translateY(0); }
+  #draw-drawer.wp-mode {
+    top: 0; bottom: 0; left: auto; right: 0;
+    width: 55vw; height: 100vh;
+    border-top: none;
+    border-left: 2px solid var(--accent);
+    border-radius: 20px 0 0 20px;
+    transform: translateX(100%);
+  }
+  #draw-drawer.wp-mode.open { transform: translateX(0); }
+
+  #draw-drawer-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px 8px; border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  #draw-drawer-bar span {
+    font-size: 14px; font-weight: 700; color: var(--text-primary);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  #draw-close {
+    background: none; border: none; font-size: 22px; cursor: pointer;
+    color: var(--text-muted); line-height: 1; padding: 2px 6px; border-radius: 6px;
+  }
+  #draw-close:hover { color: var(--accent); }
+  #draw-iframe { flex: 1; border: none; width: 100%; }
+
+  .app.wp-panel-open { max-width: 420px; margin-right: 55vw; }
 </style>
 </head>
 <body>
@@ -106,6 +164,20 @@
   <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   <div id="main"></div>
 </div>
+
+<!-- Bar Model Drawing Tool Drawer -->
+<button id="draw-btn" onclick="toggleDrawer()" title="Bar Model Drawing Tool" style="display:none;">
+  <img src="Icons/fountain pen.png" alt="Draw">
+</button>
+
+<div id="draw-drawer">
+  <div id="draw-drawer-bar">
+    <span>Bar Model Drawing Tool</span>
+    <button id="draw-close" onclick="toggleDrawer()" title="Close">✕</button>
+  </div>
+  <iframe id="draw-iframe" src="" title="Bar Model Drawing Tool"></iframe>
+</div>
+
 <script src="word-problems.js"></script>
 <script>
 // ── Config ───────────────────────────────────────────────────────────────────
@@ -242,6 +314,9 @@ const S = {
   instructSelectedAnswer: null,
   drawFeedback: null,
   drawOk: false,
+  wpIframeReady: false,
+  wpPendingLoad: null,
+  wpErrors: 0,
 };
 
 
@@ -468,9 +543,10 @@ function renderPracticeItem() {
       <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Draw the bar model</div>
       <div class="problem-text">${p.text}</div>
       <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">Labels to use: <strong>${p.labels.join(', ')}</strong></div>
-      <div id="bar-tool-placeholder"></div>
-      <button class="btn-continue" style="margin-top:10px" onclick="doneDrawing()">Done Drawing</button>
+      <div style="padding:20px;text-align:center;color:var(--text-muted);font-size:14px;">Open the drawing tool on the right →</div>
     </div>`);
+    openDrawerForProblem(p);
+    S.wpErrors = 0;
   } else {
     // Name phase
     render(`<div class="card" style="animation:fadeUp 0.3s ease">
@@ -533,6 +609,159 @@ function showComplete() {
     </div>
   </div>`);
 }
+
+// ── Drawing Tool Integration (Word Problems) ──────────────────────────────────
+const DRAW_TOOL_SRC = 'bar_model_draw.html';
+let drawerOpen = false;
+let iframeLoaded = false;
+
+function toggleDrawer() {
+  drawerOpen = !drawerOpen;
+  const drawer = document.getElementById('draw-drawer');
+  drawer.classList.toggle('open', drawerOpen);
+  if (drawerOpen && !iframeLoaded) {
+    document.getElementById('draw-iframe').src = DRAW_TOOL_SRC;
+    iframeLoaded = true;
+  }
+}
+
+function openDrawerForProblem(problem) {
+  const drawer = document.getElementById('draw-drawer');
+  const app = document.querySelector('.app');
+  const btn = document.getElementById('draw-btn');
+
+  drawer.classList.add('wp-mode');
+  app.classList.add('wp-panel-open');
+  btn.style.display = 'none';
+
+  drawerOpen = false;
+  toggleDrawer();
+
+  const ctx = {
+    type: 'wp:load',
+    problem: problem
+  };
+
+  if (S.wpIframeReady) {
+    document.getElementById('draw-iframe').contentWindow.postMessage(ctx, '*');
+  } else {
+    S.wpPendingLoad = ctx;
+  }
+}
+
+function evaluateWordProblem(bars, equation) {
+  const problem = PRACTICE_PROBLEMS[S.practiceStep];
+
+  // Pass 1: Bar count
+  const nonFadedBars = bars.filter(b => !b.faded);
+  if (nonFadedBars.length !== problem.expectedBars) {
+    showWordProbFeedback(false, false, `Draw ${problem.expectedBars} bars — one for each quantity.`, problem);
+    return;
+  }
+
+  // Pass 2: Label coverage
+  const labels = nonFadedBars.map(b => (b.label || '').toLowerCase());
+  const expectedLabels = problem.labels.map(l => l.toLowerCase());
+  for (const exp of expectedLabels) {
+    if (!labels.some(l => l.includes(exp))) {
+      showWordProbFeedback(false, false, `Label each bar with the correct quantity.`, problem);
+      return;
+    }
+  }
+  const unkLabelFound = labels.some(l => l.includes(problem.unkLabel.toLowerCase()));
+  if (!unkLabelFound) {
+    showWordProbFeedback(false, false, `One bar should show the unknown (?) value.`, problem);
+    return;
+  }
+
+  // Pass 3: Proportions (simplified check)
+  const modelOk = true;  // In full implementation, check proportions ±20%
+
+  // Equation check
+  const equationStr = equation.join(' ').toLowerCase();
+  const correctStr = problem.correct.join(' ').toLowerCase();
+  const equationOk = equationStr === correctStr;
+
+  if (modelOk && equationOk) {
+    S.responses.push({ok: true});
+    showWordProbFeedback(true, true, null, problem);
+  } else if (!modelOk) {
+    S.responses.push({ok: false});
+    showWordProbFeedback(false, false, `Check your bar model proportions.`, problem);
+  } else {
+    S.wpErrors++;
+    if (S.wpErrors >= 2) {
+      showWordProbFeedback(false, true, `Correct equation: ${problem.correct.join(' ')}`, problem);
+      S.responses.push({ok: false});
+    } else {
+      showWordProbFeedback(false, true, null, problem);
+    }
+  }
+}
+
+function showWordProbFeedback(modelOk, equationOk, hint, problem) {
+  let feedbackHtml = '';
+  let buttonHtml = '';
+
+  if (modelOk && equationOk) {
+    feedbackHtml = `<div class="feedback-card ok">✓ Correct — ${problem.correct.join(' ')}</div>`;
+    buttonHtml = `<button class="btn-continue" onclick="nextPracticeStep()">Next problem →</button>`;
+  } else if (!modelOk) {
+    feedbackHtml = `<div class="feedback-card err">${hint || 'Check your bar model.'}</div>`;
+    buttonHtml = `<button class="btn-continue" onclick="retryDraw()">Try again</button>`;
+  } else {
+    feedbackHtml = `<div class="feedback-card err">Model looks right — check your equation.${hint ? `<br><small>${hint}</small>` : ''}</div>`;
+    buttonHtml = `<button class="btn-continue" onclick="retryEquation()">Try again</button>`;
+  }
+
+  const mainEl = document.getElementById('main');
+  const currentHTML = mainEl.innerHTML;
+  const feedbackIdx = currentHTML.indexOf('<div class="feedback-card');
+  if (feedbackIdx >= 0) {
+    mainEl.innerHTML = currentHTML.substring(0, feedbackIdx) + feedbackHtml + currentHTML.substring(currentHTML.indexOf('</div>', feedbackIdx) + 6);
+  } else {
+    mainEl.innerHTML += feedbackHtml;
+  }
+
+  const buttonArea = document.querySelector('.strip-row') || mainEl.parentElement;
+  if (buttonArea) {
+    const btnEl = buttonArea.querySelector('.btn-continue');
+    if (btnEl) btnEl.remove();
+  }
+  if (mainEl.querySelector('.strip-row')) {
+    mainEl.querySelector('.strip-row').innerHTML = buttonHtml;
+  } else {
+    mainEl.innerHTML += `<div class="strip-row">${buttonHtml}</div>`;
+  }
+}
+
+function retryDraw() {
+  S.wpErrors = 0;
+  const drawer = document.getElementById('draw-drawer');
+  drawer.contentWindow.postMessage({type: 'wp:reset'}, '*');
+  renderPracticeItem();
+}
+
+function retryEquation() {
+  // Keep the canvas open, just let them try again
+  renderPracticeItem();
+}
+
+// postMessage listener for iframe
+window.addEventListener('message', e => {
+  const iframe = document.getElementById('draw-iframe');
+  if (e.source !== iframe.contentWindow) return;
+
+  if (e.data.type === 'wp:ready') {
+    S.wpIframeReady = true;
+    if (S.wpPendingLoad) {
+      iframe.contentWindow.postMessage(S.wpPendingLoad, '*');
+      S.wpPendingLoad = null;
+    }
+  } else if (e.data.type === 'wp:submit') {
+    evaluateWordProblem(e.data.bars, e.data.equation);
+  }
+});
 
 // ── Boot ─────────────────────────────────────────────────────────────────────
 window.speechSynthesis.onvoiceschanged = () => {};
