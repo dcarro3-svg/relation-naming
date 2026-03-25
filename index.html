@@ -269,16 +269,24 @@
     .main-layout{flex-direction:column-reverse;padding:0 24px 64px;gap:32px;}
     .main-right{flex:none;width:100%;}
   }
+  /* Corner mascots */
+  .corner-mascot{position:fixed;pointer-events:none;z-index:10;image-rendering:pixelated;width:160px;height:auto;}
+  .corner-mascot.top-left{top:12px;left:12px;}
+  .corner-mascot.bottom-right{bottom:12px;right:12px;}
+
   @media(max-width:760px){
     .banner{padding:52px 28px 44px;}
     .banner-inner{flex-direction:column;gap:32px;}
     .hero-visual{flex:none;width:100%;}
     .banner-title{font-size:44px;letter-spacing:-1.5px;}
     .features{grid-template-columns:1fr;max-width:100%;}
+    .corner-mascot{display:none;}
   }
 </style>
 </head>
 <body>
+<img src="Icons/crow typing.png" class="corner-mascot top-left" alt="">
+<img src="Icons/packrat.png" class="corner-mascot bottom-right" alt="">
 <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
