@@ -325,7 +325,6 @@
   <!-- ── Left: curriculum ─────────────────────────────────────────────────── -->
   <div class="main-left">
 
-    <div class="section-divider"><hr><span>Curriculum</span><hr></div>
 
     <div id="curriculum">
   <h1>Relation Naming</h1>
@@ -535,19 +534,65 @@
 
     <div class="tutorial-wrap" id="how-it-works">
 
-      <div class="section-eyebrow">How it works</div>
+      <!-- Slide 1: Equal Relation -->
+      <div class="tutorial-card" id="slide-1" style="display:none;">
+        <div class="tut-title">Equal Relations</div>
+        <div class="tut-model" style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;">
+          <div style="display:flex;gap:4px;align-items:center;"><div style="width:120px;height:28px;background:#6845A8;border-radius:4px;"></div><span style="font-size:12px;font-weight:600;">A</span></div>
+          <div style="display:flex;gap:4px;align-items:center;"><div style="width:120px;height:28px;background:#2B5DC7;border-radius:4px;"></div><span style="font-size:12px;font-weight:600;">B</span></div>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">Both bars are equal — same length means same value.</p>
+        </div>
+      </div>
 
-      <div class="tutorial-card" id="tutorial">
-        <div style="display:flex;flex-direction:column;gap:4px;">
-          <div class="tut-counter" id="tut-counter">1 of 7</div>
-          <div class="tut-title" id="tut-title">What is a relation?</div>
+      <!-- Slide 2: Part-Whole Relation -->
+      <div class="tutorial-card" id="slide-2" style="display:none;">
+        <div class="tut-title">Part-Whole Relations</div>
+        <div class="tut-model" style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+          <div style="width:140px;height:28px;background:#0E7E7E;border-radius:4px;"></div>
+          <div style="display:flex;gap:4px;"><div style="width:60px;height:24px;background:#2B5DC7;border-radius:3px;"></div><div style="width:80px;height:24px;background:#E08000;border-radius:3px;"></div></div>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">The whole bar equals the sum of its parts.</p>
         </div>
-        <div class="tut-model" id="tut-model"></div>
-        <p class="tut-text" id="tut-text"></p>
-        <div class="tut-footer">
-          <div class="tut-dots" id="tut-dots"></div>
-          <button class="tut-next" id="tut-next" onclick="tutNext()">Next →</button>
+      </div>
+
+      <!-- Slide 3: Comparison Relation -->
+      <div class="tutorial-card" id="slide-3" style="display:none;">
+        <div class="tut-title">Comparison Relations</div>
+        <div class="tut-model" style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+          <div style="display:flex;gap:4px;align-items:center;"><div style="width:100px;height:24px;background:#6845A8;border-radius:4px;"></div><span style="font-size:10px;font-weight:600;">Item A</span></div>
+          <div style="display:flex;gap:4px;align-items:center;"><div style="width:140px;height:24px;background:#2B5DC7;border-radius:4px;"></div><span style="font-size:10px;font-weight:600;">Item B</span></div>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:6px;">The difference shows the comparison between values.</p>
         </div>
+      </div>
+
+      <!-- Slide 4: Bar Model without Numbers -->
+      <div class="tutorial-card" id="slide-4" style="display:none;">
+        <div class="tut-title">Model Without Numbers</div>
+        <div class="tut-model" style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;">
+          <div style="display:flex;gap:4px;"><div style="width:50px;height:20px;background:#E2DDD6;border:2px solid #6845A8;border-radius:3px;"></div><div style="width:50px;height:20px;background:#E2DDD6;border:2px solid #6845A8;border-radius:3px;"></div><div style="width:50px;height:20px;background:#6845A8;border-radius:3px;"></div></div>
+          <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">Build the model structure before adding numbers.</p>
+        </div>
+      </div>
+
+      <!-- Slide 5: Daily Chart -->
+      <div class="tutorial-card" id="slide-5" style="display:none;">
+        <div class="tut-title">Your Daily Progress</div>
+        <div class="tut-model" style="font-size:11px;color:var(--text-muted);padding:12px 0;">
+          <p>Your personalized chart tracks:</p>
+          <ul style="margin-left:16px;margin-top:8px;line-height:1.6;">
+            <li>Problems solved today</li>
+            <li>Accuracy rate</li>
+            <li>Fluency progress</li>
+            <li>Skill mastery</li>
+          </ul>
+          <p style="margin-top:12px;"><a href="chart.html" style="color:var(--accent);font-weight:600;text-decoration:none;">View your chart →</a></p>
+        </div>
+      </div>
+
+      <!-- Slide Navigation -->
+      <div class="tut-footer" style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+        <button onclick="prevSlide()" style="background:var(--surface);border:1px solid var(--border);padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:600;">← Back</button>
+        <div class="tut-dots" id="slide-dots"></div>
+        <button onclick="nextSlide()" style="background:var(--accent);color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:600;">Next →</button>
       </div>
 
     </div>
@@ -556,6 +601,10 @@
 
 </div><!-- /.main-layout -->
 
+<!-- Octopus at bottom-right -->
+<div style="width:100%;max-width:1280px;display:flex;justify-content:flex-end;padding:0 40px 40px;margin:0 auto;">
+  <img src="Icons/octopus.png" alt="Octopus" style="width:500px;height:auto;image-rendering:pixelated;display:block;">
+</div>
 
 </div><!-- /outer wrapper -->
 
@@ -591,231 +640,37 @@ function bar(hex, label, width, isUnk) {
   return `<div class="bar-h" style="width:${width}px;background:${hex}">${inner}</div>`;
 }
 
-const STEPS = [
-  {
-    title: 'What is a relation?',
-    model() {
-      return `<div style="display:flex;flex-direction:column;gap:8px;">
-        ${bar(BLUE,'blue',240)}
-        ${bar(GREEN,'green',240)}
-      </div>`;
-    },
-    text: 'A relation tells you how two things are connected. These two bars are the same size. That is a relation — we call it equal.'
-  },
-  {
-    title: 'The unknown',
-    model() {
-      return `<div style="display:flex;flex-direction:column;gap:8px;">
-        ${bar(BLUE,'blue',240)}
-        ${bar(GREEN,'',240,true)}
-      </div>`;
-    },
-    text: 'Sometimes one bar is a mystery. We call it the unknown. Your job is to figure out what it equals.'
-  },
-  {
-    title: 'Part-Whole',
-    model() {
-      return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
-        ${bar(TEAL,'whole',240)}
-        <div style="display:flex;gap:4px;">
-          ${bar(BLUE,'part',130)}
-          ${bar(ORANGE,'part',106)}
-        </div>
-      </div>`;
-    },
-    text: 'This shows a part-whole relation. The two small bars together are the same size as the big bar. If you know two of them, you can always find the third.'
-  },
-  {
-    title: 'Fractions and multiples',
-    model() {
-      const pw = 240, boxW = Math.floor((pw - 12) / 4);
-      const boxes = [
-        `<div class="bar-h" style="width:${boxW}px;background:${ORANGE};"><span style="font-size:10px;font-weight:600;color:#fff">1/4</span></div>`,
-        `<div class="bar-h" style="width:${boxW}px;background:#E2DDD6;"></div>`,
-        `<div class="bar-h" style="width:${boxW}px;background:#E2DDD6;"></div>`,
-        `<div class="bar-h" style="width:${boxW}px;background:#E2DDD6;"></div>`,
-      ].join('');
-      return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
-        ${bar(TEAL,'whole',pw)}
-        <div style="display:flex;gap:4px;">${boxes}</div>
-      </div>`;
-    },
-    text: 'This bar has been split into four equal pieces. The filled piece is one fourth of the whole bar. You can also say the whole bar is four times the filled piece. Same picture, two ways to describe it.'
-  },
-  {
-    title: 'How a lesson works',
-    model() {
-      return `<div class="lesson-flow">
-        <div class="flow-pill">Learn it</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-pill">Spot it</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-pill">Name it</div>
-      </div>`;
-    },
-    text: 'Every lesson has three parts. First you learn about a new relation. Then you look at pictures and say whether they show that relation or not. Then you name the relation to find the unknown.'
-  },
-  {
-    title: 'Fluency practice',
-    model() {
-      const circ = 2 * Math.PI * 24;
-      const off = circ * (1 - 22/30);
-      return `<div style="display:flex;align-items:center;gap:20px;">
-        <div style="position:relative;width:56px;height:56px;flex-shrink:0;">
-          <svg width="56" height="56" viewBox="0 0 56 56" style="transform:rotate(-90deg)">
-            <circle fill="none" stroke="#E2DDD6" stroke-width="5" cx="28" cy="28" r="24"/>
-            <circle fill="none" stroke="#2D6A4F" stroke-width="5" stroke-linecap="round"
-              cx="28" cy="28" r="24"
-              stroke-dasharray="${circ.toFixed(1)}"
-              stroke-dashoffset="${off.toFixed(1)}"/>
-          </svg>
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-            font-family:'DM Serif Display',serif;font-size:17px;">22</div>
-        </div>
-        <div class="mock-wb">
-          <div class="mock-wb-btn">blue</div>
-          <div class="mock-wb-btn">equals</div>
-          <div class="mock-wb-btn">unknown</div>
-        </div>
-      </div>`;
-    },
-    text: 'After each lesson there is a timed practice. You have 30 seconds. Use the buttons to build the relation as fast as you can. The goal is to get faster every day — not just right, but quick and right.'
-  },
-  {
-    title: 'Your goal and your chart',
-    model() {
-      // Simple SVG semi-log chart mock
-      return `<svg width="240" height="110" viewBox="0 0 240 110" style="overflow:visible;">
-        <!-- y-axis -->
-        <line x1="30" y1="8" x2="30" y2="95" stroke="#9B9591" stroke-width="1.5"/>
-        <!-- x-axis -->
-        <line x1="30" y1="95" x2="225" y2="95" stroke="#9B9591" stroke-width="1.5"/>
-        <!-- dashed aim line -->
-        <line x1="30" y1="80" x2="200" y2="18" stroke="#2D6A4F" stroke-width="1.5"
-          stroke-dasharray="5,4"/>
-        <!-- star at top right of aim line -->
-        <text x="205" y="22" font-size="14" fill="#2D6A4F">★</text>
-        <text x="210" y="14" font-size="10" fill="#2D6A4F" font-family="DM Sans,sans-serif"
-          font-weight="600">Goal</text>
-        <!-- data line -->
-        <polyline points="50,82 90,74 130,66 170,57" fill="none"
-          stroke="#1B6CA8" stroke-width="2" stroke-linejoin="round"/>
-        <!-- dots -->
-        <circle cx="50" cy="82" r="4" fill="#1B6CA8"/>
-        <circle cx="90" cy="74" r="4" fill="#1B6CA8"/>
-        <circle cx="130" cy="66" r="4" fill="#1B6CA8"/>
-        <circle cx="170" cy="57" r="4" fill="#1B6CA8"/>
-        <!-- y-axis label -->
-        <text x="4" y="55" font-size="9" fill="#9B9591" font-family="DM Sans,sans-serif"
-          writing-mode="vertical-rl" transform="rotate(-90,14,55)">Score</text>
-      </svg>`;
-    },
-    text: 'Every time you practice, your score goes on a chart. The dashed line shows where you need to be to reach your goal. When your score hits the goal, you pass off that skill and move to the next one. You can watch yourself get better, one session at a time.'
+
+/* ── Tutorial Slide Navigation ──────────────────────────────────────────── */
+let currentSlide = 1;
+const totalSlides = 5;
+
+function showSlide(n) {
+  for (let i = 1; i <= totalSlides; i++) {
+    document.getElementById(`slide-${i}`).style.display = 'none';
   }
-];
-
-let tutStep = 0;
-
-function tutRender() {
-  const s = STEPS[tutStep];
-  document.getElementById('tut-counter').textContent = `${tutStep + 1} of ${STEPS.length}`;
-  document.getElementById('tut-title').textContent = s.title;
-  document.getElementById('tut-model').innerHTML = s.model();
-  document.getElementById('tut-text').textContent = s.text;
-
-  // Dots
-  const dots = document.getElementById('tut-dots');
-  dots.innerHTML = STEPS.map((_, i) => {
-    const cls = i < tutStep ? 'tut-dot done' : i === tutStep ? 'tut-dot active' : 'tut-dot';
-    return `<div class="${cls}"></div>`;
-  }).join('');
-
-  // Button label
-  const btn = document.getElementById('tut-next');
-  if (tutStep === STEPS.length - 1) {
-    btn.textContent = 'Start Learning';
-    btn.onclick = () => document.getElementById('curriculum').scrollIntoView({behavior:'smooth'});
-  } else {
-    btn.textContent = 'Next →';
-    btn.onclick = tutNext;
-  }
+  document.getElementById(`slide-${n}`).style.display = 'block';
+  updateDots();
 }
 
-function tutNext() {
-  if (tutStep < STEPS.length - 1) {
-    tutStep++;
-    tutRender();
-  }
+function nextSlide() {
+  currentSlide = currentSlide < totalSlides ? currentSlide + 1 : 1;
+  showSlide(currentSlide);
 }
 
-// ── Hero visual animation ─────────────────────────────────────────────────────
-const HV_SCENES = [
-  {
-    label: 'Equal relation',
-    render() {
-      return `<div style="display:flex;flex-direction:column;gap:8px;">
-        ${bar(BLUE,'blue',220)}${bar(GREEN,'green',220)}</div>`;
-    }
-  },
-  {
-    label: 'Part-whole relation',
-    render() {
-      return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
-        ${bar(TEAL,'whole',220)}
-        <div style="display:flex;gap:4px;">${bar(BLUE,'part',120)}${bar(ORANGE,'part',96)}</div>
-      </div>`;
-    }
-  },
-  {
-    label: 'Comparison relation',
-    render() {
-      return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
-        ${bar(BLUE,'blue',220)}${bar(ORANGE,'',145,true)}</div>`;
-    }
-  },
-  {
-    label: 'Fractional relation',
-    render() {
-      const bw = Math.floor((220 - 12) / 4);
-      const boxes = [0,1,2,3].map(i =>
-        `<div class="bar-h" style="width:${bw}px;background:${i===0?ORANGE:'#E2DDD6'};">
-          <span style="font-size:10px;font-weight:700;color:${i===0?'#fff':'transparent'}">¼</span>
-        </div>`
-      ).join('');
-      return `<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
-        ${bar(TEAL,'whole',220)}
-        <div style="display:flex;gap:4px;">${boxes}</div></div>`;
-    }
-  }
-];
+function prevSlide() {
+  currentSlide = currentSlide > 1 ? currentSlide - 1 : totalSlides;
+  showSlide(currentSlide);
+}
 
-let hvStep = 0;
-
-function hvRender() {
-  const s = HV_SCENES[hvStep];
-  document.getElementById('hvLabel').textContent = s.label;
-  document.getElementById('hvModel').innerHTML = s.render();
-  document.getElementById('hvDots').innerHTML = HV_SCENES.map((_,i) =>
-    `<div class="hv-dot${i === hvStep ? ' active' : ''}"></div>`
+function updateDots() {
+  const dots = document.getElementById('slide-dots');
+  dots.innerHTML = Array.from({length: totalSlides}, (_, i) =>
+    `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${i+1===currentSlide?'var(--accent)':'var(--border)'};margin:0 4px;cursor:pointer;" onclick="currentSlide=${i+1};showSlide(${i+1})"></span>`
   ).join('');
 }
 
-function hvNext() {
-  const el = document.getElementById('hvModel');
-  el.classList.add('fade');
-  setTimeout(() => {
-    hvStep = (hvStep + 1) % HV_SCENES.length;
-    hvRender();
-    el.classList.remove('fade');
-  }, 320);
-}
-
-if (document.getElementById('hvLabel')) {
-  hvRender();
-  setInterval(hvNext, 3000);
-}
-
-tutRender();
+showSlide(1);
 
 /* ── Study Rat Greeting Bubble ──────────────────────────────────────────── */
 const RAT_GREETINGS = [
