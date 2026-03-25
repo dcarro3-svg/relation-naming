@@ -184,14 +184,62 @@ function sub(){
 function showPigeonTransition(delayMs) {
   setTimeout(() => {
     try { localStorage.setItem('chart_new_lesson', String(CFG.id)); } catch(e) {}
+
+    // Current session CPM
+    const currentCpm = S.cor * 2;
+
+    // Previous best CPM from saved sessions (before this one was saved)
+    const prevSessions = loadSessions().slice(0, -1); // last one is the just-saved session
+    const prevBest = prevSessions.reduce((best, s) => Math.max(best, s.cpm || 0), 0);
+    const improved = prevBest > 0 && currentCpm > prevBest;
+
+    // Inline goal calculation (mirrors chart.html calcTodayGoal)
+    const PASSOFF_AIM = 30, CELERATION = 1.5;
+    let todayGoal = null;
+    if (prevSessions.length) {
+      const byDay = {};
+      prevSessions.forEach(s => {
+        const dk = s.date ? s.date.slice(0,10) : '';
+        if (!byDay[dk] || (s.cpm||0) > (byDay[dk].cpm||0)) byDay[dk] = s;
+      });
+      const daily = Object.values(byDay).sort((a,b) => new Date(a.date)-new Date(b.date));
+      const best = daily.reduce((b,s) => (s.cpm||0) > (b.cpm||0) ? s : b, daily[0]);
+      const anchorRate = best.cpm || 1;
+      const weeksElapsed = (new Date() - new Date(best.date)) / (7*24*60*60*1000);
+      // Effective celeration — same steepening logic as chart.html
+      const steepened = PASSOFF_AIM / anchorRate;
+      const cel = Math.max(steepened, CELERATION);
+      todayGoal = Math.min(anchorRate * Math.pow(cel, weeksElapsed), PASSOFF_AIM);
+    }
+    const twoBelowGoal = todayGoal !== null && currentCpm <= todayGoal - 2;
+
+    // Random exclamation
+    const EXCLAMATIONS = ['Wow!', 'Nice work!', 'Awesome!', 'Great job!', 'Way to go!', 'Fantastic!'];
+    const exclaim = EXCLAMATIONS[Math.floor(Math.random() * EXCLAMATIONS.length)];
+
+    // Sub-message
+    let subMsg = '';
+    if (improved) {
+      const ENCOURAGE = [
+        "You're getting closer!", "Look at that improvement!", "You're on a roll!",
+        "Keep climbing!", "That's real progress!"
+      ];
+      subMsg = `<div class="pig-sub">${ENCOURAGE[Math.floor(Math.random() * ENCOURAGE.length)]}</div>`;
+    } else if (twoBelowGoal && CFG.lessonHref) {
+      subMsg = `<div class="pig-sub pig-link">Need a refresher? <a href="${CFG.lessonHref}">Back to instruction →</a></div>`;
+    }
+
     const overlay = document.createElement('div');
     overlay.id = 'pigeon-overlay';
     overlay.innerHTML = `<div class="pig-inner">
-      <div class="pig-bubble">Let's chart your timing!</div>
+      <div class="pig-bubble">
+        <span class="pig-exclaim">${exclaim}</span> Let's chart your timing!
+        ${subMsg}
+      </div>
       <img src="Icons/pigeon.png" alt="Pigeon">
     </div>`;
     document.body.appendChild(overlay);
-    setTimeout(() => { window.location.href = CFG.chartHref; }, 2200);
+    setTimeout(() => { window.location.href = CFG.chartHref; }, 2800);
   }, delayMs || 0);
 }
 
@@ -314,9 +362,12 @@ showIntro();
     animation:pigeonSlideUp 0.5s ease 0.1s both; }
   #pigeon-overlay .pig-bubble { background:#FBF0E4;border:3px solid #D4600A;border-radius:12px;
     padding:14px 28px;font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;
-    color:#1E1530;white-space:nowrap;margin-bottom:14px;
+    color:#1E1530;white-space:nowrap;margin-bottom:14px;text-align:center;
     box-shadow:0 4px 20px rgba(0,0,0,0.18); }
-  #pigeon-overlay img { width:220px;height:auto;image-rendering:pixelated; }
+  #pigeon-overlay .pig-exclaim { color:#D4600A; }
+  #pigeon-overlay .pig-sub { font-size:15px;font-weight:600;color:#5a3a1a;margin-top:8px;white-space:normal;max-width:280px; }
+  #pigeon-overlay .pig-link a { color:#6845A8;text-decoration:underline; }
+  #pigeon-overlay img { width:280px;height:auto;image-rendering:pixelated; }
 </style>
 
 <button id="draw-btn" onclick="toggleDrawer()" title="Bar Model Drawing Tool">
