@@ -18,6 +18,7 @@
   .word-bank{width:132px;flex-shrink:0;border:2px solid var(--text-primary);border-radius:var(--radius);padding:8px 7px;display:flex;flex-direction:column;gap:5px;background:var(--surface);}
   .wb-group{display:flex;flex-direction:column;gap:3px;}
   .wb-row{display:flex;gap:3px;}
+  .wb-row .word-btn{flex:1;width:auto;}
   .wb-div{height:1px;background:var(--border);margin:3px 0;}
   .word-btn{width:100%;padding:6px 4px;border-radius:7px;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text-primary);cursor:pointer;transition:all 0.1s;text-align:center;}
   .word-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
@@ -209,13 +210,29 @@ function genItem(){
 }
 
 // ── Word bank ─────────────────────────────────────────────────────────────────
+// Colors stack vertically. Relation words:
+//   2 short words (≤8 chars each) → side-by-side row
+//   4 words (plus/minus/equals/unknown) → 2 rows of 2
+//   anything else → vertical stack
 function wb(item,onAdd){
   const cb=item.colors.map(c=>`<button class="word-btn" onclick="${onAdd}('${c.name}')">${c.name}</button>`).join('');
-  const rb=item.relWords.map(w=>`<button class="word-btn" onclick="${onAdd}('${w.replace(/'/g,"\\'")}')">${w}</button>`).join('');
+  const rw=item.relWords;
+  const btn=w=>`<button class="word-btn" onclick="${onAdd}('${w.replace(/'/g,"\\'")}')">${w}</button>`;
+  let rb;
+  if(rw.length===2 && rw.every(w=>w.length<=8)){
+    // equals/unknown or two times/unknown — side by side
+    rb=`<div class="wb-row">${rw.map(btn).join('')}</div>`;
+  }else if(rw.length===4){
+    // plus, minus, equals, unknown — 2×2 grid
+    rb=`<div class="wb-row">${btn(rw[0])}${btn(rw[1])}</div><div class="wb-row">${btn(rw[2])}${btn(rw[3])}</div>`;
+  }else{
+    // phrase buttons or any other count — vertical stack
+    rb=rw.map(btn).join('');
+  }
   return`<div class="word-bank">
     <div class="wb-group">${cb}</div>
     <div class="wb-div"></div>
-    <div class="wb-group"><div class="wb-row">${rb}</div></div>
+    <div class="wb-group">${rb}</div>
   </div>`;
 }
 
