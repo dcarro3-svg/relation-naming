@@ -64,8 +64,10 @@
   .intro-card h2{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:10px;}
   .intro-card p{font-size:14px;line-height:1.6;color:var(--text-secondary);margin-bottom:6px;}
   .start-btn{width:100%;padding:14px;border-radius:var(--radius);border:none;background:var(--accent);color:white;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px;}
-  .start-btn:hover{background:#512F8A;
-    box-shadow:0 0 0 2px #F0922B,0 0 14px 4px rgba(240,146,43,0.55),0 0 32px 10px rgba(240,146,43,0.28);}
+  .start-btn:hover{background:#512F8A;box-shadow:0 0 0 2px #F0922B,0 0 14px 4px rgba(240,146,43,0.55),0 0 32px 10px rgba(240,146,43,0.28);}
+  .pig-intro{display:flex;align-items:center;gap:12px;margin:14px 0 4px;}
+  .pig-intro img{width:48px;height:auto;image-rendering:pixelated;flex-shrink:0;}
+  .pig-intro-line{font-size:13px;font-weight:600;color:var(--text-secondary);font-style:italic;}
   .bar-h{height:58px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
   .fu{animation:fadeUp 0.2s ease;}
@@ -258,8 +260,43 @@ const S={phase:'intro',t:DUR,timer:null,cor:0,err:0,item:null,asm:[],start:null,
 function render(h){document.getElementById('main').innerHTML=h;}
 function setPhase(l){document.getElementById('phaseLabel').textContent=l;}
 
+// ── Pigeon dialogue pools ──────────────────────────────────────────────────────
+const PIG_BEFORE = [
+  'Ready when you are.',
+  'Take your time getting started.',
+  'No rush. I\'ll be here.',
+  'Whenever you\'re set.',
+  'I\'ll be watching. In a good way.',
+  'You\'ve done this before. You know what to do.',
+];
+const PIG_AFTER = [
+  'That was a good one.',
+  'Good work.',
+  'That went well.',
+  'You showed up. That matters.',
+  'Let\'s see where that lands.',
+];
+const PIG_IMPROVED = [
+  'You\'re getting it.',
+  'That one was better.',
+  'Getting closer.',
+  'That\'s a real improvement.',
+  'Progress. Quiet, steady progress.',
+];
+function pigLine(pool){ return pool[Math.floor(Math.random()*pool.length)]; }
+
 // ── Drill ─────────────────────────────────────────────────────────────────────
-function showIntro(){S.phase='intro';setPhase('Practice');render(`<div class="intro-card fu"><h2>Comparisons & Differences — Fluency</h2><p>You will see bar models for <strong>30 seconds</strong>.</p><p>Build the relation using the word buttons on the right. The unknown goes at the end.</p><p style="color:var(--accent);font-weight:600">Go as fast as you accurately can.</p><button class="start-btn" onclick="startDrill()">Start</button></div>`);}
+function showIntro(){
+  S.phase='intro';setPhase('Practice');
+  render(`<div class="intro-card fu">
+    <h2>Comparisons & Differences — Fluency</h2>
+    <p>You will see bar models for <strong>30 seconds</strong>.</p>
+    <p>Build the relation using the word buttons on the right. The unknown goes at the end.</p>
+    <p style="color:var(--accent);font-weight:600">Go as fast as you accurately can.</p>
+    <div class="pig-intro"><img src="Icons/pigeon.png" alt="Pigeon"><div class="pig-intro-line">${pigLine(PIG_BEFORE)}</div></div>
+    <button class="start-btn" onclick="startDrill()">Start</button>
+  </div>`);
+}
 
 function startDrill(){S.phase='drill';S.cor=0;S.err=0;S.t=DUR;S.start=new Date().toISOString();S.errors=[];setPhase('Practice');nextItem();S.timer=setInterval(()=>{S.t--;updateT();if(S.t<=0)endDrill();},1000);}
 
@@ -318,27 +355,24 @@ function showPigeonTransition(delayMs) {
     }
     const twoBelowGoal = todayGoal !== null && currentCpm <= todayGoal - 2;
 
-    // Random exclamation
-    const EXCLAMATIONS = ['Wow!', 'Nice work!', 'Awesome!', 'Great job!', 'Way to go!', 'Fantastic!'];
-    const exclaim = EXCLAMATIONS[Math.floor(Math.random() * EXCLAMATIONS.length)];
+    // Main line — improvement gets its own line, otherwise a general after-timing line
+    const mainLine = improved ? pigLine(PIG_IMPROVED) : pigLine(PIG_AFTER);
 
     // Sub-message
     let subMsg = '';
     if (improved) {
-      const ENCOURAGE = [
-        "You're getting closer!", "Look at that improvement!", "You're on a roll!",
-        "Keep climbing!", "That's real progress!"
-      ];
-      subMsg = `<div class="pig-sub">${ENCOURAGE[Math.floor(Math.random() * ENCOURAGE.length)]}</div>`;
+      subMsg = `<div class="pig-sub">Let's chart it.</div>`;
     } else if (twoBelowGoal && CFG.lessonHref) {
-      subMsg = `<div class="pig-sub pig-link">Need a refresher? <a href="${CFG.lessonHref}">Back to instruction →</a></div>`;
+      subMsg = `<div class="pig-sub pig-link">A refresher might help. <a href="${CFG.lessonHref}">Back to instruction →</a></div>`;
+    } else {
+      subMsg = `<div class="pig-sub">Let's chart your timing.</div>`;
     }
 
     const overlay = document.createElement('div');
     overlay.id = 'pigeon-overlay';
     overlay.innerHTML = `<div class="pig-inner">
       <div class="pig-bubble">
-        <span class="pig-exclaim">${exclaim}</span> Let's chart your timing!
+        ${mainLine}
         ${subMsg}
       </div>
       <img src="Icons/pigeon.png" alt="Pigeon">
