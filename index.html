@@ -269,10 +269,8 @@
     .main-layout{flex-direction:column-reverse;padding:0 24px 64px;gap:32px;}
     .main-right{flex:none;width:100%;}
   }
-  /* Corner mascots */
-  .corner-mascot{position:fixed;pointer-events:none;z-index:10;image-rendering:pixelated;width:160px;height:auto;}
-  .corner-mascot.top-left{top:12px;left:12px;}
-  .corner-mascot.bottom-right{bottom:12px;right:12px;}
+  /* Mascots */
+  .mascot{image-rendering:pixelated;display:block;}
 
   @media(max-width:760px){
     .banner{padding:52px 28px 44px;}
@@ -285,8 +283,6 @@
 </style>
 </head>
 <body>
-<img src="Icons/crow typing.png" class="corner-mascot top-left" alt="">
-<img src="Icons/packrat.png" class="corner-mascot bottom-right" alt="">
 <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -314,6 +310,11 @@
     </div>
 
   </div>
+
+  <!-- Crow mascot — embedded in banner, lower-left -->
+  <img src="Icons/crow typing.png" class="mascot" alt=""
+    style="position:absolute;left:0;bottom:6px;width:280px;height:auto;">
+
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -572,6 +573,11 @@
   </div><!-- /.main-right -->
 
 </div><!-- /.main-layout -->
+
+<!-- Packrat mascot — embedded at bottom-right -->
+<div style="width:100%;max-width:1280px;display:flex;justify-content:flex-end;padding:0 40px 8px;">
+  <img src="Icons/packrat.png" class="mascot" alt="" style="width:280px;height:auto;">
+</div>
 
 </div><!-- /outer wrapper -->
 
