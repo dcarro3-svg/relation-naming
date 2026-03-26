@@ -92,6 +92,18 @@
 
   @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
+  /* ── Instruction stage animations ─────────────────────────────────────── */
+  @keyframes buildIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes unkPulse{0%,100%{outline-color:var(--accent);outline-offset:2px}50%{outline-color:var(--accent-warm);outline-offset:4px}}
+  @keyframes tokenSlide{from{opacity:0;transform:translateY(-8px) scale(0.88)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .think-box{background:var(--surface);border-left:3px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;font-size:14px;line-height:1.7;color:var(--text-secondary);margin-bottom:14px;font-style:italic;}
+  .step-label{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+  .stage-indicator{display:flex;gap:6px;align-items:center;margin-bottom:14px;}
+  .stage-dot{width:9px;height:9px;border-radius:50%;background:var(--border);transition:background 0.2s,transform 0.2s;flex-shrink:0;}
+  .stage-dot.done{background:var(--accent);opacity:0.45;}
+  .stage-dot.active{background:var(--accent);transform:scale(1.25);}
+  .stage-name{font-size:11px;font-weight:600;color:var(--accent);margin-left:6px;text-transform:uppercase;letter-spacing:0.6px;}
+
   /* ── Drawing Tool Drawer (Word Problem Mode) ──────────────────────── */
   #draw-btn {
     position: fixed; top: 28px; right: 28px;
@@ -220,7 +232,10 @@ function speak(text, onEnd) {
 function replayAudio() {
   if (S.phase === 'instruct') {
     const p = INSTRUCT_PROBLEMS[S.instructStep];
-    if (p) speak(p.audio);
+    if (!p) return;
+    if (S.instructStage < 4 && p.narration && p.narration[S.instructStage]) {
+      speak(p.narration[S.instructStage]);
+    }
   }
 }
 
@@ -264,35 +279,47 @@ const PROBLEMS_INSTRUCT = [
   {
     id: 0, phase: 'instruct',
     text: `Tom has some stickers. He has red stickers and blue stickers. Together, all the stickers make up his whole collection.`,
-    explanation: `This is a part-whole model. The whole bar on top equals the two parts below — red stickers and blue stickers. To name the relation for the unknown: red plus blue equals whole.`,
-    audio: `Listen. Tom has red stickers and blue stickers. Together they make his whole collection. Draw a bar for the whole collection on top. Draw two smaller bars below — one for red, one for blue — that together match the width of the whole bar. The relation is: red stickers plus blue stickers equals whole.`,
-    type: 'pw', prebuilt: true,
-    colors: [0,1,2],
-    labels: ['red stickers','blue stickers','whole'],
+    type: 'pw',
+    labels: ['whole collection','red stickers','blue stickers'],
+    unkLabel: 'whole collection',
     proportions: [0.55, 0.45],
-    correct: ['red stickers','plus','blue stickers','equals','whole'],
+    correct: ['red stickers','plus','blue stickers','equals','whole collection'],
+    narration: [
+      `Tom has red stickers and blue stickers. Together they make up his whole collection. I notice two groups that combine into one total — this looks like a part-whole relation.`,
+      `I draw the whole collection as one long bar on top. Below it, I draw two smaller bars side by side — red stickers on the left and blue stickers on the right. Together, those two bars fill the same width as the whole bar on top.`,
+      `The problem asks how many stickers Tom has altogether — the whole collection is the unknown. I place a question mark on the top bar to mark it.`,
+      `Reading the model: red stickers plus blue stickers equals the whole collection. The equation comes directly from the picture — the two parts add up to the whole.`,
+    ],
   },
   {
     id: 1, phase: 'instruct',
-    text: `A rope was cut into two pieces — a long piece and a short piece. The long piece is the longer part.`,
-    explanation: `This is also a part-whole model. The whole rope is on top. The two cut pieces are below. You can subtract: whole minus short piece equals long piece.`,
-    audio: `A rope was cut into two pieces. Draw the whole rope on top. Draw the long piece and the short piece below, side by side. They should exactly fill the width of the whole. The relation is: whole minus short piece equals long piece.`,
-    type: 'pw', prebuilt: true,
-    colors: [2,3,0],
+    text: `A rope was cut into two pieces — a long piece and a short piece. Together the two pieces make the whole rope.`,
+    type: 'pw',
     labels: ['whole rope','long piece','short piece'],
+    unkLabel: 'long piece',
     proportions: [0.65, 0.35],
     correct: ['whole rope','minus','short piece','equals','long piece'],
+    narration: [
+      `A rope was cut into two pieces — a long piece and a short piece. The two pieces together make the whole rope. This is a part-whole situation.`,
+      `I draw the whole rope as one bar on top. Below it, I draw the long piece and the short piece side by side. Together they span the full width of the whole rope bar.`,
+      `The question asks for the long piece — that is the unknown. I place a question mark on the long-piece bar.`,
+      `Reading the model: whole rope minus short piece equals long piece. Knowing any two of the three quantities lets me find the third.`,
+    ],
   },
   {
     id: 2, phase: 'instruct',
-    text: `Ana's jump is longer than Ben's jump. Draw the model showing both jumps and the difference between them.`,
-    explanation: `This is a comparison model. The larger bar is Ana's jump. The smaller bar is Ben's jump. The difference is the extra part. Ben's jump plus the difference equals Ana's jump.`,
-    audio: `Ana jumped farther than Ben. Draw Ana's jump on top — it is the longer bar. Below it, draw Ben's jump and then the difference next to it. Together, Ben's jump and the difference should match Ana's jump. The relation is: Ben plus difference equals Ana.`,
-    type: 'cmp', prebuilt: true,
-    colors: [2,0,1],
+    text: `Ana's jump is longer than Ben's jump. The difference shows how much farther Ana jumped.`,
+    type: 'cmp',
     labels: ["Ana's jump","Ben's jump",'difference'],
+    unkLabel: 'difference',
     proportions: [0.6, 0.4],
     correct: ["Ben's jump",'plus','difference','equals',"Ana's jump"],
+    narration: [
+      `Ana jumped farther than Ben. I am comparing two quantities — Ana's jump and Ben's jump. The amount by which Ana leads is called the difference.`,
+      `I draw Ana's jump as the longer bar on top. Below it, I draw Ben's jump — which is shorter — and then the difference bar right next to it. Together, Ben's jump and the difference fill the same length as Ana's jump.`,
+      `The problem asks for the difference — by how much Ana jumped farther. I mark the difference bar with a question mark.`,
+      `Reading the model: Ben's jump plus the difference equals Ana's jump. The comparison model shows exactly this relationship between the three quantities.`,
+    ],
   },
 ];
 
@@ -303,6 +330,7 @@ const PRACTICE_PROBLEMS = WP1;
 const S = {
   phase: 'intro',
   instructStep: 0,
+  instructStage: 0,
   practiceStep: 0,
   practicePhase: 'draw',
   totalInstruct: 3,
@@ -409,80 +437,145 @@ function showIntro() {
 function startInstruct() {
   S.phase = 'instruct';
   S.instructStep = 0;
+  S.instructStage = 0;
   S.instructAnswered = false;
   S.instructSelectedAnswer = null;
   setPhase('Instruction');
-  showInstructStep();
+  showInstructStage();
 }
 
-function showInstructStep() {
-  updateProgress();
-  const p = INSTRUCT_PROBLEMS[S.instructStep];
-  S.instructAnswered = false;
-  S.instructSelectedAnswer = null;
+// ── Staged instruction renderers ──────────────────────────────────────────────
 
-  let modelHtml = '';
-  if (p.type === 'pw') {
-    modelHtml = renderStaticPW(p.labels, null, p.proportions);
-  } else if (p.type === 'cmp') {
-    modelHtml = renderStaticCMP(p.labels, null, p.proportions);
+function stageIndicatorHtml(stage) {
+  const names = ['Read','Build','Unknown','Equation','Name'];
+  const dots = names.map((n, i) => {
+    const cls = i < stage ? 'done' : i === stage ? 'active' : '';
+    return `<div class="stage-dot ${cls}" title="${n}"></div>`;
+  }).join('');
+  return `<div class="stage-indicator">${dots}<span class="stage-name">${names[stage]}</span></div>`;
+}
+
+function renderAnimBarPW(labels, proportions, unkLabel, stage, w) {
+  w = w || 320;
+  const p1w = Math.round(w * proportions[0]);
+  const p2w = w - p1w;
+  const unks = unkLabel.toLowerCase();
+
+  function bar(label, width, border, delay) {
+    const isUnk = label.toLowerCase() === unks;
+    const anim  = stage === 1 ? `animation:buildIn 0.45s ease ${delay}ms both;` : '';
+    const pulse = (isUnk && stage === 2) ? `animation:unkPulse 1.3s ease infinite;outline:2.5px dashed var(--accent);outline-offset:2px;` : '';
+    const text  = (isUnk && stage >= 2) ? '?' : label;
+    const textStyle = (isUnk && stage >= 2) ? `${LBL_S}font-size:18px;font-weight:700;color:var(--accent)` : LBL_S;
+    return `<div style="${BAR_S}width:${width}px;height:${BH}px;background:#fff;${border}${anim}${pulse}"><span style="${textStyle}">${text}</span></div>`;
   }
 
-  // Generate 3 answer choices: correct + 2 distractors
-  const correctStr = p.correct.join(' ');
-  const distractors = generateDistractors(p);
-  const choices = shuffle([correctStr, ...distractors.slice(0, 2)]);
+  const wBar  = bar(labels[0], w, 'border:2px solid #1E1530;border-radius:6px;', 0);
+  const p1Bar = bar(labels[1], p1w, 'border:2px solid #1E1530;border-right:1px solid #1E1530;border-radius:6px 0 0 6px;', 200);
+  const p2Bar = bar(labels[2], p2w, 'border:2px solid #1E1530;border-left:none;border-radius:0 6px 6px 0;', 400);
+  return `<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">${wBar}<div style="display:flex">${p1Bar}${p2Bar}</div></div>`;
+}
 
-  render(`<div class="card" style="animation:fadeUp 0.3s ease">
-    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">
-      <div style="flex:1">
-        <div class="problem-text">${p.text}</div>
-      </div>
-      ${audioBtnHtml()}
-    </div>
-    <div style="margin-bottom:14px;overflow-x:auto">${modelHtml}</div>
-    <div class="instruct-text">${p.explanation}</div>
-    <div style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px">Choose the correct relation:</div>
-    <div class="instruct-word-bank" id="choiceBank">
-      <div class="wb-group" style="flex-direction:column">
-        ${choices.map((c, idx) => `<button class="wb-btn" id="choice_${idx}" onclick="pickInstructAnswer('${c.replace(/'/g, "\\'")}')">${c}</button>`).join('')}
-      </div>
-    </div>
-    <div id="instructFeedback"></div>
-  </div>`);
+function renderAnimBarCMP(labels, proportions, unkLabel, stage, w) {
+  w = w || 320;
+  const smallW = Math.round(w * proportions[1]);
+  const diffW  = w - smallW;
+  const unks = unkLabel.toLowerCase();
 
-  speak(p.audio);
+  function bar(label, width, border, bg, delay) {
+    const isUnk = label.toLowerCase() === unks;
+    const anim  = stage === 1 ? `animation:buildIn 0.45s ease ${delay}ms both;` : '';
+    const pulse = (isUnk && stage === 2) ? `animation:unkPulse 1.3s ease infinite;outline:2.5px dashed var(--accent);outline-offset:2px;` : '';
+    const text  = (isUnk && stage >= 2) ? '?' : label;
+    const textStyle = (isUnk && stage >= 2) ? `${LBL_S}font-size:18px;font-weight:700;color:var(--accent)` : LBL_S;
+    return `<div style="${BAR_S}width:${width}px;height:${BH}px;background:${bg};${border}${anim}${pulse}"><span style="${textStyle}">${text}</span></div>`;
+  }
+
+  const largeBar = bar(labels[0], w, 'border:2px solid #1E1530;border-radius:6px;', '#fff', 0);
+  const smallBar = bar(labels[1], smallW, 'border:2px solid #1E1530;border-right:1px solid #1E1530;border-radius:6px 0 0 6px;', '#fff', 200);
+  const diffBar  = bar(labels[2], diffW, 'border:2px dashed #1E1530;border-left:none;border-radius:0 6px 6px 0;', '#F3F4F6', 400);
+  return `<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">${largeBar}<div style="display:flex">${smallBar}${diffBar}</div></div>`;
+}
+
+function renderInstructModel(p, stage) {
+  if (p.type === 'pw')  return renderAnimBarPW(p.labels, p.proportions, p.unkLabel, stage);
+  if (p.type === 'cmp') return renderAnimBarCMP(p.labels, p.proportions, p.unkLabel, stage);
+  return '';
+}
+
+function renderEquationTokens(correct) {
+  return `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:10px 0 4px">
+    ${correct.map((t, i) => `<span class="token${t === 'unknown' ? ' unk' : ''}" style="animation:tokenSlide 0.35s ease ${i * 130}ms both;opacity:0">${t}</span>`).join('')}
+  </div>`;
 }
 
 function generateDistractors(p) {
   const correct = p.correct;
-  const labels = p.labels;
-  const ops = p.type === 'frac' ? ['of','equals'] : ['plus','minus','equals'];
   const distList = [];
-
-  // Swap operator
   if (correct.includes('plus')) {
-    const alt = [...correct];
-    const idx = alt.indexOf('plus');
-    alt[idx] = 'minus';
-    distList.push(alt.join(' '));
+    const alt = [...correct]; alt[alt.indexOf('plus')] = 'minus'; distList.push(alt.join(' '));
   } else if (correct.includes('minus')) {
-    const alt = [...correct];
-    const idx = alt.indexOf('minus');
-    alt[idx] = 'plus';
-    distList.push(alt.join(' '));
+    const alt = [...correct]; alt[alt.indexOf('minus')] = 'plus'; distList.push(alt.join(' '));
   }
-
-  // Reverse label order
-  const reversed = [...correct].reverse();
-  distList.push(reversed.join(' '));
-
-  // Shuffle labels
+  distList.push([...correct].reverse().join(' '));
   const shuffled = shuffle([...correct]);
   if (shuffled.join(' ') !== correct.join(' ')) distList.push(shuffled.join(' '));
-
-  // Ensure distractors are different from correct
   return distList.filter(d => d !== correct.join(' ')).slice(0, 2);
+}
+
+// ── Main staged renderer ───────────────────────────────────────────────────────
+function showInstructStage() {
+  updateProgress();
+  const p = INSTRUCT_PROBLEMS[S.instructStep];
+  S.instructAnswered = false;
+  S.instructSelectedAnswer = null;
+  const stage = S.instructStage;
+
+  const stageActionLabels = ['Build the model →', 'Mark the unknown →', 'Read the equation →', 'Name the relation →'];
+
+  const thinkHtml = stage < 4 && p.narration[stage]
+    ? `<div class="think-box">${p.narration[stage]}</div>` : '';
+
+  const modelHtml = stage >= 1
+    ? `<div style="margin-bottom:14px;overflow-x:auto">${renderInstructModel(p, stage)}</div>` : '';
+
+  const equationHtml = stage >= 3
+    ? `<div style="margin-bottom:10px">${renderEquationTokens(p.correct)}</div>` : '';
+
+  let actionHtml = '';
+  if (stage < 4) {
+    actionHtml = `<button class="btn-continue" style="margin-top:14px" onclick="advanceInstructStage()">${stageActionLabels[stage]}</button>`;
+  } else {
+    const correctStr = p.correct.join(' ');
+    const choices = shuffle([correctStr, ...generateDistractors(p).slice(0, 2)]);
+    actionHtml = `
+      <div style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px">Choose the relation name:</div>
+      <div class="instruct-word-bank" id="choiceBank">
+        <div class="wb-group" style="flex-direction:column">
+          ${choices.map((c, i) => `<button class="wb-btn" id="choice_${i}" onclick="pickInstructAnswer('${c.replace(/'/g, "\\'")}')">${c}</button>`).join('')}
+        </div>
+      </div>
+      <div id="instructFeedback"></div>`;
+  }
+
+  render(`<div class="card" style="animation:fadeUp 0.3s ease">
+    ${stageIndicatorHtml(stage)}
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+      <div style="flex:1"><div class="problem-text">${p.text}</div></div>
+      ${audioBtnHtml()}
+    </div>
+    ${thinkHtml}
+    ${modelHtml}
+    ${equationHtml}
+    ${actionHtml}
+  </div>`);
+
+  if (stage < 4 && p.narration[stage]) speak(p.narration[stage]);
+}
+
+function advanceInstructStage() {
+  S.instructStage++;
+  showInstructStage();
 }
 
 function pickInstructAnswer(chosen) {
@@ -494,31 +587,32 @@ function pickInstructAnswer(chosen) {
   S.instructSelectedAnswer = chosen;
   recordResp('instruct', ok);
 
-  // Highlight buttons
   const bank = document.getElementById('choiceBank');
   if (bank) {
     bank.querySelectorAll('.wb-btn').forEach(btn => {
-      if (btn.textContent === correct) btn.classList.add('correct');
-      else if (btn.textContent === chosen && !ok) btn.classList.add('incorrect');
+      if (btn.textContent.trim() === correct) btn.classList.add('correct');
+      else if (btn.textContent.trim() === chosen && !ok) btn.classList.add('incorrect');
     });
   }
 
   const fb = document.getElementById('instructFeedback');
   if (fb) {
+    const nextLabel = S.instructStep < S.totalInstruct - 1 ? 'Next example →' : 'Start practice →';
     fb.innerHTML = ok
-      ? `<div class="feedback-card ok" style="margin-top:10px">Correct! ${correct}</div>
-         <button class="btn-continue" style="margin-top:10px" onclick="nextInstructStep()">${S.instructStep < S.totalInstruct - 1 ? 'Next example →' : 'Start practice →'}</button>`
-      : `<div class="feedback-card err" style="margin-top:10px">Not quite. The correct relation is: <strong>${correct}</strong></div>
-         <button class="btn-continue" style="margin-top:10px" onclick="nextInstructStep()">${S.instructStep < S.totalInstruct - 1 ? 'Next example →' : 'Start practice →'}</button>`;
+      ? `<div class="feedback-card ok" style="margin-top:10px">Correct! <strong>${correct}</strong></div>
+         <button class="btn-continue" style="margin-top:10px" onclick="nextInstructStep()">${nextLabel}</button>`
+      : `<div class="feedback-card err" style="margin-top:10px">Not quite. The relation is: <strong>${correct}</strong></div>
+         <button class="btn-continue" style="margin-top:10px" onclick="nextInstructStep()">${nextLabel}</button>`;
   }
 }
 
 function nextInstructStep() {
   S.instructStep++;
+  S.instructStage = 0;
   if (S.instructStep >= S.totalInstruct) {
     startPractice();
   } else {
-    showInstructStep();
+    showInstructStage();
   }
 }
 
