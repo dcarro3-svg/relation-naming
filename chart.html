@@ -199,24 +199,27 @@ function aimRate(firstRate, weeksElapsed) {
   return firstRate * Math.pow(CELERATION, weeksElapsed);
 }
 
-// How many weeks to reach PASSOFF_AIM using a given celeration
-function weeksToPassoffWith(firstRate, cel) {
+// How many weeks to reach the pass-off aim using a given celeration
+function weeksToPassoffWith(firstRate, cel, aim) {
+  const target = aim || PASSOFF_AIM;
   if (firstRate <= 0 || cel <= 1) return Infinity;
-  return Math.log(PASSOFF_AIM / firstRate) / Math.log(cel);
+  return Math.log(target / firstRate) / Math.log(cel);
 }
 
 // Effective celeration for a lesson — steepened if 1.5x takes more than 7 days
-function calcEffectiveCeleration(firstRate) {
-  const wtp = weeksToPassoffWith(firstRate, CELERATION);
+function calcEffectiveCeleration(firstRate, aim) {
+  const target = aim || PASSOFF_AIM;
+  const wtp = weeksToPassoffWith(firstRate, CELERATION, target);
   if (wtp * 7 <= 7) return CELERATION; // reaches goal within a week — use standard
-  // Steepen so it hits 30 in exactly 7 days (1 week)
-  // PASSOFF_AIM = firstRate * cel^1  →  cel = PASSOFF_AIM / firstRate
-  const steepened = PASSOFF_AIM / firstRate;
+  // Steepen so it hits the target in exactly 7 days (1 week)
+  // target = firstRate * cel^1  →  cel = target / firstRate
+  const steepened = target / firstRate;
   return Math.max(steepened, CELERATION); // never less than standard
 }
 
 // Today's derived daily goal — anchored to best daily pinpoint so far
 function calcTodayGoal(L) {
+  const aim = L.passoffAim || PASSOFF_AIM;
   const sorted = [...L.sessions].sort((a,b) => new Date(a.date)-new Date(b.date));
   if (!sorted.length) return null;
   // Best per day
@@ -228,9 +231,9 @@ function calcTodayGoal(L) {
   const daily = Object.values(byDay).sort((a,b) => new Date(a.date)-new Date(b.date));
   const bestSession = daily.reduce((b,s) => (s.cpm||0) > (b.cpm||0) ? s : b, daily[0]);
   const anchorRate = bestSession.cpm || 1;
-  const cel = calcEffectiveCeleration(anchorRate);
+  const cel = calcEffectiveCeleration(anchorRate, aim);
   const weeks = weeksElapsed(bestSession.date, new Date().toISOString());
-  return Math.min(anchorRate * Math.pow(cel, weeks), PASSOFF_AIM);
+  return Math.min(anchorRate * Math.pow(cel, weeks), aim);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -257,8 +260,9 @@ function buildAimLines(lessonData, xAt, H, PT, PB, W, PR, viewMode) {
     if (anchorRate <= 0) return;
 
     // Use effective celeration from the anchor point
-    const cel = calcEffectiveCeleration(anchorRate);
-    const wtp = weeksToPassoffWith(anchorRate, cel);
+    const aim = L.passoffAim || PASSOFF_AIM;
+    const cel = calcEffectiveCeleration(anchorRate, aim);
+    const wtp = weeksToPassoffWith(anchorRate, cel, aim);
     if (!isFinite(wtp)) return;
     const anchorDate = new Date(bestSession.date);
     const passoffDate = new Date(anchorDate.getTime() + wtp * 7 * DAY_MS);
@@ -266,7 +270,7 @@ function buildAimLines(lessonData, xAt, H, PT, PB, W, PR, viewMode) {
     const x0 = xAt(bestSession.date);
     const x1 = xAt(passoffDate.toISOString());
     const y0 = toY(anchorRate, H, PT, PB);
-    const y1 = toY(PASSOFF_AIM, H, PT, PB);
+    const y1 = toY(aim, H, PT, PB);
 
     // Draw aim line — solid neutral gray
     out += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}"
@@ -276,8 +280,8 @@ function buildAimLines(lessonData, xAt, H, PT, PB, W, PR, viewMode) {
     out += `<text x="${x1.toFixed(1)}" y="${(y1+4).toFixed(1)}" text-anchor="middle"
       font-size="14" fill="#9B9591" font-family="DM Sans,sans-serif" opacity="0.8">★</text>`;
 
-    // Pass-off phase change line — only if a session actually hit >= PASSOFF_AIM
-    const passoffSession = sorted.find(s => (s.cpm||0) >= PASSOFF_AIM);
+    // Pass-off phase change line — only if a session actually hit >= aim
+    const passoffSession = sorted.find(s => (s.cpm||0) >= aim);
     if (passoffSession) {
       const px = xAt(passoffSession.date);
       out += `<line x1="${px.toFixed(1)}" y1="${PT}" x2="${px.toFixed(1)}" y2="${H-PB}"
@@ -329,7 +333,8 @@ function buildTodayMini(L, state, isNew) {
   const latestCpm = sessions[sessions.length-1].cpm || 0;
   const todayGoal = calcTodayGoal(L);
   const firstTodayCpm = sessions[0].cpm || 1;
-  const hasPassoff = latestCpm >= PASSOFF_AIM;
+  const aim = L.passoffAim || PASSOFF_AIM;
+  const hasPassoff = latestCpm >= aim;
   const hasGoal = todayGoal !== null && latestCpm >= todayGoal && !hasPassoff;
   const keepgoing = ls.keepgoing || false;
 
@@ -339,7 +344,7 @@ function buildTodayMini(L, state, isNew) {
       <div class="today-mini-title"><span style="width:10px;height:10px;border-radius:50%;background:${L.color};display:inline-block"></span>${L.label}</div>
       <div class="today-token passoff">
         <div class="today-token-title">★ Passed off!</div>
-        <div class="today-token-sub">${latestCpm} correct/min — you reached the goal of ${PASSOFF_AIM}.</div>
+        <div class="today-token-sub">${latestCpm} correct/min — you reached the goal of ${aim}.</div>
         <div class="today-token-btns">
           <button class="token-btn" onclick="dismissToken(${L.id}, true, ${latestCpm})">Done ✓</button>
           <button class="token-btn primary" onclick="keepGoing(${L.id})">Keep going</button>
@@ -414,10 +419,11 @@ function buildTodayMiniSVG(L, sessions, todayGoal, firstTodayCpm, isNew) {
 
   // Aim line — from session 1's rate to today's goal at session 10
   // Sloped on log scale
+  const miniAim = L.passoffAim || PASSOFF_AIM;
   let aimLine = '';
   if (todayGoal !== null && firstTodayCpm > 0) {
     const ax0 = xAt(0), ay0 = yAt(firstTodayCpm);
-    const ax1 = xAt(TODAY_SLOTS - 1), ay1 = yAt(Math.min(todayGoal, PASSOFF_AIM));
+    const ax1 = xAt(TODAY_SLOTS - 1), ay1 = yAt(Math.min(todayGoal, miniAim));
     aimLine = `<line x1="${ax0.toFixed(1)}" y1="${ay0.toFixed(1)}" x2="${ax1.toFixed(1)}" y2="${ay1.toFixed(1)}"
       stroke="#9B9591" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>`;
     // Label at end
@@ -494,11 +500,31 @@ function renderToday(newLessonId) {
 // LESSON CONFIG
 // ═══════════════════════════════════════════════════════════════════════════════
 const LESSONS = [
-  { id:1, label:'Equal',          key:'fluency_l1_sessions', color:'#2D6A4F', fluency:'fluency-l1.html' },
-  { id:2, label:'Part-Whole',     key:'fluency_l2_sessions', color:'#1B6CA8', fluency:'fluency-l2.html' },
-  { id:3, label:'Comparison',     key:'fluency_l3_sessions', color:'#D4600A', fluency:'fluency-l3.html' },
-  { id:4, label:'Fractional',     key:'fluency_l4_sessions', color:'#6C3483', fluency:'fluency-l4.html' },
-  { id:5, label:'Multiplicative', key:'fluency_l5_sessions', color:'#C0392B', fluency:'fluency-l5.html' },
+  { id:1, label:'Equal',               key:'fluency_l1_sessions',         color:'#2D6A4F', fluency:'fluency-l1.html',            passoffAim:30 },
+  { id:2, label:'Part-Whole',          key:'fluency_l2_sessions',         color:'#1B6CA8', fluency:'fluency-l2.html',            passoffAim:30 },
+  { id:3, label:'Comparison',          key:'fluency_l3_sessions',         color:'#D4600A', fluency:'fluency-l3.html',            passoffAim:30 },
+  { id:4, label:'Fractional',          key:'fluency_l4_sessions',         color:'#6C3483', fluency:'fluency-l4.html',            passoffAim:30 },
+  { id:5, label:'Multiplicative',      key:'fluency_l5_sessions',         color:'#C0392B', fluency:'fluency-l5.html',            passoffAim:30 },
+  { id:6, label:'Additive Facts',      key:'fluency_fact_add_sessions',   color:'#0E7E7E', fluency:'fact-fluency-add.html',      passoffAim:60 },
+  { id:7, label:'Multiplicative Facts',key:'fluency_fact_mult_sessions',  color:'#B03A6E', fluency:'fact-fluency-mult.html',     passoffAim:60 },
+  // Per-lesson additive fact lessons (MF1–MF10)
+  { id:8,  label:'MF1',  key:'fact_add_1_sessions',  color:'#086B7D', fluency:'fact-lesson-add-1.html',  passoffAim:60 },
+  { id:9,  label:'MF2',  key:'fact_add_2_sessions',  color:'#0B8296', fluency:'fact-lesson-add-2.html',  passoffAim:60 },
+  { id:10, label:'MF3',  key:'fact_add_3_sessions',  color:'#0E99B0', fluency:'fact-lesson-add-3.html',  passoffAim:60 },
+  { id:11, label:'MF4',  key:'fact_add_4_sessions',  color:'#11B0C9', fluency:'fact-lesson-add-4.html',  passoffAim:60 },
+  { id:12, label:'MF5',  key:'fact_add_5_sessions',  color:'#14C7E2', fluency:'fact-lesson-add-5.html',  passoffAim:60 },
+  { id:13, label:'MF6',  key:'fact_add_6_sessions',  color:'#12B6D2', fluency:'fact-lesson-add-6.html',  passoffAim:60 },
+  { id:14, label:'MF7',  key:'fact_add_7_sessions',  color:'#10A5C2', fluency:'fact-lesson-add-7.html',  passoffAim:60 },
+  { id:15, label:'MF8',  key:'fact_add_8_sessions',  color:'#0E94B1', fluency:'fact-lesson-add-8.html',  passoffAim:60 },
+  { id:16, label:'MF9',  key:'fact_add_9_sessions',  color:'#0C83A1', fluency:'fact-lesson-add-9.html',  passoffAim:60 },
+  { id:17, label:'MF10', key:'fact_add_10_sessions', color:'#0A7291', fluency:'fact-lesson-add-10.html', passoffAim:60 },
+  // Per-lesson multiplicative fact lessons (MF1–MF6)
+  { id:18, label:'MF1', key:'fact_mult_1_sessions', color:'#8B1464', fluency:'fact-lesson-mult-1.html', passoffAim:60 },
+  { id:19, label:'MF2', key:'fact_mult_2_sessions', color:'#A8197A', fluency:'fact-lesson-mult-2.html', passoffAim:60 },
+  { id:20, label:'MF3', key:'fact_mult_3_sessions', color:'#C51E90', fluency:'fact-lesson-mult-3.html', passoffAim:60 },
+  { id:21, label:'MF4', key:'fact_mult_4_sessions', color:'#9E1A78', fluency:'fact-lesson-mult-4.html', passoffAim:60 },
+  { id:22, label:'MF5', key:'fact_mult_5_sessions', color:'#B51F8A', fluency:'fact-lesson-mult-5.html', passoffAim:60 },
+  { id:23, label:'MF6', key:'fact_mult_6_sessions', color:'#CC249C', fluency:'fact-lesson-mult-6.html', passoffAim:60 },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -581,8 +607,9 @@ function buildChart(lessonData, viewMode) {
     const bestSession = daily.reduce((b,s) => (s.cpm||0) > (b.cpm||0) ? s : b, daily[0]);
     const anchorRate = bestSession.cpm || 1;
     if (anchorRate <= 0) return;
-    const cel = calcEffectiveCeleration(anchorRate);
-    const wtp = weeksToPassoffWith(anchorRate, cel);
+    const lAim = L.passoffAim || PASSOFF_AIM;
+    const cel = calcEffectiveCeleration(anchorRate, lAim);
+    const wtp = weeksToPassoffWith(anchorRate, cel, lAim);
     if (!isFinite(wtp)) return;
     const projDate = new Date(new Date(bestSession.date).getTime() + wtp * 7 * DAY_MS);
     if (projDate > new Date(maxProjectedDate)) maxProjectedDate = projDate.toISOString();
@@ -812,7 +839,7 @@ function init() {
       if (todaySessions.length) {
         const latestCpm = todaySessions[todaySessions.length - 1].cpm || 0;
         const todayGoal = calcTodayGoal(L);
-        const metGoal = (todayGoal !== null && latestCpm >= todayGoal) || latestCpm >= PASSOFF_AIM;
+        const metGoal = (todayGoal !== null && latestCpm >= todayGoal) || latestCpm >= (L.passoffAim || PASSOFF_AIM);
 
         // Scroll to today section after a brief pause
         setTimeout(() => {
