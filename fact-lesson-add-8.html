@@ -113,25 +113,25 @@
 </div>
 <script>
 // ── Config ─────────────────────────────────────────────────────────────────────
-const CFG={factType:'add',label:'5 · 7 · 12  and  6 · 6 · 12',storageKey:'fact_add_8_sessions',chartId:15,chartHref:'chart.html',nextHref:'fact-lesson-add-9.html'};
+const CFG={factType:'add',label:'5 · 7 · 12  and  6 · 6 · 12',storageKey:'fact_add_8_sessions',chartId:15,chartHref:'chart.html',nextHref:'fact-lesson-add-numonly-4.html'};
 const FAM_A=[5,7,12];   // additive: [a,b,whole]  |  multiplicative: partSize (integer)
 const FAM_B=[6,6,12];
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
-function isAdd(){return Array.isArray(FAM_A);}
+function isAdd(){return CFG.factType==='add';}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 
 function famLabel(fam){
-  return isAdd()?`${fam[0]} · ${fam[1]} · ${fam[2]}`:`×${fam}`;
+  return isAdd()?`${fam[0]} · ${fam[1]} · ${fam[2]}`:`${fam[0]} × ${fam[1]} = ${fam[2]}`;
 }
 function famDesc(fam){
   if(isAdd()) return`The parts are <strong>${fam[0]}</strong> and <strong>${fam[1]}</strong>. Together they make <strong>${fam[2]}</strong>.`;
-  return`Each equal part is <strong>${fam}</strong>.`;
+  return`<strong>${fam[1]}</strong> equal parts of <strong>${fam[0]}</strong> makes <strong>${fam[2]}</strong>.`;
 }
 // Item shown in intro — all numbers visible (unknownRole 'none' shows all bars normally)
 function famIntroItem(fam){
   if(isAdd()){const[a,b,w]=fam;return{a,b,whole:w,unknownRole:'none'};}
-  return{partSize:fam,numParts:3,whole:fam*3,unknownRole:'none'};
+  const[p,n,w]=fam;return{partSize:p,numParts:n,whole:w,unknownRole:'none'};
 }
 // Fixed practice items for a family — student must get each right before advancing
 function famPracticeItems(fam){
@@ -143,12 +143,10 @@ function famPracticeItems(fam){
       {a,b,whole:w,unknownRole:'p2',answer:b}
     ]);
   }else{
-    const p=fam;
+    const[p,n,w]=fam;
     return shuffle([
-      {partSize:p,numParts:2,whole:p*2,unknownRole:'whole',answer:p*2},
-      {partSize:p,numParts:3,whole:p*3,unknownRole:'part',answer:p},
-      {partSize:p,numParts:4,whole:p*4,unknownRole:'count',answer:4},
-      {partSize:p,numParts:5,whole:p*5,unknownRole:'whole',answer:p*5}
+      {partSize:p,numParts:n,whole:w,unknownRole:'whole',answer:w},
+      {partSize:p,numParts:n,whole:w,unknownRole:'part',answer:p}
     ]);
   }
 }
@@ -159,9 +157,9 @@ function makeFluencyItem(fam){
     const roles=['whole','p1','p2'],role=roles[Math.floor(Math.random()*3)];
     return{a,b,whole:w,unknownRole:role,answer:role==='whole'?w:role==='p1'?a:b};
   }else{
-    const p=fam,n=2+Math.floor(Math.random()*11),w=p*n;
-    const roles=['whole','part','count'],role=roles[Math.floor(Math.random()*3)];
-    return{partSize:p,numParts:n,whole:w,unknownRole:role,answer:role==='whole'?w:role==='part'?p:n};
+    const[p,n,w]=fam;
+    const unknownRole=Math.random()<0.5?'whole':'part';
+    return{partSize:p,numParts:n,whole:w,unknownRole,answer:unknownRole==='whole'?w:p};
   }
 }
 function genFluencyItem(){return makeFluencyItem(Math.random()<0.5?FAM_A:FAM_B);}

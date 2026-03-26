@@ -1,43 +1,60 @@
 #!/usr/bin/env node
 // build-fact-lessons.js
-// Reads fact-lesson-template.html + fact-lesson-config.json
-// Generates one lesson HTML file per config entry
+// Reads fact-lesson-template.html, fact-lesson-numonly-template.html,
+// and fact-lesson-config.json to generate all lesson HTML files.
 // Run: node build-fact-lessons.js
 
 const fs = require('fs');
 
-const template = fs.readFileSync('fact-lesson-template.html', 'utf8');
-const config   = JSON.parse(fs.readFileSync('fact-lesson-config.json', 'utf8'));
+const barTemplate    = fs.readFileSync('fact-lesson-template.html', 'utf8');
+const numonlyTemplate = fs.readFileSync('fact-lesson-numonly-template.html', 'utf8');
+const config         = JSON.parse(fs.readFileSync('fact-lesson-config.json', 'utf8'));
 
-// Chart href by type (storage keys and chart IDs now come from config per-item)
-const META = {
-  add:  { chartHref: 'chart.html' },
-  mult: { chartHref: 'chart.html' },
-};
+const CHART_HREF = 'chart.html';
 
-// Build a human-readable label from the family data
+// Build a human-readable label from the entry
 function makeLabel(item) {
+  if (item.type === 'numonly') {
+    const sep = item.factType === 'add' ? ' · ' : '×';
+    const famsStr = item.fams.map(f =>
+      item.factType === 'add'
+        ? `${f[0]}·${f[1]}·${f[2]}`
+        : `${f[0]}×${f[1]}=${f[2]}`
+    ).join(', ');
+    return `Review: ${famsStr}`;
+  }
   if (item.type === 'add') {
     return `${item.famA[0]} · ${item.famA[1]} · ${item.famA[2]}  and  ${item.famB[0]} · ${item.famB[1]} · ${item.famB[2]}`;
   }
-  return `\u00d7${item.famA} and \u00d7${item.famB}`;
+  // mult: famA and famB are now [partSize, numParts, whole] arrays
+  return `${item.famA[0]}×${item.famA[1]}=${item.famA[2]}  and  ${item.famB[0]}×${item.famB[1]}=${item.famB[2]}`;
 }
 
 config.forEach(item => {
-  const meta   = META[item.type];
-  const label  = makeLabel(item);
-  const famAJs = JSON.stringify(item.famA);
-  const famBJs = JSON.stringify(item.famB);
+  const label = makeLabel(item);
 
-  const output = template
-    .replaceAll('%%FACT_TYPE%%',   item.type)
-    .replaceAll('%%LABEL%%',       label)
-    .replaceAll('%%FAM_A%%',       famAJs)
-    .replaceAll('%%FAM_B%%',       famBJs)
-    .replaceAll('%%STORAGE_KEY%%', item.storageKey)
-    .replaceAll('%%CHART_ID%%',    item.chartId)
-    .replaceAll('%%CHART_HREF%%',  meta.chartHref)
-    .replaceAll('%%NEXT_HREF%%',   item.nextHref);
+  let output;
+
+  if (item.type === 'numonly') {
+    output = numonlyTemplate
+      .replaceAll('%%FACT_TYPE%%',   item.factType)
+      .replaceAll('%%LABEL%%',       label)
+      .replaceAll('%%FAMS%%',        JSON.stringify(item.fams))
+      .replaceAll('%%STORAGE_KEY%%', item.storageKey)
+      .replaceAll('%%CHART_ID%%',    item.chartId)
+      .replaceAll('%%CHART_HREF%%',  CHART_HREF)
+      .replaceAll('%%NEXT_HREF%%',   item.nextHref);
+  } else {
+    output = barTemplate
+      .replaceAll('%%FACT_TYPE%%',   item.type)
+      .replaceAll('%%LABEL%%',       label)
+      .replaceAll('%%FAM_A%%',       JSON.stringify(item.famA))
+      .replaceAll('%%FAM_B%%',       JSON.stringify(item.famB))
+      .replaceAll('%%STORAGE_KEY%%', item.storageKey)
+      .replaceAll('%%CHART_ID%%',    item.chartId)
+      .replaceAll('%%CHART_HREF%%',  CHART_HREF)
+      .replaceAll('%%NEXT_HREF%%',   item.nextHref);
+  }
 
   fs.writeFileSync(item.output, output, 'utf8');
   console.log(`✓  ${item.output}  (${label})`);

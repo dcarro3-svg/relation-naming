@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Math Facts — 4 · 4 · 8  and  3 · 5 · 8</title>
+<title>Math Facts — Review: 4×4=16, 4×5=20, 5×5=25, 5×6=30</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
   :root{--bg:#DDD0F5;--surface:#EDE5FF;--border:#C4ADEE;--text-primary:#1E1530;--text-secondary:#584C72;--text-muted:#9589B8;--accent:#6845A8;--accent-light:#EEE6FF;--accent-warm:#D4600A;--accent-warm-light:#FBF0E4;--error:#C0392B;--radius:12px;--radius-lg:20px;}
@@ -15,22 +15,17 @@
   .lesson-label{font-family:'DM Serif Display',serif;font-size:24px;letter-spacing:-0.5px;}
   .phase-label{font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;flex:1;}
 
-  /* Model */
-  .model-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px 24px;display:flex;align-items:center;justify-content:center;min-height:190px;overflow:visible;}
+  /* Equation display area */
+  .model-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px 24px;display:flex;align-items:center;justify-content:center;min-height:160px;overflow:visible;}
 
   /* Cards */
   .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;}
   .card h2{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:10px;}
   .card p{font-size:14px;line-height:1.6;color:var(--text-secondary);margin-bottom:8px;}
 
-  /* Family pills — show both family names on intro */
+  /* Family pills — show all 4 on intro */
   .fam-pills{display:flex;flex-direction:column;gap:8px;margin:14px 0;}
-  .fam-pill{background:var(--accent-light);border:1px solid #C4ADEE;border-radius:var(--radius);padding:11px 18px;font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);text-align:center;}
-
-  /* Family intro description */
-  .fam-desc{background:var(--accent-light);border:1px solid #C4ADEE;border-radius:var(--radius);padding:14px 18px;}
-  .fam-desc .fam-name{font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);margin-bottom:5px;}
-  .fam-desc p{font-size:14px;color:var(--text-secondary);line-height:1.5;}
+  .fam-pill{background:var(--accent-light);border:1px solid #C4ADEE;border-radius:var(--radius);padding:11px 18px;font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);text-align:center;letter-spacing:1px;}
 
   /* Practice progress */
   .pra-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
@@ -96,9 +91,6 @@
   .pig-bubble{background:var(--surface);border:2px solid var(--accent);border-radius:16px;padding:20px 24px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;max-width:260px;line-height:1.5;}
   .pig-sub{font-size:13px;font-weight:400;color:var(--text-secondary);margin-top:6px;}
 
-  /* Bar base */
-  .fb{height:58px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-
   @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
   .fu{animation:fadeUp 0.18s ease;}
 </style>
@@ -107,33 +99,66 @@
 <div class="app">
   <div class="header">
     <span class="lesson-label">Math Facts</span>
-    <span class="phase-label" id="phaseLabel">Lesson</span>
+    <span class="phase-label" id="phaseLabel">Review</span>
   </div>
   <div id="main"></div>
 </div>
 <script>
 // ── Config ─────────────────────────────────────────────────────────────────────
-const CFG={factType:'add',label:'4 · 4 · 8  and  3 · 5 · 8',storageKey:'fact_add_4_sessions',chartId:11,chartHref:'chart.html',nextHref:'fact-lesson-add-numonly-2.html'};
-const FAM_A=[4,4,8];   // additive: [a,b,whole]  |  multiplicative: partSize (integer)
-const FAM_B=[3,5,8];
+const CFG={factType:'mult',label:'Review: 4×4=16, 4×5=20, 5×5=25, 5×6=30',storageKey:'fact_mult_numonly_3_sessions',chartId:31,chartHref:'chart.html',nextHref:'index.html'};
+const FAMS=[[4,4,16],[4,5,20],[5,5,25],[5,6,30]];   // array of 4 [a,b,whole] or [partSize,numParts,whole] families
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function isAdd(){return CFG.factType==='add';}
 function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 
 function famLabel(fam){
-  return isAdd()?`${fam[0]} · ${fam[1]} · ${fam[2]}`:`${fam[0]} × ${fam[1]} = ${fam[2]}`;
+  return isAdd()?`${fam[0]} + ${fam[1]} = ${fam[2]}`:`${fam[0]} × ${fam[1]} = ${fam[2]}`;
 }
-function famDesc(fam){
-  if(isAdd()) return`The parts are <strong>${fam[0]}</strong> and <strong>${fam[1]}</strong>. Together they make <strong>${fam[2]}</strong>.`;
-  return`<strong>${fam[1]}</strong> equal parts of <strong>${fam[0]}</strong> makes <strong>${fam[2]}</strong>.`;
+
+// ── Equation renderer ──────────────────────────────────────────────────────────
+function numSpan(val,isUnk){
+  const color=isUnk?'var(--accent)':'var(--text-primary)';
+  const fi=isUnk?'italic':'normal';
+  const text=isUnk?'?':String(val);
+  const len=String(val).length;
+  const fs=isUnk?'52px':len>=3?'36px':len>=2?'48px':'56px';
+  return`<span style="font-family:'DM Serif Display',serif;font-size:${fs};color:${color};font-style:${fi};min-width:${isUnk?'52px':'44px'};text-align:center;display:inline-block;line-height:1">${text}</span>`;
 }
-// Item shown in intro — all numbers visible (unknownRole 'none' shows all bars normally)
-function famIntroItem(fam){
-  if(isAdd()){const[a,b,w]=fam;return{a,b,whole:w,unknownRole:'none'};}
-  const[p,n,w]=fam;return{partSize:p,numParts:n,whole:w,unknownRole:'none'};
+function opSpan(op){
+  return`<span style="font-family:'DM Sans',sans-serif;font-size:36px;color:var(--text-muted);font-weight:300;padding:0 6px">${op}</span>`;
 }
-// Fixed practice items for a family — student must get each right before advancing
+
+function renderEq(item){
+  if(isAdd()){
+    const{a,b,whole,unknownRole}=item;
+    return`<div style="display:flex;align-items:center;justify-content:center;flex-wrap:nowrap">
+      ${numSpan(a,unknownRole==='p1')}${opSpan('+')}${numSpan(b,unknownRole==='p2')}${opSpan('=')}${numSpan(whole,unknownRole==='whole')}
+    </div>`;
+  }else{
+    const{partSize,numParts,whole,unknownRole}=item;
+    return`<div style="display:flex;align-items:center;justify-content:center;flex-wrap:nowrap">
+      ${numSpan(partSize,unknownRole==='part')}${opSpan('×')}${numSpan(numParts,unknownRole==='count')}${opSpan('=')}${numSpan(whole,unknownRole==='whole')}
+    </div>`;
+  }
+}
+
+// Equation with all values shown (for intro display)
+function renderEqFull(fam){
+  if(isAdd()){
+    const[a,b,w]=fam;
+    return`<div style="display:flex;align-items:center;justify-content:center;flex-wrap:nowrap">
+      ${numSpan(a,false)}${opSpan('+')}${numSpan(b,false)}${opSpan('=')}${numSpan(w,false)}
+    </div>`;
+  }else{
+    const[p,n,w]=fam;
+    return`<div style="display:flex;align-items:center;justify-content:center;flex-wrap:nowrap">
+      ${numSpan(p,false)}${opSpan('×')}${numSpan(n,false)}${opSpan('=')}${numSpan(w,false)}
+    </div>`;
+  }
+}
+
+// ── Practice item generation ───────────────────────────────────────────────────
 function famPracticeItems(fam){
   if(isAdd()){
     const[a,b,w]=fam;
@@ -146,147 +171,82 @@ function famPracticeItems(fam){
     const[p,n,w]=fam;
     return shuffle([
       {partSize:p,numParts:n,whole:w,unknownRole:'whole',answer:w},
-      {partSize:p,numParts:n,whole:w,unknownRole:'part',answer:p}
+      {partSize:p,numParts:n,whole:w,unknownRole:'part',answer:p},
+      {partSize:p,numParts:n,whole:w,unknownRole:'count',answer:n}
     ]);
   }
 }
-// Random fluency item drawn from a family
-function makeFluencyItem(fam){
+
+function genFluencyItem(){
+  const fam=FAMS[Math.floor(Math.random()*FAMS.length)];
   if(isAdd()){
     const[a,b,w]=fam;
     const roles=['whole','p1','p2'],role=roles[Math.floor(Math.random()*3)];
     return{a,b,whole:w,unknownRole:role,answer:role==='whole'?w:role==='p1'?a:b};
   }else{
     const[p,n,w]=fam;
-    const unknownRole=Math.random()<0.5?'whole':'part';
-    return{partSize:p,numParts:n,whole:w,unknownRole,answer:unknownRole==='whole'?w:p};
+    const roles=['whole','part','count'],role=roles[Math.floor(Math.random()*3)];
+    return{partSize:p,numParts:n,whole:w,unknownRole:role,answer:role==='whole'?w:role==='part'?p:n};
   }
 }
-function genFluencyItem(){return makeFluencyItem(Math.random()<0.5?FAM_A:FAM_B);}
 
 // ── Storage ────────────────────────────────────────────────────────────────────
 function loadSessions(){try{const r=localStorage.getItem(CFG.storageKey);return r?JSON.parse(r):[];}catch(e){return[];}}
 function saveSession(s){try{const a=loadSessions();a.push(s);localStorage.setItem(CFG.storageKey,JSON.stringify(a));}catch(e){}}
-
-// ── Bar rendering (identical to fact-fluency-template) ─────────────────────────
-const C_WHOLE='#6845A8',C_P1='#2B5DC7',C_P2='#D4600A',C_UNK_BG='#EDE5FF';
-const BAR_H=58,MAX_W=320;
-function numFs(n){return n>=100?'15px':n>=10?'21px':'26px';}
-function numBar(w,label,color,isUnk){
-  const bg=isUnk?C_UNK_BG:color,col=isUnk?'#584C72':'#fff',
-        bdr=isUnk?'2px dashed #9B9591':'none',
-        fs=isUnk?'28px':numFs(label),fi=isUnk?'italic':'normal';
-  return`<div class="fb" style="width:${w}px;background:${bg};border:${bdr};border-radius:6px"><span style="font-family:'DM Serif Display',serif;font-size:${fs};color:${col};font-style:${fi}">${isUnk?'?':label}</span></div>`;
-}
-function renderFactAdd(item){
-  const{a,b,whole,unknownRole}=item;
-  const ZERO_W=28;
-  let aW,bW;
-  if(a===0){aW=ZERO_W;bW=MAX_W-ZERO_W;}
-  else if(b===0){aW=MAX_W-ZERO_W;bW=ZERO_W;}
-  else{aW=Math.round(a/whole*MAX_W);bW=MAX_W-aW;}
-  const lines=`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591"></div><div style="position:absolute;right:0;top:0;bottom:0;border-right:2px dashed #9B9591"></div>`;
-  const wBar=numBar(MAX_W,whole,C_WHOLE,unknownRole==='whole');
-  const aBar=numBar(aW,a,C_P1,unknownRole==='p1');
-  const bBar=numBar(bW,b,C_P2,unknownRole==='p2');
-  return`<div style="position:relative;display:inline-block">${lines}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:7px">${wBar}<div style="display:flex">${aBar}${bBar}</div></div></div>`;
-}
-function renderFactMult(item){
-  const{partSize,numParts,whole,unknownRole}=item;
-  const totalW=Math.max(200,Math.min(380,numParts*48)),boxW=totalW/numParts;
-  const partFs=numParts>9?'15px':numParts>6?'18px':'22px';
-  const lns=`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591"></div><div style="position:absolute;right:0;top:0;bottom:0;border-right:2px dashed #9B9591"></div>`;
-  const wBar=numBar(totalW,whole,C_WHOLE,unknownRole==='whole');
-  if(unknownRole==='count'){
-    const restW=totalW-boxW;
-    const dotBar=`<div class="fb" style="width:${restW}px;background:${C_UNK_BG};border:2px dashed #9B9591;border-left:none;border-radius:0 6px 6px 0"><span style="font-family:'DM Serif Display',serif;font-size:28px;color:#584C72;font-style:italic">?</span></div>`;
-    return`<div style="position:relative;display:inline-block">${lns}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:7px">${wBar}<div style="display:flex">${numBar(boxW,partSize,C_P1,false)}${dotBar}</div></div></div>`;
-  }
-  const isPartUnk=unknownRole==='part';
-  let divLines='';
-  for(let i=1;i<numParts;i++) divLines+=`<div style="position:absolute;left:${(i*boxW).toFixed(1)}px;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div>`;
-  const parts=Array.from({length:numParts},(_,i)=>{
-    const bg=isPartUnk?C_UNK_BG:C_P1,col=isPartUnk?'#584C72':'#fff',
-          bdr=isPartUnk?'2px dashed #9B9591':'none',
-          r=i===0?'border-radius:6px 0 0 6px;':i===numParts-1?'border-radius:0 6px 6px 0;':'',
-          lbl=isPartUnk?'?':partSize,fs=isPartUnk?'28px':partFs,fi=isPartUnk?'italic':'normal';
-    return`<div style="width:${boxW.toFixed(1)}px;height:${BAR_H}px;background:${bg};border:${bdr};${r}display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-family:'DM Serif Display',serif;font-size:${fs};color:${col};font-style:${fi}">${lbl}</span></div>`;
-  }).join('');
-  return`<div style="position:relative;display:inline-block">${lns}${divLines}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:7px">${wBar}<div style="display:flex">${parts}</div></div></div>`;
-}
-function renderItem(item){return isAdd()?renderFactAdd(item):renderFactMult(item);}
 
 // ── Timer ──────────────────────────────────────────────────────────────────────
 const DUR=60,CIRC=2*Math.PI*24;
 function tRing(t){const off=CIRC*(1-t/DUR);return`<div class="timer-ring"><svg width="56" height="56" viewBox="0 0 56 56"><circle class="bg" cx="28" cy="28" r="24"/><circle class="fg${t<=10?' urgent':''}" cx="28" cy="28" r="24" stroke-dasharray="${CIRC.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg><div class="timer-label">${t}</div></div>`;}
 
 // ── Pigeon lines ───────────────────────────────────────────────────────────────
-const PIG_INTRO=['Here we go.','Two families. Let\'s learn them.','Take a good look.','Study the model first.'];
+const PIG_INTRO=['Time to see how these feel as numbers.','No bars this time — just the facts.','You\'ve seen these before. Now without the model.','These are the same families, bare.'];
 const PIG_FLUENCY=['Ready when you are.','You know these. Show it.','Go fast, stay accurate.','Here comes the clock.'];
 const PIG_AFTER=['Good session.','That went well.','You showed up. That matters.','Let\'s see where that lands.'];
 const PIG_IMPROVED=['You\'re getting it.','That\'s a real improvement.','Progress. Quiet, steady progress.'];
 function pigLine(pool){return pool[Math.floor(Math.random()*pool.length)];}
 
 // ── State ──────────────────────────────────────────────────────────────────────
-const S={phase:'intro',famCur:'A',praQ:[],praIdx:0,cor:0,err:0,t:DUR,timer:null,start:null};
+const S={phase:'intro',praQ:[],praIdx:0,cor:0,err:0,t:DUR,timer:null,start:null};
 function render(h){document.getElementById('main').innerHTML=h;}
 function setPhase(l){document.getElementById('phaseLabel').textContent=l;}
 function focusInput(){setTimeout(()=>{const el=document.getElementById('answerInput');if(el){el.value='';el.focus();}},40);}
 
 // ── Phase 1: Lesson intro ──────────────────────────────────────────────────────
 function showLessonIntro(){
-  S.phase='intro';setPhase('Lesson');
+  S.phase='intro';setPhase('Review');
+  const pills=FAMS.map(f=>`<div class="fam-pill">${renderEqFull(f)}</div>`).join('');
   render(`<div class="card fu">
-    <h2>Today's Families</h2>
-    <p>Look at each family model, then answer the practice items. When you answer correctly for both families, you'll move to a 60-second drill.</p>
-    <div class="fam-pills">
-      <div class="fam-pill">${famLabel(FAM_A)}</div>
-      <div class="fam-pill">${famLabel(FAM_B)}</div>
-    </div>
+    <h2>Number Review</h2>
+    <p>Same families — no bar models this time. Practice each fact using numbers only, then do a 60-second timed drill.</p>
+    <div class="fam-pills">${pills}</div>
     <div class="pig-intro"><img src="Icons/pigeon.png" alt="Pigeon"><div class="pig-intro-line">${pigLine(PIG_INTRO)}</div></div>
-    <button class="start-btn" onclick="showFamIntro('A')">Begin</button>
+    <button class="start-btn" onclick="startPractice()">Begin</button>
   </div>`);
 }
 
-// ── Phase 2: Family intro (full model, no unknown) ─────────────────────────────
-function showFamIntro(which){
-  S.phase='fam-intro';S.famCur=which;
-  const fam=which==='A'?FAM_A:FAM_B;
-  const famNum=which==='A'?1:2;
-  setPhase(`Family ${famNum} of 2 — Introduction`);
-  render(`<div class="pra-header"><span class="pra-step">Family ${famNum} of 2</span><span class="pra-step">Introduction</span></div>
-    <div class="model-area fu">${renderItem(famIntroItem(fam))}</div>
-    <div class="fam-desc fu">
-      <div class="fam-name">${famLabel(fam)}</div>
-      <p>${famDesc(fam)}</p>
-    </div>
-    <button class="continue-btn" onclick="startFamPractice('${which}')">Practice this family →</button>`);
-}
-
-// ── Phase 3: Family practice ───────────────────────────────────────────────────
-function startFamPractice(which){
-  S.famCur=which;
-  S.praQ=famPracticeItems(which==='A'?FAM_A:FAM_B).map(item=>({...item,done:false}));
-  S.praIdx=0;
+// ── Phase 2: Practice ──────────────────────────────────────────────────────────
+function startPractice(){
+  S.phase='practice';
+  // Build a single shuffled queue from all families
+  S.praQ=shuffle(FAMS.flatMap(f=>famPracticeItems(f))).map(item=>({...item,done:false}));
+  S.praIdx=S.praQ.findIndex(x=>!x.done);
   showPracticeItem();
 }
 
 function showPracticeItem(){
-  S.phase='practice';
-  const famNum=S.famCur==='A'?1:2;
-  setPhase(`Family ${famNum} of 2 — Practice`);
+  S.phase='practice';setPhase('Practice');
   const done=S.praQ.filter(x=>x.done).length;
   const total=S.praQ.length;
   const pct=Math.round(done/total*100);
   const item=S.praQ[S.praIdx];
   render(`<div class="pra-header">
-    <span class="pra-step">Family ${famNum} of 2 — Practice</span>
+    <span class="pra-step">Practice</span>
     <span class="pra-count">${done} / ${total}</span>
   </div>
   <div class="progress-track" style="margin-bottom:10px"><div class="progress-fill" style="width:${pct}%"></div></div>
-  <div class="model-area fu">${renderItem(item)}</div>
+  <div class="model-area fu">${renderEq(item)}</div>
   <div class="answer-row">
-    <span class="answer-prompt">Choose the missing number</span>
+    <span class="answer-prompt">Type the missing number</span>
     <input type="text" inputmode="numeric" id="answerInput" class="num-input" autocomplete="off" onkeydown="if(event.key==='Enter')submitPractice()">
     <button class="btn-check" onclick="submitPractice()">✓</button>
   </div>
@@ -306,9 +266,8 @@ function submitPractice(){
     el.classList.add('correct');
     if(fm){fm.className='feedback-flash flash-ok';fm.textContent='✓';}
     setTimeout(()=>{
-      // Find next undone item
       const next=S.praQ.findIndex(x=>!x.done);
-      if(next===-1){advanceFamPhase();}
+      if(next===-1){showPreFluency();}
       else{S.praIdx=next;showPracticeItem();}
     },300);
   }else{
@@ -322,28 +281,20 @@ function submitPractice(){
   }
 }
 
-function advanceFamPhase(){
-  if(S.famCur==='A'){showFamIntro('B');}
-  else{showPreFluency();}
-}
-
-// ── Phase 4: Pre-fluency gate ──────────────────────────────────────────────────
+// ── Phase 3: Pre-fluency gate ──────────────────────────────────────────────────
 function showPreFluency(){
   S.phase='pre-fluency';setPhase('Fluency');
+  const pills=FAMS.map(f=>`<div class="fam-pill">${famLabel(f)}</div>`).join('');
   render(`<div class="card fu">
-    <h2>Both families done.</h2>
-    <p>You answered correctly for <strong>${famLabel(FAM_A)}</strong> and <strong>${famLabel(FAM_B)}</strong>.</p>
-    <p>Now: 60 seconds, as many as you can. Both families will appear with random unknowns.</p>
-    <div class="fam-pills">
-      <div class="fam-pill">${famLabel(FAM_A)}</div>
-      <div class="fam-pill">${famLabel(FAM_B)}</div>
-    </div>
+    <h2>All facts done.</h2>
+    <p>Now: 60 seconds, all families mixed. Answer as many as you can.</p>
+    <div class="fam-pills">${pills}</div>
     <div class="pig-intro"><img src="Icons/pigeon.png" alt="Pigeon"><div class="pig-intro-line">${pigLine(PIG_FLUENCY)}</div></div>
     <button class="start-btn" onclick="startDrill()">Start Fluency</button>
   </div>`);
 }
 
-// ── Phase 5: Fluency drill ─────────────────────────────────────────────────────
+// ── Phase 4: Fluency drill ─────────────────────────────────────────────────────
 function startDrill(){
   S.phase='drill';S.cor=0;S.err=0;S.t=DUR;S.start=new Date().toISOString();
   setPhase('Fluency Drill');
@@ -352,7 +303,6 @@ function startDrill(){
 }
 
 function nextItem(){
-  S.praIdx=null;
   const item=genFluencyItem();
   S.praQ=[{...item,done:false}];
   drawDrill(item);
@@ -367,9 +317,9 @@ function drawDrill(item){
       ${S.err?`<div><div class="score-e">${S.err}</div><div class="score-sub">errors</div></div>`:''}
     </div>
   </div>
-  <div class="model-area fu">${renderItem(item)}</div>
+  <div class="model-area fu">${renderEq(item)}</div>
   <div class="answer-row">
-    <span class="answer-prompt">Choose the missing number</span>
+    <span class="answer-prompt">Type the missing number</span>
     <input type="text" inputmode="numeric" id="answerInput" class="num-input" autocomplete="off" onkeydown="if(event.key==='Enter')submitDrill()">
     <button class="btn-check" onclick="submitDrill()">✓</button>
   </div>
@@ -405,7 +355,7 @@ function submitDrill(){
   }
 }
 
-// ── Phase 6: End & results ─────────────────────────────────────────────────────
+// ── Phase 5: End & results ─────────────────────────────────────────────────────
 function endDrill(){
   clearInterval(S.timer);S.phase='results';setPhase('Results');
   const cpm=S.cor,epm=S.err;
@@ -436,7 +386,7 @@ function showPigeonTransition(delayMs){
     overlay.id='pigeon-overlay';
     overlay.innerHTML=`<div class="pig-inner"><div class="pig-bubble">${mainLine}${subMsg}</div><img src="Icons/pigeon.png" alt="Pigeon"></div>`;
     document.body.appendChild(overlay);
-    setTimeout(()=>{window.location.href=CFG.chartHref;},2800);
+    setTimeout(()=>{window.location.href=CFG.nextHref;},2800);
   },delayMs||0);
 }
 

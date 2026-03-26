@@ -193,15 +193,12 @@ function genAddItem(){
   return{a,b,whole,unknownRole,answer};
 }
 
+const MULT_FAMILIES=[[2,2,4],[2,3,6],[2,4,8],[2,5,10],[2,6,12],[2,7,14],[2,8,16],[2,9,18],[2,10,20],[3,3,9],[3,4,12],[3,5,15],[3,6,18],[3,7,21],[3,8,24],[3,9,27],[3,10,30],[4,4,16],[4,5,20],[4,6,24],[4,7,28],[4,8,32],[4,9,36],[4,10,40],[5,5,25],[5,6,30],[5,7,35],[5,8,40],[5,9,45],[5,10,50],[6,6,36],[6,7,42],[6,8,48],[6,9,54],[6,10,60],[7,7,49],[7,8,56],[7,9,63],[7,10,70],[8,8,64],[8,9,72],[8,10,80],[9,9,81],[9,10,90],[10,10,100]];
 function genMultItem(){
-  const p=2+Math.floor(Math.random()*11); // part size: 2–12
-  const n=1+Math.floor(Math.random()*12); // count: 1–12
-  const whole=p*n;
-  // Skip count-unknown when n=1 (degenerate visual)
-  const roles=n===1?['whole','part']:['whole','part','count'];
-  const unknownRole=roles[Math.floor(Math.random()*roles.length)];
-  const answer=unknownRole==='whole'?whole:unknownRole==='part'?p:n;
-  return{partSize:p,numParts:n,whole,unknownRole,answer};
+  const[p,n,w]=MULT_FAMILIES[Math.floor(Math.random()*MULT_FAMILIES.length)];
+  const unknownRole=Math.random()<0.5?'whole':'part';
+  const answer=unknownRole==='whole'?w:p;
+  return{partSize:p,numParts:n,whole:w,unknownRole,answer};
 }
 
 function genItem(){return CFG.factType==='add'?genAddItem():genMultItem();}
