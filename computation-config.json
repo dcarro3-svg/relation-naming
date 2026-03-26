@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "label": "Double-Digit Addition (No Regrouping)",
+    "compType": "dd-add-no-regroup",
+    "chartId": 32,
+    "storageKey": "computation_1_fluency_sessions",
+    "chartHref": "chart.html",
+    "output": "computation-1-fluency.html"
+  }
+]
