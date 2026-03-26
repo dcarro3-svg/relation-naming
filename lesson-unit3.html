@@ -6,15 +6,9 @@
 <title>Complex Relations — Lesson Seven</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
-  :root{
-    --bg:#F7F4EF;--surface:#FFFFFF;--border:#E2DDD6;
-    --text-primary:#1A1714;--text-secondary:#6B6560;--text-muted:#9B9591;
-    --accent:#2D6A4F;--accent-light:#EAF4EF;
-    --accent-warm:#C17D3C;--accent-warm-light:#FBF0E4;
-    --radius:12px;--radius-lg:20px;
-  }
+  :root{--bg:#DDD0F5;--surface:#EDE5FF;--border:#C4ADEE;--text-primary:#1E1530;--text-secondary:#584C72;--text-muted:#9589B8;--accent:#6845A8;--accent-light:#EEE6FF;--accent-warm:#D4600A;--accent-warm-light:#FBF0E4;--radius:12px;--radius-lg:20px;}
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-primary);
+  body{font-family:'DM Sans',sans-serif;background-color:var(--bg);background-image:url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='2' width='14' height='5' fill='%236845A8' fill-opacity='0.28'/%3E%3Crect x='2' y='9' width='7' height='5' fill='%236845A8' fill-opacity='0.22'/%3E%3Crect x='11' y='9' width='5' height='5' fill='%232B5DC7' fill-opacity='0.30'/%3E%3Crect x='40' y='4' width='10' height='5' fill='%232B5DC7' fill-opacity='0.34'/%3E%3Crect x='40' y='11' width='6' height='5' fill='%232B5DC7' fill-opacity='0.24'/%3E%3Crect x='48' y='11' width='4' height='5' fill='%236845A8' fill-opacity='0.20'/%3E%3Crect x='4' y='48' width='12' height='5' fill='%236845A8' fill-opacity='0.24'/%3E%3Crect x='4' y='55' width='6' height='5' fill='%232B5DC7' fill-opacity='0.28'/%3E%3Crect x='12' y='55' width='4' height='5' fill='%236845A8' fill-opacity='0.18'/%3E%3Crect x='44' y='32' width='8' height='5' fill='%232B5DC7' fill-opacity='0.30'/%3E%3Crect x='28' y='22' width='5' height='5' fill='%232B5DC7' fill-opacity='0.24'/%3E%3Crect x='18' y='44' width='10' height='5' fill='%236845A8' fill-opacity='0.22'/%3E%3Crect x='52' y='44' width='6' height='5' fill='%232B5DC7' fill-opacity='0.28'/%3E%3C/svg%3E");background-size:128px 128px;color:var(--text-primary);
     min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
   .app{width:100%;max-width:680px;display:flex;flex-direction:column;gap:20px;}
   .header{display:flex;align-items:center;gap:12px;}
@@ -42,8 +36,8 @@
     line-height:1.7;animation:fadeUp 0.35s ease;display:flex;align-items:flex-start;gap:12px;}
   .instruct-text.correction{background:var(--accent-warm-light);border-color:#E8C99A;}
   .instruct-text.neutral{background:var(--surface);border-color:var(--border);}
-  .instruct-text.bridge{background:#F0EAF8;border-color:#C9B8E8;}
-  .instruct-text.positive{background:var(--accent-light);border-color:#B8DAC8;}
+  .instruct-text.bridge{background:#EEE6FF;border-color:#C4ADEE;}
+  .instruct-text.positive{background:var(--accent-light);border-color:#C4ADEE;}
 
   /* Letter-by-letter animation */
   .typed-text .char{opacity:0;animation:charFade 0.04s forwards;}
@@ -53,7 +47,7 @@
   .audio-indicator{width:32px;height:32px;border-radius:50%;background:var(--accent);
     display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
     transition:all 0.15s;border:none;margin-top:2px;}
-  .audio-indicator:hover{background:#255C43;transform:scale(1.05);}
+  .audio-indicator:hover{background:#512F8A;transform:scale(1.05);}
   .audio-indicator.speaking{background:var(--accent-warm);animation:pulse 1s infinite;}
   .audio-indicator svg{width:16px;height:16px;fill:white;}
   @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
@@ -83,9 +77,9 @@
   /* Assembled relation strip */
   .relation-strip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
     padding:10px 14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:44px;}
-  .r-token{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:5px;
+  .r-token{background:var(--accent-light);border:1px solid #C4ADEE;border-radius:5px;
     padding:3px 9px;font-size:13px;font-weight:600;color:var(--accent);}
-  .r-token.unk{background:#F0EAF8;border-color:#C9B8E8;color:#6C3483;}
+  .r-token.unk{background:#EEE6FF;border-color:#C4ADEE;color:#6845A8;}
   .strip-ph{font-size:13px;color:var(--text-muted);font-style:italic;}
   .strip-row{display:flex;gap:8px;align-items:center;margin-top:6px;}
   .btn-back{padding:7px 12px;border-radius:var(--radius);border:1px solid var(--border);
@@ -94,7 +88,7 @@
   .btn-back:hover{border-color:var(--accent-warm);color:var(--accent-warm);}
   .btn-submit{padding:7px 16px;border-radius:var(--radius);border:none;background:var(--accent);
     color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
-  .btn-submit:hover{background:#255C43;}
+  .btn-submit:hover{background:#512F8A;}
   .btn-submit:disabled{opacity:0.35;pointer-events:none;}
 
   /* Response buttons (for review/ident phases) */
@@ -107,11 +101,11 @@
   .btn-continue{width:100%;padding:15px;border-radius:var(--radius);border:none;
     background:var(--accent);color:white;font-family:'DM Sans',sans-serif;
     font-size:16px;font-weight:600;cursor:pointer;transition:all 0.15s;}
-  .btn-continue:hover{background:#255C43;transform:translateY(-1px);}
+  .btn-continue:hover{background:#512F8A;transform:translateY(-1px);}
 
   /* Relations found tags */
   .relations-found{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
-  .relation-tag{background:var(--accent-light);border:1px solid #B8DAC8;border-radius:20px;
+  .relation-tag{background:var(--accent-light);border:1px solid #C4ADEE;border-radius:20px;
     padding:4px 12px;font-size:13px;font-weight:500;color:var(--accent);}
 
   /* Bar styles */
@@ -256,7 +250,7 @@ function sbar(hex,name,w,isUnk=false){
 }
 
 function renderEqual(m){
-  if(m.layout==='dotted'){const w=m.w1;return`<div style="position:relative;display:inline-block;padding:0 20px"><div style="position:absolute;left:16px;top:0;bottom:0;border-left:2px dashed #9B9591"></div><div style="position:absolute;right:16px;top:0;bottom:0;border-right:2px dashed #9B9591"></div><div style="margin-bottom:8px">${sbar(m.c1.hex,m.c1.name,w,m.unk===m.c1.name)}</div>${sbar(m.c2.hex,m.c2.name,w,m.unk===m.c2.name)}</div>`;}
+  if(m.layout==='dotted'){const w=m.w1;return`<div style="position:relative;display:inline-block;padding:0 20px"><div style="position:absolute;left:16px;top:0;bottom:0;border-left:2px dashed #9589B8"></div><div style="position:absolute;right:16px;top:0;bottom:0;border-right:2px dashed #9589B8"></div><div style="margin-bottom:8px">${sbar(m.c1.hex,m.c1.name,w,m.unk===m.c1.name)}</div>${sbar(m.c2.hex,m.c2.name,w,m.unk===m.c2.name)}</div>`;}
   return`<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">${sbar(m.c1.hex,m.c1.name,m.w1,m.unk===m.c1.name)}${sbar(m.c2.hex,m.c2.name,m.w2,m.unk===m.c2.name)}</div>`;
 }
 
@@ -267,7 +261,7 @@ function renderPW(m){
   const p2Raw=sbar(p2.color.hex,p2.color.name,p2.w,m.unknownRole==='p2');
   const p1B=m.fadedPart==='p1'?`<div style="opacity:0.35">${p1Raw}</div>`:p1Raw;
   const p2B=m.fadedPart==='p2'?`<div style="opacity:0.35">${p2Raw}</div>`:p2Raw;
-  const lines=`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591"></div><div style="position:absolute;right:0;top:0;bottom:0;border-right:2px dashed #9B9591"></div>`;
+  const lines=`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9589B8"></div><div style="position:absolute;right:0;top:0;bottom:0;border-right:2px dashed #9589B8"></div>`;
   return`<div style="position:relative;display:inline-block">${lines}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">${wB}<div style="display:flex">${p1B}${p2B}</div></div></div>`;
 }
 
@@ -275,8 +269,8 @@ function renderComparison(m){
   const{larger,smaller,diff}=m;
   const lB=sbar(larger.color.hex,larger.color.name,larger.w,m.unknownRole==='larger');
   const sB=sbar(smaller.color.hex,smaller.color.name,smaller.w,m.unknownRole==='smaller');
-  const dPale=diff?`<div style="width:${diff.w}px;height:${BH}px;background:${diff.color.hex}44;border:2px dashed #9B9591;border-radius:0 6px 6px 0;display:flex;align-items:center;justify-content:center;flex-shrink:0">${m.unknownRole==='diff'?`<span style="font-family:'DM Serif Display',serif;font-size:22px;font-style:italic;color:#777">?</span>`:`<span style="font-size:11px;font-weight:600;color:#777;text-transform:capitalize">${diff.color.name}</span>`}</div>`:'';
-  const lines=diff?`<div style="position:absolute;left:${smaller.w}px;top:0;bottom:0;border-left:2px dashed #6B6560"></div><div style="position:absolute;left:${larger.w}px;top:0;bottom:0;border-left:2px dashed #6B6560"></div>`:'';
+  const dPale=diff?`<div style="width:${diff.w}px;height:${BH}px;background:${diff.color.hex}44;border:2px dashed #9589B8;border-radius:0 6px 6px 0;display:flex;align-items:center;justify-content:center;flex-shrink:0">${m.unknownRole==='diff'?`<span style="font-family:'DM Serif Display',serif;font-size:22px;font-style:italic;color:#777">?</span>`:`<span style="font-size:11px;font-weight:600;color:#777;text-transform:capitalize">${diff.color.name}</span>`}</div>`:'';
+  const lines=diff?`<div style="position:absolute;left:${smaller.w}px;top:0;bottom:0;border-left:2px dashed #584C72"></div><div style="position:absolute;left:${larger.w}px;top:0;bottom:0;border-left:2px dashed #584C72"></div>`:'';
   return`<div style="position:relative;display:inline-block">${lines}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">${lB}<div style="display:flex">${sB}${dPale}</div></div></div>`;
 }
 
@@ -287,14 +281,14 @@ function renderFractional(m){
   let boxes='';
   for(let i=0;i<denominator;i++){
     const iF=i===filledIndex,isUnk=iF&&unknownRole==='part';
-    const bg=iF?partColor.hex:partColor.hex+'33',bdr=iF?'none':'2px dashed #9B9591',col=iF?tc(partColor.hex):'#9B9591';
+    const bg=iF?partColor.hex:partColor.hex+'33',bdr=iF?'none':'2px dashed #9589B8',col=iF?tc(partColor.hex):'#9589B8';
     const c=isUnk?`<span style="font-family:'DM Serif Display',serif;font-size:22px;font-style:italic;color:${col}">?</span>`:iF?`<span style="font-size:11px;font-weight:600;text-transform:capitalize;color:${col}">${partColor.name}</span>`:' ';
     boxes+=`<div style="width:${boxW}px;height:${BH}px;background:${bg};border:${bdr};${i===0?'border-radius:6px 0 0 6px;':''}${i===denominator-1?'border-radius:0 6px 6px 0;':''}display:flex;align-items:center;justify-content:center;flex-shrink:0">${c}</div>`;
   }
   let lines='';
-  for(let i=1;i<denominator;i++) lines+=`<div style="position:absolute;left:${i*boxW}px;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div>`;
-  lines+=`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div>`;
-  lines+=`<div style="position:absolute;left:${wholeW}px;top:0;bottom:0;border-left:2px dashed #9B9591;pointer-events:none"></div>`;
+  for(let i=1;i<denominator;i++) lines+=`<div style="position:absolute;left:${i*boxW}px;top:0;bottom:0;border-left:2px dashed #9589B8;pointer-events:none"></div>`;
+  lines+=`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9589B8;pointer-events:none"></div>`;
+  lines+=`<div style="position:absolute;left:${wholeW}px;top:0;bottom:0;border-left:2px dashed #9589B8;pointer-events:none"></div>`;
   return`<div style="position:relative;display:inline-block">${lines}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">${wBar}<div style="display:flex">${boxes}</div></div></div>`;
 }
 
@@ -597,9 +591,9 @@ function showComplete() {
     <h2>${CFG.completionTitle}</h2>
     <p>${CFG.completionSummary}</p>
     <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px">
-      <a href="${CFG.fluencyHref}" style="display:block;padding:14px 24px;background:#2D6A4F;color:white;border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">Practice for Fluency →</a>
-      <a href="${CFG.nextLessonHref}" style="display:block;padding:14px 24px;background:white;color:#2D6A4F;border:2px solid #2D6A4F;border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">${CFG.nextLessonLabel}</a>
-      <a href="chart.html" style="display:block;padding:14px 24px;background:white;color:#6B6560;border:2px solid #E2DDD6;border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">View Progress Chart</a>
+      <a href="${CFG.fluencyHref}" style="display:block;padding:14px 24px;background:var(--accent);color:white;border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">Practice for Fluency →</a>
+      <a href="${CFG.nextLessonHref}" style="display:block;padding:14px 24px;background:var(--surface);color:var(--accent);border:2px solid var(--accent);border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">${CFG.nextLessonLabel}</a>
+      <a href="chart.html" style="display:block;padding:14px 24px;background:var(--surface);color:var(--text-secondary);border:2px solid var(--border);border-radius:12px;text-decoration:none;font-weight:600;font-size:16px">View Progress Chart</a>
     </div>
   </div>`,``);
   speak(`Well done. ${CFG.completionTitle} complete.`);
@@ -680,9 +674,9 @@ function renderComplex(m){
   return `<div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
     ${r1}
     <div style="display:flex;align-items:center;gap:8px;padding-left:4px">
-      <div style="width:20px;height:2px;background:#9B9591;border-radius:1px"></div>
-      <span style="font-size:11px;font-weight:600;color:#9B9591;text-transform:uppercase;letter-spacing:0.8px">then</span>
-      <div style="width:20px;height:2px;background:#9B9591;border-radius:1px"></div>
+      <div style="width:20px;height:2px;background:#9589B8;border-radius:1px"></div>
+      <span style="font-size:11px;font-weight:600;color:#9589B8;text-transform:uppercase;letter-spacing:0.8px">then</span>
+      <div style="width:20px;height:2px;background:#9589B8;border-radius:1px"></div>
     </div>
     ${r2}
   </div>`;
