@@ -121,6 +121,33 @@
   .sub-btn.empty-sub{opacity:0.55;cursor:default;}
   .sub-btn.empty-sub:hover{background:var(--surface);}
 
+  /* ── Third-level accordion (sub2 — inside a sub-body) ─────────────────── */
+  .sub2-section{display:flex;flex-direction:column;gap:0;}
+
+  .sub2-btn{display:flex;align-items:center;gap:14px;padding:11px 28px 11px 56px;
+    background:#F9F6FF;border:none;border-top:1px solid var(--border);
+    cursor:pointer;transition:all 0.15s;text-align:left;width:100%;
+    font-family:'DM Sans',sans-serif;}
+  .sub2-btn:hover{background:var(--accent-light);}
+  .sub2-btn.open{background:var(--accent-light);}
+  .sub2-btn.empty-sub2{opacity:0.5;cursor:default;}
+  .sub2-btn.empty-sub2:hover{background:#F9F6FF;}
+
+  .sub2-icon{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;
+    justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;
+    background:var(--accent-light);color:var(--accent);}
+
+  .sub2-text{flex:1;}
+  .sub2-text strong{display:block;font-size:15px;font-weight:600;color:var(--text-primary);}
+  .sub2-text span{font-size:13px;color:var(--text-muted);}
+  .sub2-btn.open .sub2-text strong{color:var(--accent);}
+
+  .sub2-chevron{font-size:10px;color:var(--text-muted);transition:transform 0.2s;flex-shrink:0;}
+  .sub2-btn.open .sub2-chevron{transform:rotate(180deg);color:var(--accent);}
+
+  .sub2-body{display:none;flex-direction:column;gap:0;background:#F4F1FC;}
+  .sub2-body.open{display:flex;}
+
   /* ══════════════════════════════════════════════════════════════════════════
      SECTION 1 — BANNER STYLES
   ══════════════════════════════════════════════════════════════════════════ */
@@ -524,13 +551,13 @@
     </div>
   </div>
 
-  <!-- ═══ MATH FACTS ══════════════════════════════════════════════════════════ -->
+  <!-- ═══ MATH FLUENCY ════════════════════════════════════════════════════════ -->
   <div class="unit">
     <button class="unit-btn" onclick="toggleUnit('uf')" id="uf-btn">
       <div class="unit-icon"><img src="Icons/books.png" alt="Unit"></div>
       <div class="unit-text">
-        <strong>Math Facts</strong>
-        <span>Fact families — additive and multiplicative</span>
+        <strong>Math Fluency</strong>
+        <span>Math Facts · Computation</span>
       </div>
       <span class="unit-chevron">▼</span>
     </button>
@@ -579,6 +606,39 @@
           <a href="fact-lesson-mult-6.html"       class="leaf"><div class="leaf-icon lesson"><img src="Icons/exclamation.png" alt="Lesson"></div><div class="leaf-text"><strong>Lesson 6</strong><span>5×5=25  and  5×6=30</span></div></a>
           <a href="fact-lesson-mult-numonly-3.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 3</strong><span>4×4, 4×5, 5×5, 5×6 — numbers only</span></div></a>
           <a href="fact-fluency-mult.html"         class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency"></div><div class="leaf-text"><strong>General Practice</strong><span>All multiplicative families — 60-second drill</span></div></a>
+        </div>
+      </div>
+
+      <!-- Computation sub-section -->
+      <div class="sub-section">
+        <button class="sub-btn" onclick="toggleSub('uf-comp')" id="uf-comp-btn">
+          <div class="sub-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Computation" style="width:100%;height:100%;object-fit:fill;image-rendering:pixelated;"></div>
+          <div class="sub-text"><strong>Computation</strong><span>20 fluency practice sets</span></div>
+          <span class="sub-chevron">▼</span>
+        </button>
+        <div class="sub-body" id="uf-comp-body">
+
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-1-btn"><div class="sub2-icon">1</div><div class="sub2-text"><strong>Computation 1</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-2-btn"><div class="sub2-icon">2</div><div class="sub2-text"><strong>Computation 2</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-3-btn"><div class="sub2-icon">3</div><div class="sub2-text"><strong>Computation 3</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-4-btn"><div class="sub2-icon">4</div><div class="sub2-text"><strong>Computation 4</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-5-btn"><div class="sub2-icon">5</div><div class="sub2-text"><strong>Computation 5</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-6-btn"><div class="sub2-icon">6</div><div class="sub2-text"><strong>Computation 6</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-7-btn"><div class="sub2-icon">7</div><div class="sub2-text"><strong>Computation 7</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-8-btn"><div class="sub2-icon">8</div><div class="sub2-text"><strong>Computation 8</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-9-btn"><div class="sub2-icon">9</div><div class="sub2-text"><strong>Computation 9</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-10-btn"><div class="sub2-icon">10</div><div class="sub2-text"><strong>Computation 10</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-11-btn"><div class="sub2-icon">11</div><div class="sub2-text"><strong>Computation 11</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-12-btn"><div class="sub2-icon">12</div><div class="sub2-text"><strong>Computation 12</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-13-btn"><div class="sub2-icon">13</div><div class="sub2-text"><strong>Computation 13</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-14-btn"><div class="sub2-icon">14</div><div class="sub2-text"><strong>Computation 14</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-15-btn"><div class="sub2-icon">15</div><div class="sub2-text"><strong>Computation 15</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-16-btn"><div class="sub2-icon">16</div><div class="sub2-text"><strong>Computation 16</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-17-btn"><div class="sub2-icon">17</div><div class="sub2-text"><strong>Computation 17</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-18-btn"><div class="sub2-icon">18</div><div class="sub2-text"><strong>Computation 18</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-19-btn"><div class="sub2-icon">19</div><div class="sub2-text"><strong>Computation 19</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-20-btn"><div class="sub2-icon">20</div><div class="sub2-text"><strong>Computation 20</strong><span>Coming soon</span></div></button></div>
+
         </div>
       </div>
 
@@ -707,6 +767,14 @@ function toggleUnit(id) {
 }
 
 function toggleSub(id) {
+  const btn = document.getElementById(`${id}-btn`);
+  const body = document.getElementById(`${id}-body`);
+  const isOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+function toggleSub2(id) {
   const btn = document.getElementById(`${id}-btn`);
   const body = document.getElementById(`${id}-body`);
   const isOpen = btn.classList.contains('open');
