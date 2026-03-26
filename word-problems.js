@@ -121,6 +121,127 @@ const WP1 = [
   },
 ];
 
+// WP1U — WP1 with one unknown variable. Student draws the bar model and labels the unknown bar "?".
+const WP1U = [
+  // Equal (eq)
+  {
+    id: 'wp1u-001', step: 1, type: 'eq', difficulty: 1,
+    text: 'Damien and Elise walked the same distance. How far did Elise walk?',
+    labels: ['Damien', '?'],
+    unkLabel: '?',
+    expectedBars: 2, proportions: [1.0],
+  },
+  {
+    id: 'wp1u-002', step: 1, type: 'eq', difficulty: 1,
+    text: 'Two boxes hold the same number of crayons. How many crayons are in box B?',
+    labels: ['box A', '?'],
+    unkLabel: '?',
+    expectedBars: 2, proportions: [1.0],
+  },
+  {
+    id: 'wp1u-003', step: 1, type: 'eq', difficulty: 1,
+    text: "Lena's ribbon and Marco's ribbon are the same length. How long is Lena's ribbon?",
+    labels: ["Marco's ribbon", '?'],
+    unkLabel: '?',
+    expectedBars: 2, proportions: [1.0],
+  },
+  // Part-whole (pw)
+  {
+    id: 'wp1u-004', step: 1, type: 'pw', difficulty: 1,
+    text: 'A jar holds green marbles and purple marbles, filling the whole jar. How many green marbles are there?',
+    labels: ['jar', '?', 'purple marbles'],
+    unkLabel: '?',
+    expectedBars: 3, proportions: [0.45, 0.55],
+  },
+  {
+    id: 'wp1u-005', step: 1, type: 'pw', difficulty: 1,
+    text: 'Red books and blue books together fill a whole shelf. How many books are on the whole shelf?',
+    labels: ['?', 'red books', 'blue books'],
+    unkLabel: '?',
+    expectedBars: 3, proportions: [0.6, 0.4],
+  },
+  {
+    id: 'wp1u-006', step: 1, type: 'pw', difficulty: 1,
+    text: 'Tom read pages yesterday and today to finish a chapter. How many pages did he read today?',
+    labels: ['chapter', 'yesterday', '?'],
+    unkLabel: '?',
+    expectedBars: 3, proportions: [0.55, 0.45],
+  },
+  {
+    id: 'wp1u-007', step: 1, type: 'pw', difficulty: 1,
+    text: 'A board is split into a left section and a right section to make the whole board. How long is the whole board?',
+    labels: ['?', 'left section', 'right section'],
+    unkLabel: '?',
+    expectedBars: 3, proportions: [0.7, 0.3],
+  },
+  // Comparison (cmp)
+  {
+    id: 'wp1u-008', step: 1, type: 'cmp', difficulty: 2,
+    text: "Sam scored more points than Maya. How many more points did Sam score than Maya?",
+    labels: ["Sam's score", "Maya's score", '?'],
+    unkLabel: '?',
+    expectedBars: 3, proportions: [0.65, 0.35],
+  },
+  {
+    id: 'wp1u-009', step: 1, type: 'cmp', difficulty: 2,
+    text: 'The tall building is taller than the short building. How much taller is it?',
+    labels: ['tall building', 'short building', '?'],
+    unkLabel: '?',
+    expectedBars: 3, proportions: [0.7, 0.3],
+  },
+  {
+    id: 'wp1u-010', step: 1, type: 'cmp', difficulty: 2,
+    text: 'How many fewer dominoes does Jenny have than Elsa?',
+    labels: ["Elsa's dominoes", "Jenny's dominoes", '?'],
+    unkLabel: '?',
+    expectedBars: 3, proportions: [0.6, 0.4],
+  },
+  // Fractional (frac)
+  {
+    id: 'wp1u-011', step: 1, type: 'frac', difficulty: 2,
+    text: 'One third of the garden is planted. How large is the planted part?',
+    labels: ['garden', '?'],
+    unkLabel: '?',
+    expectedBars: 2, denominator: 3, proportions: [1/3],
+  },
+  {
+    id: 'wp1u-012', step: 1, type: 'frac', difficulty: 2,
+    text: 'One half of the pizza was eaten. How large was the eaten piece?',
+    labels: ['pizza', '?'],
+    unkLabel: '?',
+    expectedBars: 2, denominator: 2, proportions: [0.5],
+  },
+  {
+    id: 'wp1u-013', step: 1, type: 'frac', difficulty: 3,
+    text: 'One quarter of the field is covered in snow. How large is the snow-covered part?',
+    labels: ['field', '?'],
+    unkLabel: '?',
+    expectedBars: 2, denominator: 4, proportions: [1/4],
+  },
+  // Multiplicative (mul)
+  {
+    id: 'wp1u-014', step: 1, type: 'mul', difficulty: 2,
+    text: 'The paperbacks take up twice as much space as the hardcovers. How much space do the paperbacks take up?',
+    labels: ['hardcovers', '?'],
+    unkLabel: '?',
+    expectedBars: 2, proportions: [2],
+  },
+  {
+    id: 'wp1u-015', step: 1, type: 'mul', difficulty: 2,
+    text: 'The large section is three times as wide as the small section. How wide is the large section?',
+    labels: ['small section', '?'],
+    unkLabel: '?',
+    expectedBars: 2, proportions: [3],
+  },
+  {
+    id: 'wp1u-016', step: 1, type: 'mul', difficulty: 3,
+    text: 'The long rope is four times as long as the short rope. How long is the long rope?',
+    labels: ['short rope', '?'],
+    unkLabel: '?',
+    expectedBars: 2, proportions: [4],
+  },
+];
+
 const WP2 = [
   {
     id: 'wp-201', step: 2, type: 'compound', difficulty: 3,
