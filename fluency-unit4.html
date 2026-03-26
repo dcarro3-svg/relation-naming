@@ -136,6 +136,20 @@ function checkModel(bars,problem){
       if(Math.abs(sp[i]-se[i])>0.35)return{ok:false,fb:`Bar sizes don't match. Adjust proportions.`};
     if(Math.abs(pw.reduce((a,b)=>a+b,0)-1.0)>0.30)return{ok:false,fb:`Parts should match the whole bar.`};
   }
+  if(problem.type==='eq'){
+    const s=[...nf].sort((a,b)=>b.w-a.w);
+    if(s.length>=2){
+      const ratio=s[s.length-1].w/s[0].w;
+      if(ratio<0.75)return{ok:false,fb:`Bars should be equal length.`};
+    }
+  }
+  if(problem.type==='frac'){
+    const s=[...nf].sort((a,b)=>b.w-a.w);
+    if(s.length>=2){
+      const ratio=s[1].w/s[0].w,exp=problem.proportions[0];
+      if(Math.abs(ratio-exp)>exp*0.35)return{ok:false,fb:`The part should be about 1/${problem.denominator} of the whole.`};
+    }
+  }
   if(problem.type==='mul'){
     const s=[...nf].sort((a,b)=>b.w-a.w);
     if(s.length>=2){
@@ -144,15 +158,6 @@ function checkModel(bars,problem){
     }
   }
   return{ok:true,fb:null};
-}
-
-// ── Equation check ────────────────────────────────────────────────────────────
-function check(tokens,item){
-  const s=tokens.join(' '),cor=item.correct.join(' ');
-  if(s===cor)return{ok:true,fb:null};
-  const hasAll=item.correct.every(t=>tokens.includes(t));
-  if(hasAll)return{ok:false,fb:`Almost — check the order. Try: ${cor}`};
-  return{ok:false,fb:`Try: ${cor}`};
 }
 
 // ── Timer ─────────────────────────────────────────────────────────────────────
@@ -180,10 +185,7 @@ window.addEventListener('message',e=>{
     if(S.phase!=='drill')return;
     const mc=checkModel(e.data.bars||[],S.item);
     if(!mc.ok){S.err++;S.errors.push({item:S.item,fb:mc.fb});}
-    else{
-      const rc=check(e.data.equation||[],S.item);
-      if(rc.ok){S.cor++;}else{S.err++;S.errors.push({item:S.item,fb:rc.fb||`Try: ${S.item.correct.join(' ')}`});}
-    }
+    else{S.cor++;}
     nextItem();
   }
 });
@@ -194,7 +196,7 @@ function showIntro(){
   render(`<div class="intro-card fu">
     <h2>Simple Relations — Fluency</h2>
     <p>You will see word problems for <strong>60 seconds</strong>.</p>
-    <p>For each problem: draw a bar model using the drawing tool, then build the equation. All five simple relation types may appear.</p>
+    <p>For each problem: read the relation, then draw a bar model. All five simple relation types may appear.</p>
     <p style="color:var(--accent);font-weight:600">Go as fast as you accurately can.</p>
     <button class="start-btn" onclick="startDrill()">Start</button>
   </div>`);
@@ -219,7 +221,6 @@ function drawDrawPhase(){
   render(`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">${tRing(S.t)}</div>
     <div class="fu">
       <div class="problem-text">${p.text}</div>
-      ${p.question?`<div style="background:#EEE6FF;border:1px solid #C4ADEE;border-radius:var(--radius);padding:8px 12px;font-size:13px;font-weight:600;color:#6845A8;margin-bottom:8px">? ${p.question}</div>`:''}
       <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Labels: ${p.labels.join(', ')}</div>
       <iframe id="draw-iframe" src="bar_model_draw.html" title="Bar Model Drawing Tool"
         style="width:100%;height:340px;border:1px solid var(--border);border-radius:var(--radius-lg)"></iframe>
@@ -264,60 +265,15 @@ function showC(){
 }
 
 function drawC(){
+  const rem=S.errors.length-S.ci-1;
   render(`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
     <span style="font-size:13px;font-weight:600;color:var(--text-secondary)">Missed item ${S.ci+1} of ${S.errors.length}</span>
     <span style="font-size:12px;color:var(--text-muted)">${S.errors.length-S.ci} remaining</span>
   </div>
   <div class="feedback-card">${S.cFb}</div>
-  <div class="problem-text">${S.cItem.text}</div>
-  <div class="drill-layout fu">
-    <div class="model-area" style="min-height:80px">
-      <div style="font-size:12px;color:var(--text-muted);font-style:italic">Review the relation below</div>
-      <div style="margin-top:8px;font-size:13px;color:var(--accent);font-weight:600">${S.cItem.correct.join(' ')}</div>
-    </div>
-    <div>
-      ${wbCHtml()}
-      ${stripCHtml()}
-    </div>
-  </div>`);
-}
-
-function wbCHtml(){
-  const item=S.cItem;
-  const opBtns=item.ops.map(o=>`<button class="word-btn" onclick="addC('${o}')">${o}</button>`).join('');
-  const labelBtns=item.labels.map(l=>`<button class="word-btn" onclick="addC('${l.replace(/'/g,"\\'")}')">` +
-    `${l}</button>`).join('');
-  return`<div class="word-bank">
-    <div class="wb-group">${labelBtns}</div>
-    <div class="wb-div"></div>
-    <div class="wb-group">${opBtns}</div>
-  </div>`;
-}
-
-function stripCHtml(){
-  const toks=S.cAsm.length
-    ?S.cAsm.map(t=>`<span class="token${t==='unknown'?' unk':''}">${t}</span>`).join('')
-    :`<span class="strip-ph">Build the relation...</span>`;
-  return`<div class="relation-strip" style="margin-top:6px">${toks}</div>
-    <div class="strip-row">
-      <button class="btn-back" onclick="backC()">← Back</button>
-      <button class="btn-sub" onclick="subC()" ${S.cAsm.length<2?'disabled':''}>Submit</button>
-    </div>`;
-}
-
-function addC(w){S.cAsm.push(w);drawC();}
-function backC(){S.cAsm.pop();drawC();}
-
-function subC(){
-  const{ok,fb}=check(S.cAsm,S.cItem);
-  if(ok){
-    const rem=S.errors.length-S.ci-1;
-    render(`<div class="feedback-card ok fu">Correct — ${S.cItem.correct.join(' ')}</div>
-      <div class="problem-text">${S.cItem.text}</div>
-      <button class="btn-continue" style="margin-top:10px" onclick="nextC()">${rem>0?'Next missed item →':'Finish review'}</button>`);
-  }else{
-    S.cFb=fb;S.cAsm=[];drawC();
-  }
+  <div class="problem-text fu">${S.cItem.text}</div>
+  <div style="margin-top:8px;font-size:12px;color:var(--text-muted)">Labels: ${S.cItem.labels.join(', ')}</div>
+  <button class="btn-continue" style="margin-top:12px" onclick="nextC()">${rem>0?'Next missed item →':'Finish review'}</button>`);
 }
 
 function nextC(){S.ci++;showC();}
