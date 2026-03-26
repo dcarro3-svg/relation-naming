@@ -148,6 +148,17 @@
   .sub2-body{display:none;flex-direction:column;gap:0;background:#F4F1FC;}
   .sub2-body.open{display:flex;}
 
+  /* ── Leaf items inside sub2-body ──────────────────────────────────────── */
+  a.sub2-leaf{display:flex;align-items:center;gap:14px;padding:12px 28px 12px 72px;
+    border-top:1px solid var(--border);text-decoration:none;color:var(--text-primary);
+    background:#F4F1FC;transition:all 0.12s;}
+  a.sub2-leaf:hover{background:var(--accent-light);color:var(--accent);}
+  .sub2-leaf-icon{width:50px;height:50px;border-radius:9px;display:flex;align-items:center;
+    justify-content:center;flex-shrink:0;}
+  .sub2-leaf-icon.lesson{background:var(--accent-light);color:var(--accent);}
+  .sub2-leaf-icon.fluency{background:var(--accent-blue-light);color:var(--accent-blue);}
+  .sub2-leaf-icon img{width:100%;height:100%;object-fit:fill;image-rendering:pixelated;}
+
   /* ══════════════════════════════════════════════════════════════════════════
      SECTION 1 — BANNER STYLES
   ══════════════════════════════════════════════════════════════════════════ */
@@ -618,26 +629,146 @@
         </button>
         <div class="sub-body" id="uf-comp-body">
 
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-1-btn"><div class="sub2-icon">1</div><div class="sub2-text"><strong>Computation 1</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-2-btn"><div class="sub2-icon">2</div><div class="sub2-text"><strong>Computation 2</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-3-btn"><div class="sub2-icon">3</div><div class="sub2-text"><strong>Computation 3</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-4-btn"><div class="sub2-icon">4</div><div class="sub2-text"><strong>Computation 4</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-5-btn"><div class="sub2-icon">5</div><div class="sub2-text"><strong>Computation 5</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-6-btn"><div class="sub2-icon">6</div><div class="sub2-text"><strong>Computation 6</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-7-btn"><div class="sub2-icon">7</div><div class="sub2-text"><strong>Computation 7</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-8-btn"><div class="sub2-icon">8</div><div class="sub2-text"><strong>Computation 8</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-9-btn"><div class="sub2-icon">9</div><div class="sub2-text"><strong>Computation 9</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-10-btn"><div class="sub2-icon">10</div><div class="sub2-text"><strong>Computation 10</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-11-btn"><div class="sub2-icon">11</div><div class="sub2-text"><strong>Computation 11</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-12-btn"><div class="sub2-icon">12</div><div class="sub2-text"><strong>Computation 12</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-13-btn"><div class="sub2-icon">13</div><div class="sub2-text"><strong>Computation 13</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-14-btn"><div class="sub2-icon">14</div><div class="sub2-text"><strong>Computation 14</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-15-btn"><div class="sub2-icon">15</div><div class="sub2-text"><strong>Computation 15</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-16-btn"><div class="sub2-icon">16</div><div class="sub2-text"><strong>Computation 16</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-17-btn"><div class="sub2-icon">17</div><div class="sub2-text"><strong>Computation 17</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-18-btn"><div class="sub2-icon">18</div><div class="sub2-text"><strong>Computation 18</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-19-btn"><div class="sub2-icon">19</div><div class="sub2-text"><strong>Computation 19</strong><span>Coming soon</span></div></button></div>
-          <div class="sub2-section"><button class="sub2-btn empty-sub2" id="uf-comp-20-btn"><div class="sub2-icon">20</div><div class="sub2-text"><strong>Computation 20</strong><span>Coming soon</span></div></button></div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-1')" id="uf-comp-1-btn"><div class="sub2-icon">1</div><div class="sub2-text"><strong>Computation 1</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-1-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-2')" id="uf-comp-2-btn"><div class="sub2-icon">2</div><div class="sub2-text"><strong>Computation 2</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-2-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-3')" id="uf-comp-3-btn"><div class="sub2-icon">3</div><div class="sub2-text"><strong>Computation 3</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-3-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-4')" id="uf-comp-4-btn"><div class="sub2-icon">4</div><div class="sub2-text"><strong>Computation 4</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-4-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-5')" id="uf-comp-5-btn"><div class="sub2-icon">5</div><div class="sub2-text"><strong>Computation 5</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-5-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-6')" id="uf-comp-6-btn"><div class="sub2-icon">6</div><div class="sub2-text"><strong>Computation 6</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-6-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-7')" id="uf-comp-7-btn"><div class="sub2-icon">7</div><div class="sub2-text"><strong>Computation 7</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-7-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-8')" id="uf-comp-8-btn"><div class="sub2-icon">8</div><div class="sub2-text"><strong>Computation 8</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-8-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-9')" id="uf-comp-9-btn"><div class="sub2-icon">9</div><div class="sub2-text"><strong>Computation 9</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-9-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-10')" id="uf-comp-10-btn"><div class="sub2-icon">10</div><div class="sub2-text"><strong>Computation 10</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-10-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-11')" id="uf-comp-11-btn"><div class="sub2-icon">11</div><div class="sub2-text"><strong>Computation 11</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-11-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-12')" id="uf-comp-12-btn"><div class="sub2-icon">12</div><div class="sub2-text"><strong>Computation 12</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-12-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-13')" id="uf-comp-13-btn"><div class="sub2-icon">13</div><div class="sub2-text"><strong>Computation 13</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-13-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-14')" id="uf-comp-14-btn"><div class="sub2-icon">14</div><div class="sub2-text"><strong>Computation 14</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-14-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-15')" id="uf-comp-15-btn"><div class="sub2-icon">15</div><div class="sub2-text"><strong>Computation 15</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-15-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-16')" id="uf-comp-16-btn"><div class="sub2-icon">16</div><div class="sub2-text"><strong>Computation 16</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-16-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-17')" id="uf-comp-17-btn"><div class="sub2-icon">17</div><div class="sub2-text"><strong>Computation 17</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-17-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-18')" id="uf-comp-18-btn"><div class="sub2-icon">18</div><div class="sub2-text"><strong>Computation 18</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-18-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-19')" id="uf-comp-19-btn"><div class="sub2-icon">19</div><div class="sub2-text"><strong>Computation 19</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-19-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
+          <div class="sub2-section">
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-20')" id="uf-comp-20-btn"><div class="sub2-icon">20</div><div class="sub2-text"><strong>Computation 20</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
+            <div class="sub2-body" id="uf-comp-20-body">
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><img src="Icons/exclamation.png" alt="Instruction"></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a>
+              <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a>
+            </div>
+          </div>
 
         </div>
       </div>
