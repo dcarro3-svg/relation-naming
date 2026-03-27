@@ -399,14 +399,18 @@ function buildTodayMiniSVG(L, sessions, todayGoal, firstTodayCpm, isNew) {
 
   // Grid
   let grid = '';
+  const MINI_LABELED = new Set([1, 5, 10, 50, 100]);
   Y_TICKS.forEach(v => {
     const y = yAt(v);
     if (y < PT || y > H - PB) return;
     const isMajor = [1, 10, 100].includes(v);
+    const sw = isMajor ? 1.2 : [5, 50, 500].includes(v) ? 0.9 : 0.5;
     grid += `<line x1="${PL}" x2="${W-PR}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}"
-      stroke="${isMajor?'#C5C0BB':'#E2DDD6'}" stroke-width="${isMajor?1.2:0.8}"/>`;
-    grid += `<text x="${(PL-4).toFixed(1)}" y="${(y+3.5).toFixed(1)}" text-anchor="end"
-      font-size="9" fill="#9B9591" font-family="DM Sans,sans-serif">${v<1?'.5':v}</text>`;
+      stroke="${isMajor?'#C5C0BB':'#E2DDD6'}" stroke-width="${sw}"/>`;
+    if (MINI_LABELED.has(v)) {
+      grid += `<text x="${(PL-4).toFixed(1)}" y="${(y+3.5).toFixed(1)}" text-anchor="end"
+        font-size="9" fill="#9B9591" font-family="DM Sans,sans-serif">${v<1?'.5':v}</text>`;
+    }
   });
 
   // X axis labels — session numbers
@@ -568,7 +572,7 @@ function clearAll() {
 // ═══════════════════════════════════════════════════════════════════════════════
 const LOG_MIN = Math.log10(0.5);
 const LOG_MAX = Math.log10(500);
-const Y_TICKS = [0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500];
+const Y_TICKS = [0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500];
 const DAY_MS = 86400000;
 const GAP_THRESHOLD = 1; // days — don't connect across gaps larger than this
 
@@ -635,7 +639,7 @@ function buildChart(lessonData, viewMode) {
   const totalDays = dayIndex(maxProjectedDate, minDate) + 1;
 
   const H = 360;
-  const PT = 20, PB = 48, PL = 58, PR = 28;
+  const PT = 28, PB = 48, PL = 58, PR = 28;
 
   // In scroll view: 48px per day minimum, min width 560
   // In overview: fit to 860px max
@@ -650,13 +654,19 @@ function buildChart(lessonData, viewMode) {
 
   // Grid lines — Y axis
   let grid = '';
+  const LABELED_TICKS = new Set([0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500]);
   Y_TICKS.forEach(v => {
     const y = toY(v, H, PT, PB);
     const isMajor = [1, 10, 100].includes(v);
+    const isSemiMajor = [2, 5, 20, 50, 200, 500].includes(v);
+    const sw = isMajor ? 1.5 : isSemiMajor ? 1 : 0.5;
+    const sc = isMajor ? '#C5C0BB' : '#E2DDD6';
     grid += `<line x1="${PL}" x2="${W-PR}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}"
-      stroke="${isMajor?'#C5C0BB':'#E2DDD6'}" stroke-width="${isMajor?1.5:1}"/>`;
-    grid += `<text x="${(PL-7).toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="end"
-      font-size="11" fill="#9B9591" font-family="DM Sans,sans-serif">${v<1?'0.5':v}</text>`;
+      stroke="${sc}" stroke-width="${sw}"/>`;
+    if (LABELED_TICKS.has(v)) {
+      grid += `<text x="${(PL-7).toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="end"
+        font-size="11" fill="#9B9591" font-family="DM Sans,sans-serif">${v<1?'0.5':v}</text>`;
+    }
   });
 
   // X axis labels — one per day when scroll, sparse when overview
@@ -667,6 +677,23 @@ function buildChart(lessonData, viewMode) {
     const x = PL + (di / Math.max(totalDays - 1, 1)) * CW;
     xLabels += `<text x="${x.toFixed(1)}" y="${(H-PB+15).toFixed(1)}" text-anchor="middle"
       font-size="10" fill="#9B9591" font-family="DM Sans,sans-serif">${d.getMonth()+1}/${d.getDate()}</text>`;
+  }
+
+  // Vertical lines — one per day; Sunday bold; MWF labels at top
+  let vLines = '';
+  let mwfLabels = '';
+  for (let di = 0; di < totalDays; di++) {
+    const d = new Date(new Date(minDate).setDate(new Date(minDate).getDate() + di));
+    const dow = d.getDay(); // 0=Sun 1=Mon 2=Tue 3=Wed 4=Thu 5=Fri 6=Sat
+    const x = PL + (di / Math.max(totalDays - 1, 1)) * CW;
+    const isSunday = dow === 0;
+    const sw = isSunday ? 2 : dow === 6 ? 0.8 : 0.5;
+    const sc = isSunday ? '#A09898' : '#DDD8D0';
+    vLines += `<line x1="${x.toFixed(1)}" y1="${PT}" x2="${x.toFixed(1)}" y2="${H-PB}" stroke="${sc}" stroke-width="${sw}"/>`;
+    if (dow === 1 || dow === 3 || dow === 5) {
+      const dayLetter = dow === 1 ? 'M' : dow === 3 ? 'W' : 'F';
+      mwfLabels += `<text x="${x.toFixed(1)}" y="${(PT-5).toFixed(1)}" text-anchor="middle" font-size="9" fill="#B0A8C0" font-family="DM Sans,sans-serif">${dayLetter}</text>`;
+    }
   }
 
   // Per lesson, per metric: build path and markers
@@ -739,12 +766,14 @@ function buildChart(lessonData, viewMode) {
 
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
     <rect width="${W}" height="${H}" fill="white" rx="8"/>
+    ${vLines}
     ${grid}
     <line x1="${PL}" y1="${PT}" x2="${PL}" y2="${H-PB}" stroke="#9B9591" stroke-width="1.5"/>
     <line x1="${PL}" y1="${H-PB}" x2="${W-PR}" y2="${H-PB}" stroke="#9B9591" stroke-width="1.5"/>
     <text x="14" y="${(H/2).toFixed(1)}" text-anchor="middle" font-size="11" fill="#9B9591"
       font-family="DM Sans,sans-serif" transform="rotate(-90,14,${(H/2).toFixed(1)})">Responses / min</text>
     ${xLabels}
+    ${mwfLabels}
     ${buildAimLines(lessonData, xAt, H, PT, PB, W, PR, viewMode)}
     ${series}
   </svg>`;
