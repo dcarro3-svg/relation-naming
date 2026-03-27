@@ -127,9 +127,7 @@ function genDDAddNoRegroup(){
   const aOnes=Math.floor(Math.random()*9);
   const bOnes=Math.floor(Math.random()*(10-aOnes));
   const a=aTens*10+aOnes, b=bTens*10+bOnes, whole=a+b;
-  const roles=['whole','p1','p2'], unknownRole=roles[Math.floor(Math.random()*3)];
-  const answer=unknownRole==='whole'?whole:unknownRole==='p1'?a:b;
-  return{a,b,whole,op:'+',unknownRole,answer};
+  return{a,b,whole,op:'+',unknownRole:'whole',answer:whole};
 }
 
 function genItem(){
@@ -165,7 +163,7 @@ function showIntro(){
   S.phase='intro';setPhase('Practice');
   render(`<div class="intro-card fu">
     <h2>${CFG.label}</h2>
-    <p>One number is missing. Type it and press <strong>Enter</strong>.</p>
+    <p>What is the sum? Type it and press <strong>Enter</strong>.</p>
     <p>Both digits add without carrying — ones column stays ≤ 9, tens column stays ≤ 9.</p>
     <div class="examples">${makeExamples()}</div>
     <p style="color:var(--accent);font-weight:600">60 seconds — go as fast as you accurately can.</p>
