@@ -120,6 +120,29 @@ function renderEq(item){
   </div>`;
 }
 
+function renderVertical(item,showAnswer){
+  const{a,b,whole,op}=item;
+  const opSym=op==='-'?'−':'+';
+  const answerVal=showAnswer?String(whole):'?';
+  const ansColor=showAnswer?'var(--text-primary)':'var(--accent)';
+  const ansStyle=showAnswer?'':'font-style:italic';
+  return`<div style="display:inline-block;font-family:'DM Serif Display',serif;font-size:52px;line-height:1.3">
+    <div style="display:flex;align-items:center">
+      <span style="width:46px;display:inline-block"></span>
+      <span style="min-width:96px;text-align:right">${a}</span>
+    </div>
+    <div style="display:flex;align-items:center">
+      <span style="width:46px;text-align:center;font-size:40px;color:var(--text-muted)">${opSym}</span>
+      <span style="min-width:96px;text-align:right">${b}</span>
+    </div>
+    <div style="height:3px;background:var(--text-primary);margin:8px 0 8px 46px"></div>
+    <div style="display:flex;align-items:center">
+      <span style="width:46px;display:inline-block"></span>
+      <span style="min-width:96px;text-align:right;color:${ansColor};${ansStyle}">${answerVal}</span>
+    </div>
+  </div>`;
+}
+
 // ── Bar model renderer (lesson 3) ──────────────────────────────────────────────
 const BAR_H=58,BAR_W=300;
 const C_WHOLE='#6845A8',C_P1='#2B5DC7',C_P2='#D4600A',C_UNK_BG='#EDE5FF';
@@ -144,8 +167,13 @@ function renderBar(item){
   return`<div style="position:relative;display:inline-block">${lines}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:7px">${wBar}<div style="display:flex">${aBar}${bBar}</div></div></div>`;
 }
 
+function isVerticalType(){
+  const t=CFG.compType;
+  return t==='dd-add-no-regroup'||t==='dd-sub-no-regroup'||t==='dd-add-regroup'||t==='dd-sub-regroup';
+}
 function renderItem(item){
   if(CFG.compType==='dd-mixed-bar'||CFG.compType==='dd-mixed-bar-regroup') return renderBar(item);
+  if(isVerticalType()) return renderVertical(item,false);
   return renderEq(item);
 }
 
@@ -226,6 +254,11 @@ function makeExamples(){
     const ex1=gen();ex1.unknownRole='whole';ex1.answer=ex1.whole;
     const ex2=gen();ex2.unknownRole='p1';ex2.answer=ex2.a;
     return`<div style="display:flex;flex-direction:column;gap:14px;margin:14px 0;align-items:flex-start">${renderBar(ex1)}${renderBar(ex2)}</div>`;
+  }
+  if(isVerticalType()){
+    const ex=[];
+    for(let i=0;i<3;i++){const it=genItem();ex.push(`<div style="background:var(--accent-light);border:1px solid #C4ADEE;border-radius:var(--radius);padding:14px 20px;display:inline-block">${renderVertical(it,true)}</div>`);}
+    return`<div style="display:flex;gap:16px;flex-wrap:wrap;margin:14px 0 4px;align-items:flex-start">${ex.join('')}</div>`;
   }
   const op=(t==='dd-sub-no-regroup'||t==='dd-sub-regroup')?'−':'+';
   const ex=[];
