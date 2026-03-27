@@ -16,7 +16,9 @@ config.forEach(item => {
     .replaceAll('%%COMP_TYPE%%',   item.compType)
     .replaceAll('%%STORAGE_KEY%%', item.storageKey)
     .replaceAll('%%CHART_ID%%',    item.chartId)
-    .replaceAll('%%CHART_HREF%%',  item.chartHref);
+    .replaceAll('%%CHART_HREF%%',  item.chartHref)
+    .replaceAll('%%INTRO_Q%%',     item.introQ)
+    .replaceAll('%%INTRO_DESC%%',  item.introDesc);
 
   fs.writeFileSync(item.output, output, 'utf8');
   console.log(`✓ Generated ${item.output}  (${item.label})`);

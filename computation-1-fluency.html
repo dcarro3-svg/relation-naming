@@ -120,6 +120,35 @@ function renderEq(item){
   </div>`;
 }
 
+// ── Bar model renderer (lesson 3) ──────────────────────────────────────────────
+const BAR_H=58,BAR_W=300;
+const C_WHOLE='#6845A8',C_P1='#2B5DC7',C_P2='#D4600A',C_UNK_BG='#EDE5FF';
+
+function numBarDiv(w,val,color,isUnk,radius){
+  const bg=isUnk?C_UNK_BG:color;
+  const col=isUnk?'#584C72':'#fff';
+  const bdr=isUnk?'2px dashed #9B9591':'none';
+  const text=isUnk?'?':String(val);
+  const fs=isUnk?'26px':String(val).length>=3?'18px':'22px';
+  const fi=isUnk?'italic':'normal';
+  return`<div style="width:${w}px;height:${BAR_H}px;background:${bg};border:${bdr};border-radius:${radius};display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-family:'DM Serif Display',serif;font-size:${fs};color:${col};font-style:${fi}">${text}</span></div>`;
+}
+
+function renderBar(item){
+  const{a,b,whole,unknownRole}=item;
+  const aW=Math.max(28,Math.round(a/whole*BAR_W)), bW=BAR_W-aW;
+  const lines=`<div style="position:absolute;left:0;top:0;bottom:0;border-left:2px dashed #9B9591"></div><div style="position:absolute;right:0;top:0;bottom:0;border-right:2px dashed #9B9591"></div>`;
+  const wBar=numBarDiv(BAR_W,whole,C_WHOLE,unknownRole==='whole','6px');
+  const aBar=numBarDiv(aW,a,C_P1,unknownRole==='p1','6px 0 0 6px');
+  const bBar=numBarDiv(bW,b,C_P2,unknownRole==='p2','0 6px 6px 0');
+  return`<div style="position:relative;display:inline-block">${lines}<div style="display:flex;flex-direction:column;align-items:flex-start;gap:7px">${wBar}<div style="display:flex">${aBar}${bBar}</div></div></div>`;
+}
+
+function renderItem(item){
+  if(CFG.compType==='dd-mixed-bar'||CFG.compType==='dd-mixed-bar-regroup') return renderBar(item);
+  return renderEq(item);
+}
+
 // ── Item generators ────────────────────────────────────────────────────────────
 function genDDAddNoRegroup(){
   const aTens=1+Math.floor(Math.random()*8);
@@ -130,17 +159,78 @@ function genDDAddNoRegroup(){
   return{a,b,whole,op:'+',unknownRole:'whole',answer:whole};
 }
 
+function genDDSubNoRegroup(){
+  const aTens=2+Math.floor(Math.random()*7); // 2–8, ensures result tens ≥ 1
+  const bTens=1+Math.floor(Math.random()*(aTens-1)); // 1 to aTens-1
+  const aOnes=Math.floor(Math.random()*10);
+  const bOnes=Math.floor(Math.random()*(aOnes+1)); // ≤ aOnes, no borrow
+  const a=aTens*10+aOnes, b=bTens*10+bOnes, whole=a-b;
+  return{a,b,whole,op:'-',unknownRole:'whole',answer:whole};
+}
+
+function genDDMixedBar(){
+  const aTens=1+Math.floor(Math.random()*8);
+  const bTens=1+Math.floor(Math.random()*(9-aTens));
+  const aOnes=Math.floor(Math.random()*9);
+  const bOnes=Math.floor(Math.random()*(10-aOnes));
+  const a=aTens*10+aOnes, b=bTens*10+bOnes, whole=a+b;
+  const roles=['whole','p1','p2'], unknownRole=roles[Math.floor(Math.random()*3)];
+  const answer=unknownRole==='whole'?whole:unknownRole==='p1'?a:b;
+  return{a,b,whole,unknownRole,answer};
+}
+
+function genDDAddRegroup(){
+  const aTens=1+Math.floor(Math.random()*9); // 1–9
+  const bTens=1+Math.floor(Math.random()*9); // 1–9
+  const aOnes=1+Math.floor(Math.random()*9); // 1–9
+  const bOnes=(10-aOnes)+Math.floor(Math.random()*aOnes); // 10-aOnes to 9, guarantees carry
+  const a=aTens*10+aOnes, b=bTens*10+bOnes, whole=a+b;
+  return{a,b,whole,op:'+',unknownRole:'whole',answer:whole};
+}
+
+function genDDSubRegroup(){
+  const aTens=2+Math.floor(Math.random()*8); // 2–9, ensures positive result after borrow
+  const bTens=1+Math.floor(Math.random()*(aTens-1)); // 1 to aTens-1
+  const bOnes=1+Math.floor(Math.random()*9); // 1–9
+  const aOnes=Math.floor(Math.random()*bOnes); // 0 to bOnes-1, forces borrow
+  const a=aTens*10+aOnes, b=bTens*10+bOnes, whole=a-b;
+  return{a,b,whole,op:'-',unknownRole:'whole',answer:whole};
+}
+
+function genDDMixedBarRegroup(){
+  const aTens=1+Math.floor(Math.random()*9);
+  const bTens=1+Math.floor(Math.random()*9);
+  const aOnes=1+Math.floor(Math.random()*9);
+  const bOnes=(10-aOnes)+Math.floor(Math.random()*aOnes); // forces carry in ones
+  const a=aTens*10+aOnes, b=bTens*10+bOnes, whole=a+b;
+  const roles=['whole','p1','p2'], unknownRole=roles[Math.floor(Math.random()*3)];
+  const answer=unknownRole==='whole'?whole:unknownRole==='p1'?a:b;
+  return{a,b,whole,unknownRole,answer};
+}
+
 function genItem(){
   const t=CFG.compType;
-  if(t==='dd-add-no-regroup') return genDDAddNoRegroup();
+  if(t==='dd-sub-no-regroup')    return genDDSubNoRegroup();
+  if(t==='dd-mixed-bar')         return genDDMixedBar();
+  if(t==='dd-add-regroup')       return genDDAddRegroup();
+  if(t==='dd-sub-regroup')       return genDDSubRegroup();
+  if(t==='dd-mixed-bar-regroup') return genDDMixedBarRegroup();
   return genDDAddNoRegroup();
 }
 
 // ── Examples for intro ─────────────────────────────────────────────────────────
 function makeExamples(){
+  const t=CFG.compType;
+  if(t==='dd-mixed-bar'||t==='dd-mixed-bar-regroup'){
+    const gen=t==='dd-mixed-bar-regroup'?genDDMixedBarRegroup:genDDMixedBar;
+    const ex1=gen();ex1.unknownRole='whole';ex1.answer=ex1.whole;
+    const ex2=gen();ex2.unknownRole='p1';ex2.answer=ex2.a;
+    return`<div style="display:flex;flex-direction:column;gap:14px;margin:14px 0;align-items:flex-start">${renderBar(ex1)}${renderBar(ex2)}</div>`;
+  }
+  const op=(t==='dd-sub-no-regroup'||t==='dd-sub-regroup')?'−':'+';
   const ex=[];
-  for(let i=0;i<3;i++){const it=genItem();it.unknownRole='whole';it.answer=it.whole;ex.push(it);}
-  return ex.map(it=>`<div class="example-eq">${it.a} + ${it.b} = ${it.whole}</div>`).join('');
+  for(let i=0;i<3;i++){const it=genItem();ex.push(`<div class="example-eq">${it.a} ${op} ${it.b} = ${it.whole}</div>`);}
+  return`<div class="examples">${ex.join('')}</div>`;
 }
 
 // ── Timer ──────────────────────────────────────────────────────────────────────
@@ -164,8 +254,8 @@ function showIntro(){
   render(`<div class="intro-card fu">
     <h2>${CFG.label}</h2>
     <p>What is the sum? Type it and press <strong>Enter</strong>.</p>
-    <p>Both digits add without carrying — ones column stays ≤ 9, tens column stays ≤ 9.</p>
-    <div class="examples">${makeExamples()}</div>
+    <p>Find the sum of two double-digit numbers.</p>
+    ${makeExamples()}
     <p style="color:var(--accent);font-weight:600">60 seconds — go as fast as you accurately can.</p>
     <div class="pig-intro"><img src="Icons/pigeon.png" alt="Pigeon"><div class="pig-intro-line">${pigLine(PIG_BEFORE)}</div></div>
     <button class="start-btn" onclick="startDrill()">Start</button>
@@ -194,7 +284,7 @@ function drawDrill(){
       ${S.err?`<div><div class="score-e">${S.err}</div><div class="score-sub">errors</div></div>`:''}
     </div>
   </div>
-  <div class="model-area fu">${renderEq(S.item)}</div>
+  <div class="model-area fu">${renderItem(S.item)}</div>
   <div class="answer-row">
     <span class="answer-prompt">Type the missing number</span>
     <input type="text" inputmode="numeric" id="answerInput" class="num-input" autocomplete="off" onkeydown="if(event.key==='Enter')submitAnswer()">

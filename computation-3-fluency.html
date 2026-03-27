@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Computation — %%LABEL%%</title>
+<title>Computation — Mixed: Add or Subtract?</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
   :root{--bg:#DDD0F5;--surface:#EDE5FF;--border:#C4ADEE;--text-primary:#1E1530;--text-secondary:#584C72;--text-muted:#9589B8;--accent:#6845A8;--accent-light:#EEE6FF;--accent-warm:#D4600A;--accent-warm-light:#FBF0E4;--error:#C0392B;--radius:12px;--radius-lg:20px;}
@@ -86,14 +86,14 @@
 <body>
 <div class="app">
   <div class="header">
-    <span class="lesson-label">Computation %%ID%%</span>
+    <span class="lesson-label">Computation 3</span>
     <span class="phase-label" id="phaseLabel">Practice</span>
   </div>
   <div id="main"></div>
 </div>
 <script>
 // ── Config ─────────────────────────────────────────────────────────────────────
-const CFG={id:%%ID%%,label:'%%LABEL%%',compType:'%%COMP_TYPE%%',storageKey:'%%STORAGE_KEY%%',chartId:%%CHART_ID%%,chartHref:'%%CHART_HREF%%'};
+const CFG={id:3,label:'Mixed: Add or Subtract?',compType:'dd-mixed-bar',storageKey:'computation_3_fluency_sessions',chartId:34,chartHref:'chart.html'};
 
 // ── Storage ────────────────────────────────────────────────────────────────────
 function loadSessions(){try{const r=localStorage.getItem(CFG.storageKey);return r?JSON.parse(r):[];}catch(e){return[];}}
@@ -253,8 +253,8 @@ function showIntro(){
   S.phase='intro';setPhase('Practice');
   render(`<div class="intro-card fu">
     <h2>${CFG.label}</h2>
-    <p>%%INTRO_Q%%</p>
-    <p>%%INTRO_DESC%%</p>
+    <p>Look at the bar model and find the missing number.</p>
+    <p>The unknown could be the whole or a part. Decide whether to add or subtract based on which box has the question mark.</p>
     ${makeExamples()}
     <p style="color:var(--accent);font-weight:600">60 seconds — go as fast as you accurately can.</p>
     <div class="pig-intro"><img src="Icons/pigeon.png" alt="Pigeon"><div class="pig-intro-line">${pigLine(PIG_BEFORE)}</div></div>
