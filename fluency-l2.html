@@ -65,9 +65,6 @@
   .intro-card p{font-size:14px;line-height:1.6;color:var(--text-secondary);margin-bottom:6px;}
   .start-btn{width:100%;padding:14px;border-radius:var(--radius);border:none;background:var(--accent);color:white;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px;}
   .start-btn:hover{background:#512F8A;box-shadow:0 0 0 2px #F0922B,0 0 14px 4px rgba(240,146,43,0.55),0 0 32px 10px rgba(240,146,43,0.28);}
-  .pig-intro{display:flex;align-items:center;gap:12px;margin:14px 0 4px;}
-  .pig-intro img{width:48px;height:auto;image-rendering:pixelated;flex-shrink:0;}
-  .pig-intro-line{font-size:13px;font-weight:600;color:var(--text-secondary);font-style:italic;}
   .bar-h{height:58px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
   .fu{animation:fadeUp 0.2s ease;}
@@ -260,31 +257,6 @@ const S={phase:'intro',t:DUR,timer:null,cor:0,err:0,item:null,asm:[],start:null,
 function render(h){document.getElementById('main').innerHTML=h;}
 function setPhase(l){document.getElementById('phaseLabel').textContent=l;}
 
-// ── Pigeon dialogue pools ──────────────────────────────────────────────────────
-const PIG_BEFORE = [
-  'Ready when you are.',
-  'Take your time getting started.',
-  'No rush. I\'ll be here.',
-  'Whenever you\'re set.',
-  'I\'ll be watching. In a good way.',
-  'You\'ve done this before. You know what to do.',
-];
-const PIG_AFTER = [
-  'That was a good one.',
-  'Good work.',
-  'That went well.',
-  'You showed up. That matters.',
-  'Let\'s see where that lands.',
-];
-const PIG_IMPROVED = [
-  'You\'re getting it.',
-  'That one was better.',
-  'Getting closer.',
-  'That\'s a real improvement.',
-  'Progress. Quiet, steady progress.',
-];
-function pigLine(pool){ return pool[Math.floor(Math.random()*pool.length)]; }
-
 // ── Drill ─────────────────────────────────────────────────────────────────────
 function showIntro(){
   S.phase='intro';setPhase('Practice');
@@ -293,7 +265,6 @@ function showIntro(){
     <p>You will see bar models for <strong>30 seconds</strong>.</p>
     <p>Build the relation using the word buttons on the right. The unknown goes at the end.</p>
     <p style="color:var(--accent);font-weight:600">Go as fast as you accurately can.</p>
-    <div class="pig-intro"><img src="Icons/pigeon.png" alt="Pigeon"><div class="pig-intro-line">${pigLine(PIG_BEFORE)}</div></div>
     <button class="start-btn" onclick="startDrill()">Start</button>
   </div>`);
 }
@@ -320,65 +291,11 @@ function sub(){
   nextItem();
 }
 
-// ── Pigeon Transition ─────────────────────────────────────────────────────────
-// Shows pigeon + bubble, saves lesson id for chart.html, then redirects.
-// delayMs: how long to wait before showing (gives score card a moment to breathe).
+// ── Transition to chart ───────────────────────────────────────────────────────
 function showPigeonTransition(delayMs) {
   setTimeout(() => {
     try { localStorage.setItem('chart_new_lesson', String(CFG.id)); } catch(e) {}
-
-    // Current session CPM
-    const currentCpm = S.cor * 2;
-
-    // Previous best CPM from saved sessions (before this one was saved)
-    const prevSessions = loadSessions().slice(0, -1); // last one is the just-saved session
-    const prevBest = prevSessions.reduce((best, s) => Math.max(best, s.cpm || 0), 0);
-    const improved = prevBest > 0 && currentCpm > prevBest;
-
-    // Inline goal calculation (mirrors chart.html calcTodayGoal)
-    const PASSOFF_AIM = 30, CELERATION = 1.5;
-    let todayGoal = null;
-    if (prevSessions.length) {
-      const byDay = {};
-      prevSessions.forEach(s => {
-        const dk = s.date ? s.date.slice(0,10) : '';
-        if (!byDay[dk] || (s.cpm||0) > (byDay[dk].cpm||0)) byDay[dk] = s;
-      });
-      const daily = Object.values(byDay).sort((a,b) => new Date(a.date)-new Date(b.date));
-      const best = daily.reduce((b,s) => (s.cpm||0) > (b.cpm||0) ? s : b, daily[0]);
-      const anchorRate = best.cpm || 1;
-      const weeksElapsed = (new Date() - new Date(best.date)) / (7*24*60*60*1000);
-      // Effective celeration — same steepening logic as chart.html
-      const steepened = PASSOFF_AIM / anchorRate;
-      const cel = Math.max(steepened, CELERATION);
-      todayGoal = Math.min(anchorRate * Math.pow(cel, weeksElapsed), PASSOFF_AIM);
-    }
-    const twoBelowGoal = todayGoal !== null && currentCpm <= todayGoal - 2;
-
-    // Main line — improvement gets its own line, otherwise a general after-timing line
-    const mainLine = improved ? pigLine(PIG_IMPROVED) : pigLine(PIG_AFTER);
-
-    // Sub-message
-    let subMsg = '';
-    if (improved) {
-      subMsg = `<div class="pig-sub">Let's chart it.</div>`;
-    } else if (twoBelowGoal && CFG.lessonHref) {
-      subMsg = `<div class="pig-sub pig-link">A refresher might help. <a href="${CFG.lessonHref}">Back to instruction →</a></div>`;
-    } else {
-      subMsg = `<div class="pig-sub">Let's chart your timing.</div>`;
-    }
-
-    const overlay = document.createElement('div');
-    overlay.id = 'pigeon-overlay';
-    overlay.innerHTML = `<div class="pig-inner">
-      <div class="pig-bubble">
-        ${mainLine}
-        ${subMsg}
-      </div>
-      <img src="Icons/pigeon.png" alt="Pigeon">
-    </div>`;
-    document.body.appendChild(overlay);
-    setTimeout(() => { window.location.href = CFG.chartHref; }, 2800);
+    window.location.href = CFG.chartHref;
   }, delayMs || 0);
 }
 
@@ -491,26 +408,10 @@ showIntro();
   #draw-close:hover { color: var(--accent); }
   #draw-iframe { flex: 1; border: none; width: 100%; }
 
-  /* ── Pigeon Transition Overlay ───────────────────────────────────────── */
-  @keyframes overlayFadeIn { from{opacity:0} to{opacity:1} }
-  @keyframes pigeonSlideUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
-  #pigeon-overlay { position:fixed;inset:0;background:rgba(21,9,52,0.88);
-    display:flex;align-items:center;justify-content:center;z-index:9999;
-    animation:overlayFadeIn 0.35s ease forwards; }
-  #pigeon-overlay .pig-inner { display:flex;flex-direction:column;align-items:center;gap:0;
-    animation:pigeonSlideUp 0.5s ease 0.1s both; }
-  #pigeon-overlay .pig-bubble { background:#FBF0E4;border:3px solid #D4600A;border-radius:12px;
-    padding:14px 28px;font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;
-    color:#1E1530;white-space:nowrap;margin-bottom:14px;text-align:center;
-    box-shadow:0 4px 20px rgba(0,0,0,0.18); }
-  #pigeon-overlay .pig-exclaim { color:#D4600A; }
-  #pigeon-overlay .pig-sub { font-size:15px;font-weight:600;color:#5a3a1a;margin-top:8px;white-space:normal;max-width:280px; }
-  #pigeon-overlay .pig-link a { color:#6845A8;text-decoration:underline; }
-  #pigeon-overlay img { width:280px;height:auto;image-rendering:pixelated; }
 </style>
 
 <button id="draw-btn" onclick="toggleDrawer()" title="Bar Model Drawing Tool">
-  <img src="Icons/fountain pen.png" alt="Draw">
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="white"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
 </button>
 
 <div id="draw-drawer">

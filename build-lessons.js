@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // build-lessons.js
-// Generates all five lesson HTML files from:
+// Generates all lesson HTML files from:
 //   lesson-template.html   — shared engine (instruction phase, bar renderers, TTS, etc.)
 //   lesson-config.json     — per-lesson metadata (title, label, hrefs, storage key)
 //   lesson-N-specific.js   — per-lesson unique content (INSTRUCT, generators, phases)
@@ -13,7 +13,7 @@ const fs = require('fs');
 const template = fs.readFileSync('lesson-template.html', 'utf8');
 const config = JSON.parse(fs.readFileSync('lesson-config.json', 'utf8'));
 
-const lessonNames = ['one','two','three','four','five','compound','unit3'];
+const lessonNames = ['one','two','three','four','five','compound'];
 
 config.forEach((lesson, idx) => {
   const specificPath = `lesson-${lessonNames[idx]}-specific.js`;

@@ -46,9 +46,6 @@
   .instruct-text.neutral{background:var(--surface);border-color:var(--border);}
   .instruct-text.bridge{background:#EEE6FF;border-color:#C4ADEE;}
   .instruct-text.positive{background:var(--accent-light);border-color:#C4ADEE;}
-  .crow-note{display:flex;align-items:center;gap:10px;margin-bottom:10px;animation:fadeUp 0.2s ease;}
-  .crow-note img{width:38px;height:38px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;}
-  .crow-note span{font-size:13px;font-weight:600;color:var(--text-primary);font-style:italic;}
 
   /* Letter-by-letter animation */
   .typed-text .char{opacity:0;animation:charFade 0.04s forwards;}
@@ -194,8 +191,8 @@ function speak(text, onEnd) {
 
 function replayAudio() { if (currentUtterance && ttsEnabled) speak(currentUtterance.text); }
 function audioBtn() {
-  return `<button class="audio-indicator" id="audioBtn" onclick="replayAudio()" style="width:100px;height:100px;">
-    <img src="Icons/crow typing.png" alt="Replay" style="width:100px;height:100px;object-fit:contain;image-rendering:pixelated;">
+  return `<button class="audio-indicator" id="audioBtn" onclick="replayAudio()">
+    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
   </button>`;
 }
 
@@ -387,18 +384,6 @@ function render(m,r){document.getElementById('mainContent').innerHTML=m;document
 const POSITIVE_MSGS = ['Yes!','Right!','Good!','That\'s it!','Nice work.','Exactly.'];
 function randPos() { return POSITIVE_MSGS[Math.floor(Math.random()*POSITIVE_MSGS.length)]; }
 
-const CROW_LINES = [
-  'Look at the bars again.',
-  'Not quite. What does the picture show?',
-  'That wasn\'t it. Try again.',
-  'Look more carefully.',
-  'Read the bars, not the answer.',
-  'Think about what you see.',
-  'Almost. Look again.',
-  'Not that one.',
-];
-function crowLine() { return CROW_LINES[Math.floor(Math.random()*CROW_LINES.length)]; }
-function crowNote() { return `<div class="crow-note"><img src="Icons/crow typing.png" alt="Crow"><span>${crowLine()}</span></div>`; }
 
 function showInstruct(step) {
   if (step >= INSTRUCT.length) { afterInstruct(); return; }
@@ -424,7 +409,7 @@ function showInstructItem() {
   const question = typeof def.question === 'function' ? def.question(m) : def.question;
   const opts = S.currentOpts;
   const modelHtml = m ? `<div class="canvas">${renderModel(m)}</div>` : '';
-  const crowHtml = S.instructItemErrors > 0 ? crowNote() : '';
+  const crowHtml = '';
 
   if (mode === 'T') {
     // Test: model + question + buttons immediately, no instruction text
@@ -546,7 +531,7 @@ function showInstructFUError() {
   }
 
   render(
-    `${crowNote()}${modelHtml}
+    `${modelHtml}
      <div class="instruct-text correction" id="instructBox">${audioBtn()}<span id="instructAnim" class="typed-text"></span></div>
      <div class="question-prompt" id="questionBox" style="display:none">${fuQ}</div>`,
     `<div id="instructBtns" style="display:none"></div>`
@@ -1308,7 +1293,7 @@ showIntro();
 </style>
 
 <button id="draw-btn" onclick="toggleDrawer()" title="Bar Model Drawing Tool">
-  <img src="Icons/fountain pen.png" alt="Draw">
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="white"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
 </button>
 
 <div id="draw-drawer">

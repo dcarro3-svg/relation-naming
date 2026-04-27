@@ -65,16 +65,6 @@
   .rate-num.e{color:var(--error);}
   .rate-sub{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
 
-  /* Pig */
-  .pig-intro{display:flex;align-items:center;gap:12px;margin:14px 0 4px;}
-  .pig-intro img{width:48px;height:auto;image-rendering:pixelated;flex-shrink:0;}
-  .pig-intro-line{font-size:13px;font-weight:600;color:var(--text-secondary);font-style:italic;}
-  #pigeon-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(221,208,245,0.72);backdrop-filter:blur(4px);z-index:999;}
-  .pig-inner{display:flex;align-items:flex-end;gap:16px;padding:32px;}
-  .pig-inner img{width:100px;image-rendering:pixelated;}
-  .pig-bubble{background:var(--surface);border:2px solid var(--accent);border-radius:16px;padding:20px 24px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;max-width:260px;line-height:1.5;}
-  .pig-sub{font-size:13px;font-weight:400;color:var(--text-secondary);margin-top:6px;}
-
   /* Example problems on intro */
   .examples{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 4px;}
   .example-eq{background:var(--accent-light);border:1px solid #C4ADEE;border-radius:var(--radius);padding:10px 16px;font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);white-space:nowrap;}
@@ -275,11 +265,6 @@ const S={phase:'intro',t:DUR,timer:null,cor:0,err:0,item:null,start:null};
 function render(h){document.getElementById('main').innerHTML=h;}
 function setPhase(l){document.getElementById('phaseLabel').textContent=l;}
 
-// ── Pigeon lines ───────────────────────────────────────────────────────────────
-const PIG_BEFORE=['Ready when you are.','No rush. I\'ll be here.','Whenever you\'re set.','You know these. Show it.','Go fast, stay accurate.'];
-const PIG_AFTER=['That was a good one.','Good work.','That went well.','You showed up. That matters.','Let\'s see where that lands.'];
-const PIG_IMPROVED=['You\'re getting it.','That one was better.','Getting closer.','That\'s a real improvement.','Progress. Quiet, steady progress.'];
-function pigLine(pool){return pool[Math.floor(Math.random()*pool.length)];}
 
 // ── Intro ──────────────────────────────────────────────────────────────────────
 function showIntro(){
@@ -290,7 +275,6 @@ function showIntro(){
     <p>Find the sum of two double-digit numbers.</p>
     ${makeExamples()}
     <p style="color:var(--accent);font-weight:600">60 seconds — go as fast as you accurately can.</p>
-    <div class="pig-intro"><img src="Icons/pigeon.png" alt="Pigeon"><div class="pig-intro-line">${pigLine(PIG_BEFORE)}</div></div>
     <button class="start-btn" onclick="startDrill()">Start</button>
   </div>`);
 }
@@ -377,17 +361,7 @@ function endDrill(){
 function showPigeonTransition(delayMs){
   setTimeout(()=>{
     try{localStorage.setItem('chart_new_lesson',String(CFG.chartId));}catch(e){}
-    const currentCpm=S.cor;
-    const prevSessions=loadSessions().slice(0,-1);
-    const prevBest=prevSessions.reduce((best,s)=>Math.max(best,s.cpm||0),0);
-    const improved=prevBest>0&&currentCpm>prevBest;
-    const mainLine=improved?pigLine(PIG_IMPROVED):pigLine(PIG_AFTER);
-    const subMsg=`<div class="pig-sub">Let's chart your timing.</div>`;
-    const overlay=document.createElement('div');
-    overlay.id='pigeon-overlay';
-    overlay.innerHTML=`<div class="pig-inner"><div class="pig-bubble">${mainLine}${subMsg}</div><img src="Icons/pigeon.png" alt="Pigeon"></div>`;
-    document.body.appendChild(overlay);
-    setTimeout(()=>{window.location.href=CFG.chartHref;},2800);
+    window.location.href=CFG.chartHref;
   },delayMs||0);
 }
 
