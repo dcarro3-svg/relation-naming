@@ -270,7 +270,7 @@ function submitNaming(r){
   const kp=unknownRole==='p1'?p2:p1;
   const isCorrect=unknownRole==='whole'
     ?(cmatch(r,p1)&&cmatch(r,p2)&&(r.includes('plus')||r.includes('and')))
-    :(cmatch(r,whole)&&cmatch(r,kp)&&(r.includes('minus')||r.includes('without')));
+    :(r.indexOf(whole)<r.indexOf(kp)&&r.includes('minus'));
   recordResp('naming',isCorrect);updateColorScaffold(isCorrect);updateRoleScaffold(isCorrect);
   if(isCorrect){
     document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;

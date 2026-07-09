@@ -879,8 +879,8 @@ function submitNaming(r){
   const{larger,smaller,diff,unknownRole}=n;
   let isCorrect;
   if(unknownRole==='larger') isCorrect=cmatch(r,smaller)&&cmatch(r,diff)&&r.includes('plus');
-  else if(unknownRole==='smaller') isCorrect=cmatch(r,larger)&&cmatch(r,diff)&&r.includes('minus');
-  else isCorrect=cmatch(r,larger)&&cmatch(r,smaller)&&r.includes('minus');
+  else if(unknownRole==='smaller') isCorrect=r.indexOf(larger)<r.indexOf(diff)&&r.includes('minus');
+  else isCorrect=r.indexOf(larger)<r.indexOf(smaller)&&r.includes('minus');
   recordResp('naming',isCorrect);updateColorScaffold(isCorrect);updateRoleScaffold(isCorrect);
   if(isCorrect){
     document.getElementById('responseArea').innerHTML=`<div class="instruct-text positive" style="text-align:center;font-weight:700">${randPos()}</div>`;
