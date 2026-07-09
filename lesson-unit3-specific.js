@@ -91,7 +91,7 @@ const INSTRUCT=[
     audio(m){return`This picture has two steps. Step one: ${m.c1.name} and ${m.c2.name} combine to make ${m.c3.name}. Step two: ${m.c3.name} is split into equal parts, and one part is ${m.c4.name}. The ${m.c3.name} bar appears in both steps. It links them. We call it the bridge.`;},
     guide(m){return`Which color appears in both step one and step two?`;},
     question(m){return`What is the bridge between the two steps?`;},
-    opts(m){return shuffle([`The ${m.c3.name} bar is the bridge.`,`The ${m.c1.name} bar is the bridge.`,`The ${m.c4.name} bar is the bridge.`]);},
+    opts(m){return [`The ${m.c3.name} bar is the bridge.`,`The ${m.c1.name} bar is the bridge.`,`The ${m.c4.name} bar is the bridge.`];},
     fu(m){return`${m.c3.name} is the bridge. It is the result of step one and the starting point for step two.`;},
     fuQ(m){return`Why is ${m.c3.name} called the bridge?`;},
     fuOpts:[`It appears in both steps — it connects them.`,`It is the smallest bar.`,`It is the final unknown.`],
@@ -123,7 +123,7 @@ const INSTRUCT=[
         close=`${m.c3.name} minus ${m.c2.name} equals unknown`;
         far=`${m.c1.name} plus ${m.c2.name} equals unknown`;
       }
-      return shuffle([correct,close,far]);
+      return [correct,close,far];
     },
     fu(m){return`${m.correct.join(' ')}. The bridge ${m.c3.name} now has a value. That unlocks the second step.`;},
     fuQ:`What does solving the first step unlock?`,
@@ -143,7 +143,7 @@ const INSTRUCT=[
       const wrongFrac=fracName(m.d===2?3:2);
       const close=`one ${wrongFrac} of ${m.c3.name} equals unknown`;
       const far=`${m.c3.name} minus ${m.c1.name} equals unknown`;
-      return shuffle([correct,close,far]);
+      return [correct,close,far];
     },
     fu(m){return`One ${fracName(m.d)} of ${m.c3.name} equals unknown. Both steps are solved. The bridge connected them.`;},
     fuQ:`What allowed you to name the second relation?`,
@@ -161,7 +161,7 @@ const INSTRUCT=[
     opts(m){
       const correct=m.unknownStep===1?`The first step has the unknown.`:`The second step has the unknown.`;
       const wrong=m.unknownStep===1?`The second step has the unknown.`:`The first step has the unknown.`;
-      return shuffle([correct,wrong,`Both steps have an unknown.`]);
+      return [correct,wrong,`Both steps have an unknown.`];
     },
     fu(m){const stepLabel=m.unknownStep===1?'first':'second';return`The ${stepLabel} step has the unknown. Name the relation to find it: ${m.correct.join(' ')}.`;},
     fuQ:`Name the relation to find the unknown.`,
@@ -185,7 +185,7 @@ const INSTRUCT=[
         close=`one ${wrongFrac} of ${m.c3.name} equals unknown`;
         far=`${m.c1.name} plus ${m.c2.name} equals unknown`;
       }
-      return shuffle([correct,close,far]);
+      return [correct,close,far];
     },
     fuGuide(m){return`Look only at the step with the unknown. What are the known bars in that step?`;},
   },
