@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -25,7 +25,7 @@
     color:var(--text-primary);margin-bottom:14px;}
   .divider{height:1px;background:var(--border);}
 
-  /* â”€â”€ Unit accordion button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Unit accordion button ─────────────────────────────────────────────── */
   .unit{display:flex;flex-direction:column;gap:0;}
 
   .unit-btn{display:flex;align-items:center;gap:20px;padding:18px 28px;
@@ -53,14 +53,14 @@
   .unit-btn.empty-unit{opacity:0.6;cursor:default;}
   .unit-btn.empty-unit:hover{border-color:var(--border);background:var(--surface);}
 
-  /* â”€â”€ Unit body â€” nested content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Unit body â€” nested content ───────────────────────────────────────── */
   .unit-body{display:none;flex-direction:column;gap:0;
     border:1px solid var(--accent);border-top:none;
     border-radius:0 0 var(--radius-lg) var(--radius-lg);
     background:var(--surface);overflow:hidden;}
   .unit-body.open{display:flex;}
 
-  /* â”€â”€ Nested accordion (sub-section within a unit) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Nested accordion (sub-section within a unit) ─────────────────────── */
   .sub-section{display:flex;flex-direction:column;gap:0;}
 
   .sub-btn{display:flex;align-items:center;gap:18px;padding:14px 28px 14px 40px;
@@ -89,7 +89,7 @@
   .sub-body{display:none;flex-direction:column;gap:0;background:#F9F6FF;}
   .sub-body.open{display:flex;}
 
-  /* â”€â”€ Leaf items (lessons, fluency links) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Leaf items (lessons, fluency links) ──────────────────────────────── */
   a.leaf{display:flex;align-items:center;gap:18px;padding:14px 28px 14px 60px;
     border-top:1px solid var(--border);text-decoration:none;color:var(--text-primary);
     background:var(--surface);transition:all 0.12s;font-size:17px;}
@@ -106,7 +106,7 @@
   .leaf-text strong{display:block;font-size:18px;font-weight:600;}
   .leaf-text span{font-size:14px;color:var(--text-muted);}
 
-  /* â”€â”€ Direct leaf (no sub-section, sits in unit-body) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Direct leaf (no sub-section, sits in unit-body) ─────────────────── */
   a.direct-leaf{display:flex;align-items:center;gap:16px;padding:16px 22px;
     border-top:1px solid var(--border);text-decoration:none;color:var(--text-primary);
     background:var(--surface);transition:all 0.15s;}
@@ -117,11 +117,11 @@
   .direct-leaf .item-text strong{display:block;font-size:15px;font-weight:600;}
   .direct-leaf .item-text span{font-size:13px;color:var(--text-muted);}
 
-  /* â”€â”€ Empty placeholder sub-button (coming soon) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Empty placeholder sub-button (coming soon) ───────────────────────── */
   .sub-btn.empty-sub{opacity:0.55;cursor:default;}
   .sub-btn.empty-sub:hover{background:var(--surface);}
 
-  /* â”€â”€ Third-level accordion (sub2 â€” inside a sub-body) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Third-level accordion (sub2 â€” inside a sub-body) ─────────────────── */
   .sub2-section{display:flex;flex-direction:column;gap:0;}
 
   .sub2-btn{display:flex;align-items:center;gap:14px;padding:11px 28px 11px 56px;
@@ -148,7 +148,7 @@
   .sub2-body{display:none;flex-direction:column;gap:0;background:#F4F1FC;}
   .sub2-body.open{display:flex;}
 
-  /* â”€â”€ Leaf items inside sub2-body â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Leaf items inside sub2-body ──────────────────────────────────────── */
   a.sub2-leaf{display:flex;align-items:center;gap:14px;padding:12px 28px 12px 72px;
     border-top:1px solid var(--border);text-decoration:none;color:var(--text-primary);
     background:#F4F1FC;transition:all 0.12s;}
@@ -159,9 +159,9 @@
   .sub2-leaf-icon.fluency{background:var(--accent-blue-light);color:var(--accent-blue);}
   .sub2-leaf-icon img{width:100%;height:100%;object-fit:fill;image-rendering:pixelated;}
 
-  /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  /* ══════════════════════════════════════════════════════════════════════════
      SECTION 1 â€” BANNER STYLES
-  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+  ══════════════════════════════════════════════════════════════════════════ */
 
   /* Full-bleed banner */
   .banner{width:calc(100% + 48px);margin:0 -24px;
@@ -284,7 +284,7 @@
   .section-divider span{font-size:18px;font-weight:800;text-transform:uppercase;
     letter-spacing:1px;color:var(--text-primary);white-space:nowrap;}
 
-  /* â”€â”€ Two-column main layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Two-column main layout ─────────────────────────────────────────────── */
   .main-layout{width:100%;max-width:1280px;display:flex;gap:56px;align-items:flex-start;
     padding:0 40px 80px;}
   .main-left{flex:1;min-width:0;display:flex;flex-direction:column;gap:22px;}
@@ -325,9 +325,9 @@
 <body>
 <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════════════════════════════
      SECTION 1 â€” BANNER
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+════════════════════════════════════════════════════════════════════════════ -->
 <div class="banner">
   <div class="banner-inner">
 
@@ -339,7 +339,7 @@
       <p class="banner-sub">Comprehension in reading, conceptual understanding in math, these skills are often called higher-order thinking skills. They often aren't directly taught, but this leaves many students thinking they aren't smart, or aren't good at math. This program teaches the skill of comprehension in math and reading, by focusing on relational understanding.</p>
       <div class="banner-actions">
         <button class="btn-primary" onclick="document.getElementById('curriculum').scrollIntoView({behavior:'smooth'})">Start Learning</button>
-        <button class="btn-ghost" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">How it works â†“</button>
+        <button class="btn-ghost" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">How it works ↓</button>
       </div>
     </div>
 
@@ -349,28 +349,28 @@
 
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+<!-- ═══════════════════════════════════════════════════════════════════════════
      SECTION 2 â€” FEATURE CARDS
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+════════════════════════════════════════════════════════════════════════════ -->
 
 <div class="main-layout">
 
-  <!-- â”€â”€ Left: curriculum â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <!-- ── Left: curriculum ─────────────────────────────────────────────────── -->
   <div class="main-left">
 
 
     <div id="curriculum">
   <h1>Relation Naming</h1>
 
-  <!-- â•â•â• UNIT ONE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <!-- ═══ UNIT ONE ═══════════════════════════════════════════════════════════ -->
   <div class="unit">
     <button class="unit-btn" onclick="toggleUnit('u1')" id="u1-btn">
       <div class="unit-icon"></div>
       <div class="unit-text">
         <strong>Unit One: Simple Relations</strong>
-        <span>Equal Â· Part-Whole Â· Comparison Â· Fractional Â· Multiplicative</span>
+        <span>Equal · Part-Whole · Comparison · Fractional · Multiplicative</span>
       </div>
-      <span class="unit-chevron">â–¼</span>
+      <span class="unit-chevron">▼</span>
     </button>
     <div class="unit-body" id="u1-body">
 
@@ -379,7 +379,7 @@
         <button class="sub-btn" onclick="toggleSub('u1-lessons')" id="u1-lessons-btn">
           <div class="sub-icon lesson"></div>
           <div class="sub-text"><strong>Simple Relations Lessons</strong><span>Five lessons</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="u1-lessons-body">
           <a href="lesson-one.html" class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Equal Relations</strong><span>Lesson 1.1</span></div></a>
@@ -395,7 +395,7 @@
         <button class="sub-btn" onclick="toggleSub('u1-fluency')" id="u1-fluency-btn">
           <div class="sub-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency" style="width:100%;height:100%;object-fit:fill;image-rendering:pixelated;"></div>
           <div class="sub-text"><strong>Simple Relations Fluency</strong><span>Five practice sessions</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="u1-fluency-body">
           <a href="fluency-l1.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency"></div><div class="leaf-text"><strong>Equal</strong><span>Lesson 1.1 Fluency</span></div></a>
@@ -409,7 +409,7 @@
     </div>
   </div>
 
-  <!-- â•â•â• UNIT TWO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <!-- ═══ UNIT TWO ════════════════════════════════════════════════════════════ -->
   <div class="unit">
     <button class="unit-btn" onclick="toggleUnit('u2')" id="u2-btn">
       <div class="unit-icon"></div>
@@ -417,7 +417,7 @@
         <strong>Unit Two: Compound Relations</strong>
         <span>Two relations, two unknowns</span>
       </div>
-      <span class="unit-chevron">â–¼</span>
+      <span class="unit-chevron">▼</span>
     </button>
     <div class="unit-body" id="u2-body">
 
@@ -426,7 +426,7 @@
         <button class="sub-btn" onclick="toggleSub('u2-lessons')" id="u2-lessons-btn">
           <div class="sub-icon lesson"></div>
           <div class="sub-text"><strong>Compound Relations Lessons</strong><span>One lesson</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="u2-lessons-body">
           <a href="lesson-compound.html" class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Compound Relations</strong><span>Lesson 2.1</span></div></a>
@@ -438,7 +438,7 @@
         <button class="sub-btn" onclick="toggleSub('u2-fluency')" id="u2-fluency-btn">
           <div class="sub-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency" style="width:100%;height:100%;object-fit:fill;image-rendering:pixelated;"></div>
           <div class="sub-text"><strong>Compound Relations Fluency</strong><span>One practice session</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="u2-fluency-body">
           <a href="fluency-compound.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency"></div><div class="leaf-text"><strong>Compound Relations</strong><span>Lesson 2.1 Fluency</span></div></a>
@@ -448,7 +448,7 @@
     </div>
   </div>
 
-  <!-- â•â•â• UNIT THREE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <!-- ═══ UNIT THREE ══════════════════════════════════════════════════════════ -->
   <div class="unit">
     <button class="unit-btn" onclick="toggleUnit('u3')" id="u3-btn">
       <div class="unit-icon"></div>
@@ -456,7 +456,7 @@
         <strong>Unit Three: Complex Relations</strong>
         <span>Two-step chained relations</span>
       </div>
-      <span class="unit-chevron">â–¼</span>
+      <span class="unit-chevron">▼</span>
     </button>
     <div class="unit-body" id="u3-body">
 
@@ -464,7 +464,7 @@
         <button class="sub-btn" onclick="toggleSub('u3-lessons')" id="u3-lessons-btn">
           <div class="sub-icon lesson"></div>
           <div class="sub-text"><strong>Complex Relations Lessons</strong><span>One lesson</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="u3-lessons-body">
           <a href="lesson-unit3.html" class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Complex Relations</strong><span>Lesson 3.1</span></div></a>
@@ -475,7 +475,7 @@
         <button class="sub-btn" onclick="toggleSub('u3-fluency')" id="u3-fluency-btn">
           <div class="sub-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency" style="width:100%;height:100%;object-fit:fill;image-rendering:pixelated;"></div>
           <div class="sub-text"><strong>Complex Relations Fluency</strong><span>One practice session</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="u3-fluency-body">
           <a href="fluency-unit3.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency"></div><div class="leaf-text"><strong>Complex Relations</strong><span>Lesson 3.1 Fluency</span></div></a>
@@ -485,7 +485,7 @@
     </div>
   </div>
 
-  <!-- â•â•â• UNIT FOUR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <!-- ═══ UNIT FOUR ═══════════════════════════════════════════════════════════ -->
   <div class="unit">
     <button class="unit-btn" onclick="toggleUnit('u4')" id="u4-btn">
       <div class="unit-icon"></div>
@@ -493,7 +493,7 @@
         <strong>Unit Four: Word Problems</strong>
         <span>Draw models from word problems</span>
       </div>
-      <span class="unit-chevron">â–¼</span>
+      <span class="unit-chevron">▼</span>
     </button>
     <div class="unit-body" id="u4-body">
 
@@ -501,7 +501,7 @@
         <button class="sub-btn" onclick="toggleSub('u4-lessons')" id="u4-lessons-btn">
           <div class="sub-icon lesson"></div>
           <div class="sub-text"><strong>Word Problem Lessons</strong><span>Three lessons</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="u4-lessons-body">
           <a href="lesson-unit4.html" class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Word Problems</strong><span>Lesson 4.1</span></div></a>
@@ -514,7 +514,7 @@
         <button class="sub-btn" onclick="toggleSub('u4-fluency')" id="u4-fluency-btn">
           <div class="sub-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency" style="width:100%;height:100%;object-fit:fill;image-rendering:pixelated;"></div>
           <div class="sub-text"><strong>Word Problems Fluency</strong><span>Three practice sessions</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="u4-fluency-body">
           <a href="fluency-unit4.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency"></div><div class="leaf-text"><strong>Word Problems</strong><span>Lesson 4.1 Fluency</span></div></a>
@@ -531,39 +531,39 @@
     </div>
   </div>
 
-  <!-- â•â•â• MATH FLUENCY â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <!-- ═══ MATH FLUENCY ════════════════════════════════════════════════════════ -->
   <div class="unit">
     <button class="unit-btn" onclick="toggleUnit('uf')" id="uf-btn">
       <div class="unit-icon"></div>
       <div class="unit-text">
         <strong>Math Fluency</strong>
-        <span>Math Facts Â· Computation</span>
+        <span>Math Facts · Computation</span>
       </div>
-      <span class="unit-chevron">â–¼</span>
+      <span class="unit-chevron">▼</span>
     </button>
     <div class="unit-body" id="uf-body">
 
       <div class="sub-section">
         <button class="sub-btn" onclick="toggleSub('uf-add')" id="uf-add-btn">
           <div class="sub-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency" style="width:100%;height:100%;object-fit:fill;image-rendering:pixelated;"></div>
-          <div class="sub-text"><strong>Additive Facts</strong><span>Part-whole families, sums 0â€“18</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <div class="sub-text"><strong>Additive Facts</strong><span>Part-whole families, sums 0–18</span></div>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="uf-add-body">
-          <a href="fact-lesson-add-1.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 1</strong><span>1 Â· 2 Â· 3  and  2 Â· 3 Â· 5</span></div></a>
-          <a href="fact-lesson-add-2.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 2</strong><span>3 Â· 3 Â· 6  and  2 Â· 4 Â· 6</span></div></a>
+          <a href="fact-lesson-add-1.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 1</strong><span>1 · 2 · 3  and  2 · 3 · 5</span></div></a>
+          <a href="fact-lesson-add-2.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 2</strong><span>3 · 3 · 6  and  2 · 4 · 6</span></div></a>
           <a href="fact-lesson-add-numonly-1.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 1</strong><span>1+2, 2+3, 3+3, 2+4 â€” numbers only</span></div></a>
-          <a href="fact-lesson-add-3.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 3</strong><span>3 Â· 4 Â· 7  and  2 Â· 5 Â· 7</span></div></a>
-          <a href="fact-lesson-add-4.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 4</strong><span>4 Â· 4 Â· 8  and  3 Â· 5 Â· 8</span></div></a>
+          <a href="fact-lesson-add-3.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 3</strong><span>3 · 4 · 7  and  2 · 5 · 7</span></div></a>
+          <a href="fact-lesson-add-4.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 4</strong><span>4 · 4 · 8  and  3 · 5 · 8</span></div></a>
           <a href="fact-lesson-add-numonly-2.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 2</strong><span>3+4, 2+5, 4+4, 3+5 â€” numbers only</span></div></a>
-          <a href="fact-lesson-add-5.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 5</strong><span>4 Â· 5 Â· 9  and  3 Â· 6 Â· 9</span></div></a>
-          <a href="fact-lesson-add-6.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 6</strong><span>5 Â· 5 Â· 10  and  4 Â· 6 Â· 10</span></div></a>
+          <a href="fact-lesson-add-5.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 5</strong><span>4 · 5 · 9  and  3 · 6 · 9</span></div></a>
+          <a href="fact-lesson-add-6.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 6</strong><span>5 · 5 · 10  and  4 · 6 · 10</span></div></a>
           <a href="fact-lesson-add-numonly-3.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 3</strong><span>4+5, 3+6, 5+5, 4+6 â€” numbers only</span></div></a>
-          <a href="fact-lesson-add-7.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 7</strong><span>5 Â· 6 Â· 11  and  4 Â· 7 Â· 11</span></div></a>
-          <a href="fact-lesson-add-8.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 8</strong><span>5 Â· 7 Â· 12  and  6 Â· 6 Â· 12</span></div></a>
+          <a href="fact-lesson-add-7.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 7</strong><span>5 · 6 · 11  and  4 · 7 · 11</span></div></a>
+          <a href="fact-lesson-add-8.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 8</strong><span>5 · 7 · 12  and  6 · 6 · 12</span></div></a>
           <a href="fact-lesson-add-numonly-4.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 4</strong><span>5+6, 4+7, 5+7, 6+6 â€” numbers only</span></div></a>
-          <a href="fact-lesson-add-9.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 9</strong><span>6 Â· 7 Â· 13  and  5 Â· 8 Â· 13</span></div></a>
-          <a href="fact-lesson-add-10.html"      class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 10</strong><span>7 Â· 7 Â· 14  and  6 Â· 8 Â· 14</span></div></a>
+          <a href="fact-lesson-add-9.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 9</strong><span>6 · 7 · 13  and  5 · 8 · 13</span></div></a>
+          <a href="fact-lesson-add-10.html"      class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 10</strong><span>7 · 7 · 14  and  6 · 8 · 14</span></div></a>
           <a href="fact-lesson-add-numonly-5.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 5</strong><span>6+7, 5+8, 7+7, 6+8 â€” numbers only</span></div></a>
           <a href="fact-fluency-add.html"         class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency"></div><div class="leaf-text"><strong>General Practice</strong><span>All additive families â€” 60-second drill</span></div></a>
         </div>
@@ -572,19 +572,19 @@
       <div class="sub-section">
         <button class="sub-btn" onclick="toggleSub('uf-mult')" id="uf-mult-btn">
           <div class="sub-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency" style="width:100%;height:100%;object-fit:fill;image-rendering:pixelated;"></div>
-          <div class="sub-text"><strong>Multiplicative Facts</strong><span>Equal-part families, 2Ã—2 through 5Ã—6</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <div class="sub-text"><strong>Multiplicative Facts</strong><span>Equal-part families, 2×2 through 5×6</span></div>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="uf-mult-body">
-          <a href="fact-lesson-mult-1.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 1</strong><span>2Ã—2=4  and  2Ã—3=6</span></div></a>
-          <a href="fact-lesson-mult-2.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 2</strong><span>2Ã—4=8  and  2Ã—5=10</span></div></a>
-          <a href="fact-lesson-mult-numonly-1.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 1</strong><span>2Ã—2, 2Ã—3, 2Ã—4, 2Ã—5 â€” numbers only</span></div></a>
-          <a href="fact-lesson-mult-3.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 3</strong><span>2Ã—6=12  and  3Ã—3=9</span></div></a>
-          <a href="fact-lesson-mult-4.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 4</strong><span>3Ã—4=12  and  3Ã—5=15</span></div></a>
-          <a href="fact-lesson-mult-numonly-2.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 2</strong><span>2Ã—6, 3Ã—3, 3Ã—4, 3Ã—5 â€” numbers only</span></div></a>
-          <a href="fact-lesson-mult-5.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 5</strong><span>4Ã—4=16  and  4Ã—5=20</span></div></a>
-          <a href="fact-lesson-mult-6.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 6</strong><span>5Ã—5=25  and  5Ã—6=30</span></div></a>
-          <a href="fact-lesson-mult-numonly-3.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 3</strong><span>4Ã—4, 4Ã—5, 5Ã—5, 5Ã—6 â€” numbers only</span></div></a>
+          <a href="fact-lesson-mult-1.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 1</strong><span>2×2=4  and  2×3=6</span></div></a>
+          <a href="fact-lesson-mult-2.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 2</strong><span>2×4=8  and  2×5=10</span></div></a>
+          <a href="fact-lesson-mult-numonly-1.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 1</strong><span>2×2, 2×3, 2×4, 2×5 â€” numbers only</span></div></a>
+          <a href="fact-lesson-mult-3.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 3</strong><span>2×6=12  and  3×3=9</span></div></a>
+          <a href="fact-lesson-mult-4.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 4</strong><span>3×4=12  and  3×5=15</span></div></a>
+          <a href="fact-lesson-mult-numonly-2.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 2</strong><span>2×6, 3×3, 3×4, 3×5 â€” numbers only</span></div></a>
+          <a href="fact-lesson-mult-5.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 5</strong><span>4×4=16  and  4×5=20</span></div></a>
+          <a href="fact-lesson-mult-6.html"       class="leaf"><div class="leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Lesson 6</strong><span>5×5=25  and  5×6=30</span></div></a>
+          <a href="fact-lesson-mult-numonly-3.html" class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Review"></div><div class="leaf-text"><strong>Number Review 3</strong><span>4×4, 4×5, 5×5, 5×6 â€” numbers only</span></div></a>
           <a href="fact-fluency-mult.html"         class="leaf"><div class="leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Fluency"></div><div class="leaf-text"><strong>General Practice</strong><span>All multiplicative families â€” 60-second drill</span></div></a>
         </div>
       </div>
@@ -594,145 +594,145 @@
         <button class="sub-btn" onclick="toggleSub('uf-comp')" id="uf-comp-btn">
           <div class="sub-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Computation" style="width:100%;height:100%;object-fit:fill;image-rendering:pixelated;"></div>
           <div class="sub-text"><strong>Computation</strong><span>20 fluency practice sets</span></div>
-          <span class="sub-chevron">â–¼</span>
+          <span class="sub-chevron">▼</span>
         </button>
         <div class="sub-body" id="uf-comp-body">
 
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-1')" id="uf-comp-1-btn"><div class="sub2-icon">1</div><div class="sub2-text"><strong>Computation 1</strong><span>Double-Digit Addition (No Regrouping)</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-1')" id="uf-comp-1-btn"><div class="sub2-icon">1</div><div class="sub2-text"><strong>Computation 1</strong><span>Double-Digit Addition (No Regrouping)</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-1-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <a href="computation-1-fluency.html" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Double-digit addition, no regrouping â€” 60-second drill</span></div></a>
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-2')" id="uf-comp-2-btn"><div class="sub2-icon">2</div><div class="sub2-text"><strong>Computation 2</strong><span>Double-Digit Subtraction (No Regrouping)</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-2')" id="uf-comp-2-btn"><div class="sub2-icon">2</div><div class="sub2-text"><strong>Computation 2</strong><span>Double-Digit Subtraction (No Regrouping)</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-2-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <a href="computation-2-fluency.html" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Double-digit subtraction, no regrouping â€” 60-second drill</span></div></a>
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-3')" id="uf-comp-3-btn"><div class="sub2-icon">3</div><div class="sub2-text"><strong>Computation 3</strong><span>Mixed: Add or Subtract?</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-3')" id="uf-comp-3-btn"><div class="sub2-icon">3</div><div class="sub2-text"><strong>Computation 3</strong><span>Mixed: Add or Subtract?</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-3-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <a href="computation-3-fluency.html" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Bar model drill â€” decide add or subtract â€” 60 seconds</span></div></a>
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-4')" id="uf-comp-4-btn"><div class="sub2-icon">4</div><div class="sub2-text"><strong>Computation 4</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-4')" id="uf-comp-4-btn"><div class="sub2-icon">4</div><div class="sub2-text"><strong>Computation 4</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-4-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-5')" id="uf-comp-5-btn"><div class="sub2-icon">5</div><div class="sub2-text"><strong>Computation 5</strong><span>Double-Digit Addition (With Regrouping)</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-5')" id="uf-comp-5-btn"><div class="sub2-icon">5</div><div class="sub2-text"><strong>Computation 5</strong><span>Double-Digit Addition (With Regrouping)</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-5-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <a href="computation-5-fluency.html" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Double-digit addition, with carrying â€” 60-second drill</span></div></a>
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-6')" id="uf-comp-6-btn"><div class="sub2-icon">6</div><div class="sub2-text"><strong>Computation 6</strong><span>Double-Digit Subtraction (With Regrouping)</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-6')" id="uf-comp-6-btn"><div class="sub2-icon">6</div><div class="sub2-text"><strong>Computation 6</strong><span>Double-Digit Subtraction (With Regrouping)</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-6-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <a href="computation-6-fluency.html" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Double-digit subtraction, with borrowing â€” 60-second drill</span></div></a>
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-7')" id="uf-comp-7-btn"><div class="sub2-icon">7</div><div class="sub2-text"><strong>Computation 7</strong><span>Mixed with Regrouping: Add or Subtract?</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-7')" id="uf-comp-7-btn"><div class="sub2-icon">7</div><div class="sub2-text"><strong>Computation 7</strong><span>Mixed with Regrouping: Add or Subtract?</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-7-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <a href="computation-7-fluency.html" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Bar model drill with regrouping â€” decide add or subtract â€” 60 seconds</span></div></a>
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-8')" id="uf-comp-8-btn"><div class="sub2-icon">8</div><div class="sub2-text"><strong>Computation 8</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-8')" id="uf-comp-8-btn"><div class="sub2-icon">8</div><div class="sub2-text"><strong>Computation 8</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-8-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-9')" id="uf-comp-9-btn"><div class="sub2-icon">9</div><div class="sub2-text"><strong>Computation 9</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-9')" id="uf-comp-9-btn"><div class="sub2-icon">9</div><div class="sub2-text"><strong>Computation 9</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-9-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-10')" id="uf-comp-10-btn"><div class="sub2-icon">10</div><div class="sub2-text"><strong>Computation 10</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-10')" id="uf-comp-10-btn"><div class="sub2-icon">10</div><div class="sub2-text"><strong>Computation 10</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-10-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-11')" id="uf-comp-11-btn"><div class="sub2-icon">11</div><div class="sub2-text"><strong>Computation 11</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-11')" id="uf-comp-11-btn"><div class="sub2-icon">11</div><div class="sub2-text"><strong>Computation 11</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-11-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-12')" id="uf-comp-12-btn"><div class="sub2-icon">12</div><div class="sub2-text"><strong>Computation 12</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-12')" id="uf-comp-12-btn"><div class="sub2-icon">12</div><div class="sub2-text"><strong>Computation 12</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-12-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-13')" id="uf-comp-13-btn"><div class="sub2-icon">13</div><div class="sub2-text"><strong>Computation 13</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-13')" id="uf-comp-13-btn"><div class="sub2-icon">13</div><div class="sub2-text"><strong>Computation 13</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-13-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-14')" id="uf-comp-14-btn"><div class="sub2-icon">14</div><div class="sub2-text"><strong>Computation 14</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-14')" id="uf-comp-14-btn"><div class="sub2-icon">14</div><div class="sub2-text"><strong>Computation 14</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-14-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-15')" id="uf-comp-15-btn"><div class="sub2-icon">15</div><div class="sub2-text"><strong>Computation 15</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-15')" id="uf-comp-15-btn"><div class="sub2-icon">15</div><div class="sub2-text"><strong>Computation 15</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-15-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-16')" id="uf-comp-16-btn"><div class="sub2-icon">16</div><div class="sub2-text"><strong>Computation 16</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-16')" id="uf-comp-16-btn"><div class="sub2-icon">16</div><div class="sub2-text"><strong>Computation 16</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-16-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-17')" id="uf-comp-17-btn"><div class="sub2-icon">17</div><div class="sub2-text"><strong>Computation 17</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-17')" id="uf-comp-17-btn"><div class="sub2-icon">17</div><div class="sub2-text"><strong>Computation 17</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-17-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-18')" id="uf-comp-18-btn"><div class="sub2-icon">18</div><div class="sub2-text"><strong>Computation 18</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-18')" id="uf-comp-18-btn"><div class="sub2-icon">18</div><div class="sub2-text"><strong>Computation 18</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-18-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-19')" id="uf-comp-19-btn"><div class="sub2-icon">19</div><div class="sub2-text"><strong>Computation 19</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-19')" id="uf-comp-19-btn"><div class="sub2-icon">19</div><div class="sub2-text"><strong>Computation 19</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-19-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
             </div>
           </div>
           <div class="sub2-section">
-            <button class="sub2-btn" onclick="toggleSub2('uf-comp-20')" id="uf-comp-20-btn"><div class="sub2-icon">20</div><div class="sub2-text"><strong>Computation 20</strong><span>Instruction Â· Practice</span></div><span class="sub2-chevron">â–¼</span></button>
+            <button class="sub2-btn" onclick="toggleSub2('uf-comp-20')" id="uf-comp-20-btn"><div class="sub2-icon">20</div><div class="sub2-text"><strong>Computation 20</strong><span>Instruction · Practice</span></div><span class="sub2-chevron">▼</span></button>
             <div class="sub2-body" id="uf-comp-20-body">
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon lesson"><svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div><div class="leaf-text"><strong>Instruction</strong><span>Coming soon</span></div></a> -->
               <!-- <a href="#" class="sub2-leaf"><div class="sub2-leaf-icon fluency"><img src="Icons/Retro pixel chart wi.png" alt="Practice"></div><div class="leaf-text"><strong>Computation Practice</strong><span>Coming soon</span></div></a> -->
@@ -747,7 +747,7 @@
 
   <div class="divider"></div>
 
-  <!-- â•â•â• PROGRESS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <!-- ═══ PROGRESS ════════════════════════════════════════════════════════════ -->
   <div>
     <div class="section-label">Progress</div>
     <div style="display:flex;flex-direction:column;gap:8px;">
@@ -760,7 +760,7 @@
 
   <div class="divider"></div>
 
-  <!-- â•â•â• TOOLS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <!-- ═══ TOOLS ═══════════════════════════════════════════════════════════════ -->
   <div>
     <div class="section-label">Tools</div>
     <div style="display:flex;flex-direction:column;gap:8px;">
@@ -775,7 +775,7 @@
 
   </div><!-- /.main-left -->
 
-  <!-- â”€â”€ Right: tutorial slideshow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <!-- ── Right: tutorial slideshow ─────────────────────────────────────────── -->
   <div class="main-right">
 
     <div class="tutorial-wrap" id="how-it-works">
@@ -852,7 +852,7 @@
 </div><!-- /outer wrapper -->
 
 <script>
-// â”€â”€ Curriculum accordion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Curriculum accordion ──────────────────────────────────────────────────────
 function toggleUnit(id) {
   const btn = document.getElementById(`${id}-btn`);
   const body = document.getElementById(`${id}-body`);
@@ -877,7 +877,7 @@ function toggleSub2(id) {
   body.classList.toggle('open', !isOpen);
 }
 
-// â”€â”€ Tutorial slideshow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Tutorial slideshow ────────────────────────────────────────────────────────
 const BH = 62;
 const BLUE = '#1B6CA8', GREEN = '#2D6A4F', ORANGE = '#D4600A', TEAL = '#0E7E7E';
 const PURPLE = '#6C3483';
@@ -892,7 +892,7 @@ function bar(hex, label, width, isUnk) {
 }
 
 
-/* â”€â”€ Tutorial Slide Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Tutorial Slide Navigation ──────────────────────────────────────────── */
 let currentSlide = 1;
 const totalSlides = 5;
 
@@ -923,7 +923,7 @@ function updateDots() {
 
 showSlide(1);
 
-/* â”€â”€ Leaf icon progress badges â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Leaf icon progress badges ───────────────────────────────────────────── */
 // Maps each leaf page href to its localStorage key and whether it's a lesson or fluency
 const LEAF_MAP = {
   'lesson-one.html':      {key:'fluency_l1_sessions',       type:'lesson'},
